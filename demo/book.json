@@ -1,0 +1,13 @@
+{
+  "title": "Математика движения",
+  "subtitle": "От первого колебания до языка волн",
+  "pages": [
+    {"id":"basics", "title":"01 / НАЧИНАЕМ С ПРОСТОГО", "children":[
+      {"id":"oscillations", "title":"Мир в ритме колебаний", "path":"chapters/oscillations.html"},
+      {"id":"wave-lab", "title":"Лаборатория волны", "path":"chapters/lab.html"}
+    ]},
+    {"id":"further", "title":"02 / ПОЙТИ ГЛУБЖЕ", "children":[
+      {"id":"questions", "title":"Вопросы и открытия", "path":"chapters/questions.html"}
+    ]}
+  ]
+}

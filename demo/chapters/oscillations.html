@@ -1,0 +1,17 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Мир в ритме колебаний</title><link rel="stylesheet" href="../assets/book.css"><link rel="stylesheet" href="/vendor/katex.min.css"><script defer src="/vendor/katex.min.js"></script></head><body>
+<div class="eyebrow">НАБЛЮДАТЬ · ПОНИМАТЬ · ЭКСПЕРИМЕНТИРОВАТЬ</div>
+<h1 id="world">Мир в ритме<br>колебаний</h1>
+<p class="lead" id="intro">Маятник часов, струна гитары, волны на воде.<br>У разных явлений есть один общий язык.</p>
+<figure><img src="../assets/ripples.png" alt="Концентрические волны на спокойной воде, вид сверху" width="1200" height="440"><figcaption>01 — Возмущение проходит. Движение продолжается.</figcaption></figure>
+<h2 id="return">Движение, которое возвращается</h2>
+<p id="definition">Колебание — это изменение, которое повторяется около положения равновесия. Качели уходят вперёд, на мгновение замирают и возвращаются назад. Чтобы описать этот ритм, нам понадобятся всего три величины: амплитуда, частота и фаза.</p>
+<div class="note"><div class="label">ПОПРОБУЙТЕ ЗАМЕТИТЬ</div><p id="thought">Представьте качели. Если раскачать их сильнее, размах увеличится. Но обязательно ли они начнут двигаться чаще?</p></div>
+<h2 id="language">Один ритм — одна формула</h2>
+<p id="formula-intro">Простейшее гармоническое колебание описывает синус. Амплитуда A задаёт максимальное отклонение, частота f — число полных колебаний в секунду, а фаза φ — положение в начале наблюдения.</p>
+<div class="formula"><div id="equation">x(t) = A sin(2πft + φ)</div><p>A — амплитуда · f — частота · φ — начальная фаза</p></div>
+<script>addEventListener('load',()=>{if(window.katex)katex.render('x(t) = A\\sin(2\\pi f t + \\varphi)',document.getElementById('equation'),{displayMode:true,throwOnError:false});});</script>
+<h2 id="pendulum">Посмотрим на маятник</h2>
+<svg class="diagram" viewBox="0 0 650 245" role="img" aria-label="Маятник: равновесие в центре и крайние положения по сторонам"><rect width="650" height="245" rx="10" fill="#f6f6ed"/><path d="M230 36H420" stroke="#98a187" stroke-width="3"/><path d="M325 36L220 186M325 36L430 186" stroke="#b4bea1" stroke-width="2" stroke-dasharray="5 5"/><path d="M325 36V218" stroke="#c4ccb6" stroke-dasharray="4 4"/><path d="M220 186Q325 252 430 186" fill="none" stroke="#a1b783" stroke-width="2"/><path d="M325 36L395 202" stroke="#546f47" stroke-width="3"/><circle cx="395" cy="202" r="17" fill="#728955"/><circle cx="325" cy="36" r="5" fill="#546f47"/><text x="110" y="160" fill="#889778" font-size="13">−A</text><text x="493" y="160" fill="#889778" font-size="13">+A</text><text x="288" y="239" fill="#889778" font-size="11">равновесие</text></svg>
+<p id="pendulum-note">При малых отклонениях маятник ведёт себя почти как идеальный гармонический осциллятор. Его период прежде всего зависит от длины нити и ускорения свободного падения.</p>
+<hr><p id="next">Теперь сделайте формулу живой: <a href="lab.html">измените волну в лаборатории →</a></p>
+</body></html>

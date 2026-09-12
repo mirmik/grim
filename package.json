@@ -1,0 +1,6 @@
+{
+  "name": "grim-viewer", "private": true, "version": "0.1.0", "type": "module",
+  "scripts": {"dev": "vite --host 127.0.0.1", "build": "vite build", "check": "svelte-check --tsconfig ./tsconfig.json", "test:ui": "playwright test"},
+  "dependencies": {"svelte": "^5.0.0", "katex": "^0.16.22"},
+  "devDependencies": {"@sveltejs/vite-plugin-svelte": "^5.0.0", "vite": "^6.0.0", "typescript": "^5.7.0", "svelte-check": "^4.0.0", "@playwright/test": "^1.51.0"}
+}
