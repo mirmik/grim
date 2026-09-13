@@ -154,7 +154,7 @@
       <section class="page-area" aria-label="Страница книги">
         <div class="reading-meta"><span>{current ? 'ГЛАВА '+(pageIndex+1).toString().padStart(2,'0') : 'НОВАЯ КНИГА'}</span><span>{updated ? `Обновлено в ${updated}` : 'Маленькие открытия, большой мир'}</span></div>
         {#if current?.path}
-          {#key `${bookId}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" src={`${prefix}${encodedPath(current.path)}?v=${revision}`}></iframe>{/key}
+          {#key `${bookId}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" allow="fullscreen *" src={`${prefix}${encodedPath(current.path)}?v=${revision}`}></iframe>{/key}
         {:else if book}
           <div class="empty-book"><span class="eyebrow">ПЕРВАЯ СТРАНИЦА ЕЩЁ ВПЕРЕДИ</span><h1>{book.title}</h1><p>Книга создана. Начните тему со своим внешним агентом: он добавит HTML-страницы и оглавление, а они появятся здесь автоматически.</p><h2>Папка для ваших страниц</h2><code>{book.root}</code><p class="small">Оглавление: book.json · Добавьте страницу в массив pages.</p></div>
         {/if}

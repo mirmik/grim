@@ -1,0 +1,26 @@
+[
+  {
+    "id": "lecturer",
+    "title": "Спокойный преподаватель",
+    "description": "Ровная связная речь, умеренный темп, мягкие логические акценты.",
+    "instruct": "An adult male native Russian speaker with a clear medium-low voice. Speak as a calm university lecturer explaining mechanics to first-year students. Use a moderate natural pace, connected phrasing, clear articulation, gentle logical emphasis and short natural pauses. Keep a steady conversational volume and a consistent voice throughout the passage."
+  },
+  {
+    "id": "engaged",
+    "title": "Увлечённый популяризатор",
+    "description": "Живое объяснение с любопытством и выразительными акцентами.",
+    "instruct": "An adult male native Russian speaker with a clear medium-low voice. Speak as an engaging science educator who is fascinated by this experiment. Use lively but controlled intonation, warm curiosity, clear logical emphasis and connected phrasing. Maintain a natural moderate pace and clear articulation. Keep a consistent voice throughout the passage."
+  },
+  {
+    "id": "patient",
+    "title": "Неторопливое объяснение",
+    "description": "Чуть более медленная речь, спокойные пояснения и заметные паузы.",
+    "instruct": "An adult male native Russian speaker with a clear medium-low voice. Speak as a patient teacher carefully explaining a difficult idea. Use an unhurried slightly slow pace, relaxed intonation and longer natural pauses between complete thoughts. Articulate technical terms clearly and give numerical results gentle emphasis. Keep the speech connected and the voice consistent throughout the passage."
+  },
+  {
+    "id": "mad-scientist",
+    "title": "Сумасшедший учёный",
+    "description": "Театральный азарт, внезапные акценты и восторг от эксперимента.",
+    "instruct": "An adult male native Russian speaker with a clear medium-low voice. Perform as an eccentric mad scientist thrilled by his brilliant experiment: theatrical excitement, mischievous delight, dramatic rises and falls in pitch, sudden emphatic stresses and animated changes of pace. Build suspense before revealing the result, then deliver it with triumphant scientific enthusiasm. Keep every technical term and number intelligible. Speak only the supplied text, without adding words or laughter."
+  }
+]

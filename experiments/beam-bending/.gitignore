@@ -1,0 +1,6 @@
+output/
+output-qwen/
+output-qwen-scenes/
+output-voxcpm-scenes/
+output-voxcpm-sentences/
+__pycache__/

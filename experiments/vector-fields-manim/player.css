@@ -1,0 +1,13 @@
+.chapter-video{margin:30px 0 38px;padding:0;border:1px solid #dce5d2;border-radius:10px;overflow:hidden;background:#f5f7ef}
+.chapter-video-header{display:flex;align-items:baseline;justify-content:space-between;gap:15px;padding:16px 20px}
+.chapter-video-header h2{font:600 17px/1.4 system-ui,sans-serif;margin:0;color:#36553a}
+.chapter-video-duration{font:13px/1.4 system-ui,sans-serif;color:#7b866f;white-space:nowrap}
+.chapter-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#0a111d}
+.chapter-video figcaption{margin:14px 20px 10px;font-size:13px;color:#64745c}
+.chapter-video-chapters{display:flex;flex-wrap:wrap;gap:7px;padding:0 20px 13px}
+.chapter-video-chapters button{font:12px/1.5 system-ui,sans-serif;color:#44633d;padding:6px 9px;border:1px solid #d5dfc9;border-radius:5px;background:#fffefa;cursor:pointer;text-align:left}
+.chapter-video-chapters button:hover{background:#e9efdf}
+.chapter-video button:focus-visible,.chapter-video a:focus-visible,.chapter-video video:focus-visible{outline:2px solid #597e47;outline-offset:3px}
+.chapter-video-links{display:flex;gap:18px;flex-wrap:wrap;font:12px/1.5 system-ui,sans-serif;margin:0;padding:0 20px 17px}
+.chapter-video-error{font:13px/1.6 system-ui,sans-serif;color:#805a25;padding:0 20px}
+@media(max-width:600px){.chapter-video-header{padding:13px 14px}.chapter-video-header h2{font-size:15px}.chapter-video figcaption{margin:12px 14px}.chapter-video-chapters{padding:0 14px 12px}.chapter-video-links{padding:0 14px 14px}}
