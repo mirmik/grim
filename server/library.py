@@ -8,6 +8,10 @@ import uuid
 from fastapi import HTTPException
 
 
+def library_directory():
+    return Path(os.environ.get('GRIM_LIBRARY', Path.home() / '.grim')).expanduser()
+
+
 def safe_file(root: Path, relative: str) -> Path:
     candidate = (root / relative).resolve()
     if not candidate.is_relative_to(root.resolve()) or not candidate.is_file():
@@ -86,23 +90,54 @@ class Library:
             for entry in data['books']:
                 if not re.fullmatch(r'[a-f0-9]{32}', entry['id']) or entry['id'] in self.entries:
                     raise ValueError('Invalid or duplicate book ID in library.json')
-                if not Path(entry['root']).is_absolute():
-                    raise ValueError('Book root must be absolute')
-                self.entries[entry['id']] = entry
+                root = Path(entry['root'])
+                if not root.is_absolute():
+                    root = (self.directory / root).resolve()
+                    if not root.is_relative_to(self.directory):
+                        raise ValueError('Relative book root must stay inside the library')
+                self.entries[entry['id']] = {**entry, 'root': str(root)}
         for root in initial_roots:
             resolved = str(root.resolve())
             if not any(e['root'] == resolved for e in self.entries.values()):
                 self.register(root)
         if not self.file.exists():
             self.save()
+        self.discover()
 
     def save(self):
-        atomic_json(self.file, {'version': 1, 'books': list(self.entries.values())})
+        entries = []
+        for entry in self.entries.values():
+            root = Path(entry['root'])
+            if root.is_relative_to(self.directory):
+                root = root.relative_to(self.directory)
+            entries.append({**entry, 'root': str(root)})
+        atomic_json(self.file, {'version': 1, 'books': entries})
+
+    def discover(self):
+        """Import books received through file sync; the registry stays local."""
+        books = self.directory / 'books'
+        known = {entry['root'] for entry in self.entries.values()}
+        if not books.is_dir():
+            return
+        for root in sorted(books.iterdir()):
+            if root.name.startswith('.') or '.sync-conflict-' in root.name or root.is_symlink():
+                continue
+            if str(root.resolve()) in known or not (root / 'book.json').is_file():
+                continue
+            try:
+                self.register(root)
+            except HTTPException:
+                # Syncthing may deliver the manifest before its HTML pages.
+                # Retry incomplete books on the next library refresh.
+                continue
 
     def root(self, book_id: str):
         entry = self.entries.get(book_id)
         if not entry:
-            raise HTTPException(404, 'Книга не найдена в библиотеке')
+            self.discover()
+            entry = self.entries.get(book_id)
+            if not entry:
+                raise HTTPException(404, 'Книга не найдена в библиотеке')
         return Path(entry['root'])
 
     def describe(self, book_id: str, strict=False):
@@ -123,7 +158,10 @@ class Library:
             if entry['root'] == str(root):
                 return self.describe(entry['id'])
         data = manifest(root)
-        book_id = uuid.uuid4().hex
+        if root.is_relative_to(self.directory / 'books'):
+            book_id = uuid.uuid5(uuid.NAMESPACE_URL, 'grim:' + root.relative_to(self.directory).as_posix()).hex
+        else:
+            book_id = uuid.uuid4().hex
         self.entries[book_id] = {'id': book_id, 'root': str(root), 'title': data['title']}
         try:
             self.save()

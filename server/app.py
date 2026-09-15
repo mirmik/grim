@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 BASE = Path(__file__).resolve().parent.parent
 
 
-from server.library import Library, manifest, page_map, safe_file
+from server.library import Library, library_directory, manifest, page_map, safe_file
 
 
 class ReaderUpdate(BaseModel):
@@ -82,7 +82,7 @@ def create_app(book_root: Path = None, library_dir: Path = None):
         roots = [book_root.resolve()] if book_root else [BASE / 'demo']
         if not book_root and os.environ.get('GRIM_BOOK'):
             roots.append(Path(os.environ['GRIM_BOOK']).resolve())
-        library = Library(library_dir or Path(os.environ.get('GRIM_LIBRARY', BASE / '.grim')), roots)
+        library = Library(library_dir or library_directory(), roots)
         app.state.library = library
         for book_id in library.entries:
             state_for(book_id)
@@ -131,6 +131,7 @@ def create_app(book_root: Path = None, library_dir: Path = None):
 
     @app.get('/api/library')
     async def get_library():
+        library.discover()
         return {'books': [library.describe(k) for k in library.entries], 'writer_token': writer_token,
                 'new_books_root': str(library.directory / 'books')}
 

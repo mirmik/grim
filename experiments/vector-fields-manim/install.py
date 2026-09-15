@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import html
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -12,8 +13,9 @@ parser=argparse.ArgumentParser();parser.add_argument('--book-root',type=Path);ar
 if args.book_root:
     book=args.book_root.resolve()
 else:
-    registry=json.loads((project/'.grim/library.json').read_text())
-    matches=[Path(b['root']) for b in registry['books'] if b['title']=='Дифференциальная геометрия']
+    library=Path(os.environ.get('GRIM_LIBRARY',Path.home()/'.grim')).expanduser().resolve()
+    registry=json.loads((library/'library.json').read_text())
+    matches=[library/Path(b['root']) for b in registry['books'] if b['title']=='Дифференциальная геометрия']
     assert len(matches)==1,'Specify --book-root when the title is ambiguous'
     book=matches[0]
 chapter=book/'chapters/vector-fields-and-comparison.html';source=chapter.read_text()
