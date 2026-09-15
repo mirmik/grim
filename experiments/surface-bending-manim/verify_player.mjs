@@ -3,10 +3,11 @@ import { chromium } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import os from 'node:os';
 import assert from 'node:assert/strict';
 
 const root=path.dirname(fileURLToPath(import.meta.url));
-const registry=JSON.parse(await readFile(path.join(root,'../../.grim/library.json'),'utf8'));
+const registry=JSON.parse(await readFile(path.join(process.env.GRIM_LIBRARY||path.join(os.homedir(),'.grim'),'library.json'),'utf8'));
 const book=registry.books.find(b=>b.title==='Дифференциальная геометрия');
 const origin=process.env.GRIM_TEST_ORIGIN||'http://127.0.0.1:8000';
 const browser=await chromium.launch({headless:true});

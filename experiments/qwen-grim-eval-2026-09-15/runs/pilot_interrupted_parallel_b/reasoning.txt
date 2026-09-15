@@ -1,0 +1,25 @@
+We need answer in Russian, produce Markdown with LaTeX for next chapter "Параллельный перенос" volume ~1200-1600 Russian words, comparable depth/tone. Need include: how from initial vector construct field along given path, derive coordinate equation, explain preservation of lengths/angles and path dependence. Give one completed illustrative example of transport on sphere with computed result and description of figure. End transition to future chapter on geodesics. Should not rehash large previous chapter. Need likely include chapter header similar to others: ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6? Existing chapters: Chapter 4 vector fields, Chapter 5 covariant derivative. Next is parallel transport. Need maybe number Chapter 6. Plan says following chapter is parallel transport. Existing context says next chapter: parallel transport. Need produce ready prose, not plan/notes. Markdown with LaTeX. Need no invented links? Maybe can include figure descriptions with captions. Need maybe no video. Need ensure mathematical correctness.
+
+Need think deeply.
+
+We need write chapter in Russian. Target 1200-1600 words. Existing chapters length? Chapter 4 maybe ~1500? We need comparable. Let's draft around 1400 words.
+
+Structure:
+Title: Параллельный перенос
+Subtitle: ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6
+Intro: We have covariant derivative. Parallel transport solves D V/dt=0 along curve. Given initial vector V(t0) in T_gamma(t0)M, find unique vector field V(t) along gamma satisfying ∇_{dot gamma} V=0. This is ODE. It extends local comparison to finite distance.
+
+1. Уравнение переноса
+Let gamma: [a,b]->M, V(t) along curve. Condition:
+DV/dt = dV/dt - <dV/dt,n> n =0 (for embedded) or abstract ∇_{dot gamma} V=0.
+In coordinates: gamma(t) has coordinates x^i(t), V(t)=V^i(t) e_i (maybe e_i coordinate basis). Then
+∇_{dot gamma} V = (dV^k/dt + Γ^k_{ij} dot x^i V^j) e_k =0.
+So ODE:
+dV^k/dt = - Γ^k_{ij}(gamma(t)) dot x^i(t) V^j(t).
+Initial condition V^k(t0)=V_0^k. Linear ODE, unique solution.
+
+2. Why lengths/angles preserved
+If V,W parallel transported along same curve, derivative of g(V,W) = g(∇_{dot gamma}V,W)+g(V,∇_{dot gamma}W)=0. Thus inner products constant. In particular length constant. This is metric compatibility. Also if two vectors parallel transported, angle constant. Could mention orientation? In 2D, if orthonormal pair transported, remains orthonormal; determinant? Since linear ODE, orientation preserved? Actually parallel transport is linear isometry of tangent spaces along path; in 2D, orientation preserved if no singularities? The map from initial tangent space to final is linear isometry, determinant ±1; since continuous and at t0 identity, det=+1, so orientation preserving. But not necessary. Could mention.
+
+3. Path dependence
+The transport depends on curve because solution ODE depends on gamma. If surface flat locally, closed loop may return vector unchanged; on curved surface not

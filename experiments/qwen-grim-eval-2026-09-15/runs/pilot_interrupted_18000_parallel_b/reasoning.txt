@@ -1,0 +1,48 @@
+We need answer in Russian, produce Markdown with LaTeX for next chapter "Параллельный перенос" volume ~1200-1600 Russian words, comparable depth/tone. Need include: how from initial vector construct field along given path, derive coordinate equation, explain preservation of lengths/angles and path dependence. Give one completed illustrative example of transport on sphere with computed result and description of figure. End transition to future chapter on geodesics. Should not rehash large previous chapter. Need likely include chapter header similar to others: ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6? Existing chapters: Chapter 4 vector fields, Chapter 5 covariant derivative. Next is parallel transport. Need maybe number Chapter 6. Plan says following chapter is parallel transport. Existing context says next chapter: parallel transport. Need produce ready prose, not plan/notes. Markdown with LaTeX. Need no invented links? Maybe can include figure descriptions with captions. Need maybe no video. Need ensure mathematical correctness.
+
+Need think deeply.
+
+We need write chapter in Russian. Target 1200-1600 words. Existing chapters length? Chapter 4 maybe ~1500? We need comparable. Let's draft around 1400 words.
+
+Structure:
+Title: Параллельный перенос
+Subtitle: ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6
+Intro: We have covariant derivative. Parallel transport solves D V/dt=0 along curve. Given initial vector V(t0) in T_gamma(t0)M, find unique vector field V(t) along gamma satisfying ∇_{dot gamma} V=0. This is ODE. It extends local comparison to finite distance.
+
+1. Уравнение переноса
+Let gamma: [a,b]->M, V(t) along curve. Condition:
+DV/dt = dV/dt - <dV/dt,n> n =0 (for embedded) or abstract ∇_{dot gamma} V=0.
+In coordinates: gamma(t) has coordinates x^i(t), V(t)=V^i(t) e_i (maybe e_i coordinate basis). Then
+∇_{dot gamma} V = (dV^k/dt + Γ^k_{ij} dot x^i V^j) e_k =0.
+So ODE:
+dV^k/dt = - Γ^k_{ij}(gamma(t)) dot x^i(t) V^j(t).
+Initial condition V^k(t0)=V_0^k. Linear ODE, unique solution.
+
+2. Why lengths/angles preserved
+If V,W parallel transported along same curve, derivative of g(V,W) = g(∇_{dot gamma}V,W)+g(V,∇_{dot gamma}W)=0. Thus inner products constant. In particular length constant. This is metric compatibility. Also if two vectors parallel transported, angle constant. Could mention orientation? In 2D, if orthonormal pair transported, remains orthonormal; determinant? Since linear ODE, orientation preserved? Actually parallel transport is linear isometry of tangent spaces along path; in 2D, orientation preserved if no singularities? The map from initial tangent space to final is linear isometry, determinant ±1; since continuous and at t0 identity, det=+1, so orientation preserving. But not necessary. Could mention.
+
+3. Path dependence
+The transport depends on curve because solution ODE depends on gamma. If surface flat locally, closed loop may return vector unchanged; on curved surface not necessarily. Explain holonomy. Need maybe not too deep. For small loop, rotation by K area (Gauss-Bonnet later). But can mention. Need show path dependence via example? Sphere example can show different path? We'll do one example on sphere.
+
+4. Example on sphere
+Need choose simple path and vector. Sphere radius R? Let's choose unit sphere S^2. Need compute parallel transport result. Classic: transport along equator then meridian? Or around latitude circle? Need one completed illustrative example with computed result and figure description.
+
+Simplest: transport a vector along a great circle (geodesic) remains same relative to tangent? On sphere, along equator: start at (1,0,0), vector north? Let's compute. Need clear result.
+
+Option 1: Parallel transport around a latitude circle at colatitude θ0. Result: vector rotates by angle 2π(1 - cos θ0) relative to initial? Actually holonomy around latitude circle: rotation angle = 2π(1 - cos θ) (for unit sphere) maybe sign. Let's verify. Parallel transport around a circle of latitude (not geodesic). The vector is kept tangent to sphere and has zero covariant derivative along the circle. In an orthonormal frame e_φ (east) and e_θ (south/north), connection coefficient? Let's derive.
+
+Unit sphere coordinates: θ colatitude from north pole (0 to π), φ azimuth. Position: r(θ,φ)=(sinθ cosφ, sinθ sinφ, cosθ). Basis: e_θ = ∂_θ r = (cosθ cosφ, cosθ sinφ, -sinθ), length 1. e_φ = ∂_φ r = (-sinθ sinφ, sinθ cosφ, 0), length sinθ. Orthonormal: E_θ=e_θ, E_φ=e_φ/sinθ.
+
+Connection: ∇_{e_φ} e_θ? Compute. For coordinate basis: Γ^θ_{φφ} = -sinθ cosθ? Let's compute metric diag(1, sin^2θ). Christoffel: Γ^θ_{φφ} = -1/2 g^{θθ} ∂_θ g_{φφ} = -1/2 ∂_θ sin^2θ = -sinθ cosθ. Γ^φ_{θφ}=Γ^φ_{φθ}=cotθ. Others zero.
+In orthonormal frame E_θ, E_φ: ∇_{E_φ} E_θ = Γ^θ_{φφ} E_φ? Wait coordinate: ∇_{∂_φ} ∂_θ = Γ^φ_{φθ} ∂_φ = cotθ ∂_φ. But E_φ=∂_φ/sinθ, so ∇_{E_φ} E_θ = (1/sinθ)∇_{∂_φ}E_θ = (1/sinθ) cotθ ∂_φ = cotθ/sinθ ∂_φ = cosθ/sin^2θ ∂_φ? That seems not unit. Let's do properly: ∇_{∂_φ} ∂_θ = Γ^φ_{φθ} ∂_φ = cotθ ∂_φ. Divide by sinθ: ∇_{E_φ} E_θ = cotθ/sinθ ∂_φ = cosθ/sin^2θ ∂_φ. But ∂_φ = sinθ E_φ, so = cosθ/sinθ E_φ = cotθ E_φ. Yes.
+∇_{E_φ} E_φ =? ∇_{∂_φ} ∂_φ = Γ^θ_{φφ} ∂_θ = -sinθ cosθ ∂_θ. Divide by sin^2θ: ∇_{E_φ} E_φ = -cosθ/sinθ ∂_θ = -cotθ E_θ.
+Thus along latitude θ=θ0, tangent direction is E_φ (east). Parallel transport equation for V=a E_θ + b E_φ:
+∇_{E_φ}V = a ∇_{E_φ}E_θ + b ∇_{E_φ}E_φ + a' E_θ + b' E_φ (prime derivative w.r.t φ? Need parameter φ, speed? If curve parameter φ, tangent ∂_φ = sinθ E_φ. If use arc length s=Rθ? For unit sphere, along latitude ds = sinθ dφ. Connection derivative along curve: ∇_{dotγ}V. If parameter t=φ, dotγ=∂_φ = sinθ E_φ. Then equation:
+dV/dφ + ∇_{∂_φ}V? Actually ∇_{∂_φ}V = ∂_φ V + ∇_{∂_φ} frame? We can use orthonormal frame with derivative w.r.t φ:
+∇_{∂_φ} E_θ = cotθ ∂_φ? Wait ∇_{∂_φ}E_θ = cotθ ∂_φ = cotθ sinθ E_φ? Let's compute: ∂_φ = sinθ E_φ. ∇_{∂_φ}E_θ = sinθ ∇_{E_φ}E_θ = sinθ cotθ E_φ = cosθ E_φ. Yes.
+∇_{∂_φ}E_φ =? ∂_φ = sinθ E_φ. ∇_{∂_φ}E_φ = sinθ ∇_{E_φ}E_φ = sinθ (-cotθ)E_θ = -cosθ E_θ.
+Thus for V=a(φ)E_θ + b(φ)E_φ:
+∇_{∂_φ}V = a' E_θ + b' E_φ + a cosθ E_φ - b cosθ E_θ = (a' - b cosθ)E_θ + (b' + a cosθ)E_φ.
+Set zero:
+a' = b cosθ, b' = -a cosθ.
+Solution: a = A cos(φ cosθ) + B sin? Let k=cosθ. Matrix [[0,k],[-k,0]]? Actually a'=b k, b'=-a k. Then a''=b' k=-a k^2, so a=A cos(kφ)+B sin(kφ). b? b=(a')/k = -A sin(kφ)+B cos(kφ). Initial at φ=0: a(0)=a0, b(0)=b0. Then A=a0, B=b0. So after φ=2π: a(2π)=a0 cos(2πk)+b0 sin(2πk), b(2π)= -a0 sin(2πk)+b0 cos(2πk). This is rotation by angle -2πk? Matrix [[cos, sin],[-sin, cos]] = rotation by -2πk in (a,b) coordinates. Relative to initial frame, vector rotated by angle -2π cosθ. But holonomy angle often 2π(1-cosθ) relative to initial direction? Need careful: At final point same as initial (latitude closed), frame E_θ,E_φ at φ=2π is same as at φ=0? For latitude, E_θ and E_φ are well-defined and same? At φ=2π same point and same frame (if frame continuous along loop? Yes E_φ is tangent to loop, E_θ south/north; at same point same). So transported vector components relative to same frame rotated by angle -2π cosθ. But initial vector maybe chosen along E_φ? Then after loop b? If initial V=E_φ (a=0,b=1): after: a=sin(2πk), b=cos(2πk). That is rotation by angle? Starting along east, after loop vector has north component sin(2πk). It rotated counterclockwise? In (north=e_θ, east=e_φ) coordinates, initial (0,1). After (sin, cos) = rotation by +? Standard rotation by α: (x cosα - y sinα, x sinα + y cosα). For (0,1) -> (-sinα, cosα). Our (sin, cos) = rotation by -α with α=2πk? Or rotation by +? If α=-2πk: (0,1)->(sin 2πk, cos 2πk). So angle -2πk. But known holonomy around latitude: vector rotates by 2π(1-cosθ) relative to initial? Let's check: If initial vector tangent to loop (east), after transport around loop it is rotated by angle 2π(1 - cosθ) relative to tangent? Maybe because the frame itself? Let's test θ=π/2 equator: k=0, no rotation. Known holonomy around equator is 0? Actually around a great circle, parallel transport returns vector unchanged (if start tangent? yes). 2π(1-cosθ)=0. Good. Our angle -2πk = 0. For small latitude near north pole θ small, k≈1, our angle ≈ -2π. 2π(1-k)≈0. Which is correct? Let's think: Around a tiny circle near north pole, parallel transport should rotate vector by about 2π (almost full turn) relative to initial? I recall holonomy around latitude circle is 2π(1 - cosθ). For θ small, cosθ≈1, angle≈0? That seems wrong? Let's recall: Spherical triangle with vertices north pole and two points on latitude? The angle of parallel transport around a loop equals integral of Gaussian curvature over enclosed area = area of spherical cap = 2π(1 - cosθ

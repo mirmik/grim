@@ -1,0 +1,98 @@
+[
+  {
+    "case": "01_parallel_a",
+    "finish_reason": "stop",
+    "prompt_tokens": 9370,
+    "completion_tokens_including_reasoning": 33938,
+    "elapsed_seconds": 746.56,
+    "first_content_seconds": 679.68,
+    "generation_tokens_per_second": 46.03,
+    "answer_characters": 11190,
+    "russian_words": 1210,
+    "reasoning_characters": 83687
+  },
+  {
+    "case": "02_parallel_b",
+    "finish_reason": "stop",
+    "prompt_tokens": 9370,
+    "completion_tokens_including_reasoning": 32603,
+    "elapsed_seconds": 758.2,
+    "first_content_seconds": 702.69,
+    "generation_tokens_per_second": 43.07,
+    "answer_characters": 9210,
+    "russian_words": 893,
+    "reasoning_characters": 85251
+  },
+  {
+    "case": "03_connection",
+    "finish_reason": "stop",
+    "prompt_tokens": 5893,
+    "completion_tokens_including_reasoning": 21553,
+    "elapsed_seconds": 476.74,
+    "first_content_seconds": 421.96,
+    "generation_tokens_per_second": 45.84,
+    "answer_characters": 9765,
+    "russian_words": 951,
+    "reasoning_characters": 57845
+  },
+  {
+    "case": "04_calculations",
+    "finish_reason": "stop",
+    "prompt_tokens": 1179,
+    "completion_tokens_including_reasoning": 21872,
+    "elapsed_seconds": 463.53,
+    "first_content_seconds": 420.21,
+    "generation_tokens_per_second": 47.38,
+    "answer_characters": 6187,
+    "russian_words": 318,
+    "reasoning_characters": 48098
+  },
+  {
+    "case": "05_editor",
+    "finish_reason": "stop",
+    "prompt_tokens": 1200,
+    "completion_tokens_including_reasoning": 23897,
+    "elapsed_seconds": 510.9,
+    "first_content_seconds": 473.34,
+    "generation_tokens_per_second": 46.95,
+    "answer_characters": 6703,
+    "russian_words": 715,
+    "reasoning_characters": 67084
+  },
+  {
+    "case": "06_without_examples",
+    "finish_reason": "stop",
+    "prompt_tokens": 1048,
+    "completion_tokens_including_reasoning": 27953,
+    "elapsed_seconds": 616.11,
+    "first_content_seconds": 525.33,
+    "generation_tokens_per_second": 45.51,
+    "answer_characters": 15028,
+    "russian_words": 1304,
+    "reasoning_characters": 69890
+  },
+  {
+    "case": "pilot_8500_parallel_a",
+    "finish_reason": "length",
+    "prompt_tokens": 9370,
+    "completion_tokens_including_reasoning": 8500,
+    "elapsed_seconds": 212.81,
+    "first_content_seconds": null,
+    "generation_tokens_per_second": 41.67,
+    "answer_characters": 0,
+    "russian_words": 0,
+    "reasoning_characters": 26605
+  },
+  {
+    "case": "pilot_default_18000_parallel_a",
+    "finish_reason": null,
+    "prompt_tokens": null,
+    "completion_tokens_including_reasoning": null,
+    "elapsed_seconds": 300.09,
+    "first_content_seconds": null,
+    "generation_tokens_per_second": null,
+    "answer_characters": 0,
+    "russian_words": 0,
+    "reasoning_characters": 35831
+  }
+]

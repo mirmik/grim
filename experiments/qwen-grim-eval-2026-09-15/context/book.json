@@ -1,0 +1,36 @@
+{
+  "title": "Дифференциальная геометрия",
+  "subtitle": "",
+  "pages": [
+    {
+      "id": "introduction",
+      "title": "Введение: геометрия изнутри поверхности",
+      "path": "chapters/introduction.html"
+    },
+    {
+      "id": "parametrization-and-metric",
+      "title": "От параметризации к измерению",
+      "path": "chapters/parametrization-and-metric.html"
+    },
+    {
+      "id": "normal-and-curvature",
+      "title": "Как поверхность изгибается",
+      "path": "chapters/normal-and-curvature.html"
+    },
+    {
+      "id": "why-curvature-matters",
+      "title": "Зачем измерять кривизну",
+      "path": "chapters/why-curvature-matters.html"
+    },
+    {
+      "id": "vector-fields-and-comparison",
+      "title": "Векторные поля и проблема сравнения",
+      "path": "chapters/vector-fields-and-comparison.html"
+    },
+    {
+      "id": "covariant-derivative-and-connection",
+      "title": "Ковариантная производная и связность Леви-Чивиты",
+      "path": "chapters/covariant-derivative-and-connection.html"
+    }
+  ]
+}

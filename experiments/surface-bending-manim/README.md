@@ -40,7 +40,7 @@ node experiments/surface-bending-manim/verify_player.mjs
 ```
 
 Установка выполняется после успешного `validate.py`. Она находит
-существующую книгу в `.grim/library.json`, копирует файлы в её
+существующую книгу в `~/.grim/library.json` (или `$GRIM_LIBRARY/library.json`), копирует файлы в её
 `assets/video/` и добавляет проигрыватель после вводного абзаца главы.
 Для другого экземпляра книги: `install.py --book-root /absolute/path`.
 Основной текст и прежние иллюстрации главы сохраняются.

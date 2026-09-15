@@ -1,4 +1,4 @@
-"""Grim's local book viewer and ephemeral reading context. No agent runtime."""
+"""Grim's local book viewer, external reader context and optional local agent."""
 import asyncio
 from contextlib import asynccontextmanager, suppress
 from datetime import datetime, timezone
@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 BASE = Path(__file__).resolve().parent.parent
 
 
-from server.library import Library, manifest, page_map, safe_file
+from server.library import Library, library_directory, manifest, page_map, safe_file
 
 
 class ReaderUpdate(BaseModel):
@@ -41,7 +41,7 @@ class AddBook(BaseModel):
     root: str = Field(min_length=1, max_length=4096)
 
 
-def create_app(book_root: Path = None, library_dir: Path = None):
+def create_app(book_root: Path = None, library_dir: Path = None, *, agent_completion=None):
     contexts = {}
     reader_sequences = {}
     writer_token = secrets.token_urlsafe(32)
@@ -82,14 +82,21 @@ def create_app(book_root: Path = None, library_dir: Path = None):
         roots = [book_root.resolve()] if book_root else [BASE / 'demo']
         if not book_root and os.environ.get('GRIM_BOOK'):
             roots.append(Path(os.environ['GRIM_BOOK']).resolve())
-        library = Library(library_dir or Path(os.environ.get('GRIM_LIBRARY', BASE / '.grim')), roots)
+        library = Library(library_dir or library_directory(), roots)
         app.state.library = library
+        from .agent import AgentService
+        def agent_context(reader_id, book_id):
+            import copy
+            context = contexts.get(reader_id)
+            return copy.deepcopy(context) if context and context['book']['id'] == book_id else None
+        app.state.agent = AgentService(library, agent_context, agent_completion)
         for book_id in library.entries:
             state_for(book_id)
         task = asyncio.create_task(watch())
         try:
             yield
         finally:
+            await app.state.agent.shutdown()
             task.cancel()
             with suppress(asyncio.CancelledError):
                 await task
@@ -99,6 +106,9 @@ def create_app(book_root: Path = None, library_dir: Path = None):
     def require_viewer(request):
         if not secrets.compare_digest(request.headers.get('x-grim-viewer', ''), writer_token):
             raise HTTPException(403, 'Viewer token required')
+
+    from .agent import agent_router
+    app.include_router(agent_router(require_viewer))
 
     def accept_update(payload):
         # A late request from the previously opened book cannot replace newer context.
@@ -131,6 +141,7 @@ def create_app(book_root: Path = None, library_dir: Path = None):
 
     @app.get('/api/library')
     async def get_library():
+        library.discover()
         return {'books': [library.describe(k) for k in library.entries], 'writer_token': writer_token,
                 'new_books_root': str(library.directory / 'books')}
 

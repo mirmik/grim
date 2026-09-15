@@ -140,3 +140,68 @@ def test_corrupt_registry_is_not_overwritten(tmp_path):
     directory=tmp_path/'broken';directory.mkdir();registry=directory/'library.json';registry.write_text('{broken')
     with pytest.raises(ValueError):Library(directory,[])
     assert registry.read_text()=='{broken'
+
+
+def test_home_library_and_override(monkeypatch, tmp_path, book):
+    monkeypatch.setenv('HOME', str(tmp_path))
+    monkeypatch.delenv('GRIM_LIBRARY', raising=False)
+    with TestClient(create_app(book)) as client:
+        assert client.get('/api/library').json()['new_books_root'] == str(tmp_path/'.grim/books')
+    monkeypatch.setenv('GRIM_LIBRARY', str(tmp_path/'custom'))
+    with TestClient(create_app(book)) as client:
+        assert client.get('/api/library').json()['new_books_root'] == str(tmp_path/'custom/books')
+
+
+def test_synced_books_discovered_after_start(tmp_path):
+    import shutil
+    source = Library(tmp_path/'source', [])
+    created = source.create('Shared book')
+    with TestClient(create_app(library_dir=tmp_path/'target')) as client:
+        target = tmp_path/'target/books'/Path(created['root']).name
+        shutil.copytree(created['root'], target)
+        found = {b['id']: b for b in client.get('/api/library').json()['books']}
+        assert found[created['id']]['root'] == str(target)
+        assert found[created['id']]['title'] == 'Shared book'
+        assert client.get('/api/books/'+created['id']).status_code == 200
+        assert len(client.get('/api/library').json()['books']) == len(found)
+
+
+def test_discovery_retries_partial_sync_and_ignores_conflicts(tmp_path):
+    library = Library(tmp_path, [])
+    root = tmp_path/'books/incoming'
+    root.mkdir(parents=True)
+    data = {'title':'Incoming','pages':[{'id':'one','title':'One','path':'one.html'}]}
+    (root/'book.json').write_text(json.dumps(data))
+    library.discover()
+    assert not library.entries
+    (root/'one.html').write_text('<p>Arrived</p>')
+    make_book(tmp_path/'books/incoming.sync-conflict-20260915', 'Conflict')
+    library.discover()
+    assert len(library.entries) == 1
+    assert next(iter(library.entries.values()))['title'] == 'Incoming'
+
+
+def test_managed_library_can_move_and_keeps_legacy_ids(tmp_path):
+    import shutil
+    directory = tmp_path/'original'
+    library = Library(directory, [])
+    created = library.create('Portable')
+    registry = json.loads(library.file.read_text())
+    assert registry['books'][0]['root'].startswith('books/')
+    moved = tmp_path/'moved'
+    shutil.move(directory, moved)
+    restored = Library(moved, [])
+    assert restored.describe(created['id'])['error'] is None
+    legacy_id = 'a'*32
+    registry['books'][0].update(id=legacy_id, root=str(restored.root(created['id'])))
+    (moved/'library.json').write_text(json.dumps(registry))
+    legacy = Library(moved, [])
+    legacy.discover()
+    assert list(legacy.entries) == [legacy_id]
+
+
+def test_relative_registry_root_cannot_escape(tmp_path):
+    registry = {'version':1,'books':[{'id':'a'*32,'root':'../outside','title':'Outside'}]}
+    (tmp_path/'library.json').write_text(json.dumps(registry))
+    with pytest.raises(ValueError, match='inside the library'):
+        Library(tmp_path, [])
