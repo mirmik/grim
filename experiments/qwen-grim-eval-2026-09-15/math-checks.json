@@ -1,0 +1,32 @@
+{
+  "polar_Gamma": {
+    "0,1,1": "-r",
+    "1,0,1": "1/r",
+    "1,1,0": "1/r"
+  },
+  "polar_constant_vector_derivatives": [
+    "0",
+    "0"
+  ],
+  "polar_frame_difference": "Matrix([[0], [-1/r**2]])",
+  "polar_frame_torsion": "0",
+  "surface_g": "Matrix([[1, 1], [1, 2]])",
+  "surface_b": "Matrix([[1, 1], [1, 3]])",
+  "surface_S": "Matrix([[1, -1], [0, 2]])",
+  "surface_eigenvalues": [
+    "2",
+    "1"
+  ],
+  "triangle_transport_matrix": "Matrix([[0, -1, 0], [1, 0, 0], [0, 0, 1]])",
+  "general_triangle_transport_matrix": "Matrix([[cos(alpha), -sin(alpha), 0], [sin(alpha), cos(alpha), 0], [0, 0, 1]])",
+  "latitude_parallel_transport": "verified by ambient differentiation and projection",
+  "flat_cone_counterexample": "all Riemann components zero; holonomy is -I for alpha=1/2",
+  "no_examples_helix": {
+    "kappa_squared": "helix_a**2/(helix_a**2 + helix_b**2)**2",
+    "tau": "helix_b/(helix_a**2 + helix_b**2)"
+  },
+  "no_examples_sphere_metric": "Matrix([[radius**2, 0], [0, radius**2*sin(th)**2]])",
+  "degenerate_parametrization_counterexample": "(u^3,v,0): rank 1 at origin; image is the xy-plane",
+  "zero_point_curvature_counterexample": "36*t**2/(9*t**4 + 1)**3",
+  "assertions": "passed"
+}

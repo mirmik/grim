@@ -1,0 +1,653 @@
+We need answer in Russian, Markdown with LaTeX. Need write chapter "Ковариантная производная и связность Леви-Чивиты" approx 1200-1600 Russian words. Need follow editorial requirements. Need maybe include illustrations description. Need only requested material in Markdown with LaTeX. Need not invent links. Mathematical correctness. Reader knows derivatives, vectors, matrices. Previous chapter introduced vector fields, fields along curves, covariant derivative along curve via projection for embedded surface: DV/dt = dV/dt - <dV/dt,n>n. Need now formalize connection as comparison rule, metric compatibility and torsion-free, existence uniqueness Levi-Civita, Christoffel symbols from metric and derivative formula. Finish transition to parallel transport. Need level, notation consistent. Use M, p, T_pM, r(u,v), e_i? Previous chapter used e_1,e_2 for basis along path. Need introduce coordinates u^1,u^2 maybe. Since book uses r(u,v), maybe use coordinates x^i=(u,v). Need be careful: in previous chapter parameterization r(u,v), basis r_u, r_v. Metric g = J^T J. Need introduce Christoffel symbols. Could use coordinate basis ∂_i = ∂r/∂x^i. Need define connection ∇_X Y? For vector fields along curve. Need distinguish ordinary derivative d/dt and covariant derivative D/dt. In previous chapter D V/dt for embedded surface. Need now define abstractly: connection assigns to vector field V along curve γ a vector field ∇_{γ'} V along γ, linear in V and γ'? Actually connection: (1,2)-tensor: ∇: Γ(TM)×Γ(TM) -> Γ(TM), linear in second? Need choose convention. In Russian differential geometry often ∇_X Y linear in X? Need be consistent. For along curve: ∇_{dγ/dt} V. Could define ∇_{\dot γ} V. Need mention it is bilinear in vector fields? If we define ∇_X Y, usually linear in X? In Riemannian geometry, ∇_X Y is C∞-linear in X? Actually connection on tangent bundle: ∇: Γ(TM)×Γ(TM)->Γ(TM), C∞-linear in first argument X, R-linear in second Y, and satisfies Leibniz in Y: ∇_X(fY)=X(f)Y+f∇_X Y. Some authors linear in second. Need pick and state. For along curve, ∇_{\dot γ} V. We can define ∇_X Y. Then metric compatibility: X⟨Y,Z⟩ = ⟨∇_X Y,Z⟩+⟨Y,∇_X Z⟩. Torsion-free: ∇_X Y - ∇_Y X = [X,Y]. Need explain torsion intuitively: if you compare changes of coordinate directions, symmetric part? Need not too deep. Need derive Christoffel symbols: In coordinates x^i, ∇_{∂_i} ∂_j = Γ^k_{ij} ∂_k. Then formula: Γ^k_{ij} = 1/2 g^{kl}(∂_i g_{jl}+∂_j g_{il}-∂_l g_{ij}). Need derive from metric compatibility and torsion-free. Need formula for derivative of vector field V=V^j ∂_j: ∇_X V = (X(V^k)+Γ^k_{ij} X^i V^j) ∂_k. Along curve γ(t): D V^k/dt = dV^k/dt + Γ^k_{ij} \dot γ^i V^j. Need explain Christoffel are correction for changing basis. Need maybe mention for embedded surface Γ can be computed from metric, no normal needed. Could show cylinder example? Maybe short: cylinder metric ds^2=R^2 du^2+dv^2, Christoffels zero, so coordinate components derivative equals internal derivative? But in previous chapter unit tangent around circle had constant components in coordinate basis? Let's check: basis r_u = (-R sin u, R cos u,0), r_v=(0,0,1). Unit tangent V = r_u/R = (1/R) r_u, component a=1/R constant, b=0. Γ=0, so D V/dt? If t=u, derivative components zero, D V/du=0. But previous D V/dt=0 yes. Good. Could include as check. But avoid too many examples. Need maybe include one illustration: diagram of connection as rule comparing tangent spaces? Need specify exact description and caption. Since asked if illustration needed indicate exact description and caption; don't create images. We can include markdown image placeholder? Maybe use blockquote? Need likely include "Рисунок 3." with description. Need not invent links. Could include one or two illustrations. Need keep 1200-1600 Russian words. Need count roughly. Let's draft.
+
+Structure:
+Title: Ковариантная производная и связность Леви-Чивиты
+ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 5
+
+Intro: purpose. In previous chapter recipe via embedding. Now need intrinsic rule. Goal: define connection, metric compatibility, torsion-free, existence uniqueness, Christoffel.
+
+1. Связность как правило сравнения
+Define: for each curve γ and vector field V along it, assign vector ∇_{\dot γ} V along γ. Or for vector fields X,Y: ∇_X Y. Conditions: linearity, Leibniz. Maybe state:
+- C∞-linear in X (if X=fX0 then ∇_{fX}Y=f∇_X Y)
+- R-linear in Y
+- ∇_X(fY)=X(f)Y+f∇_X Y.
+This makes ∇_X Y a tensor? Actually not tensor in X? It is tensor in X? Since C∞-linear in X, yes; in Y not due derivative of components. Along curve, ∇_{\dotγ}V depends only on velocity and V(t) and derivatives of components? It uses derivative of V components.
+Explain: connection is extra data telling how tangent spaces glued.
+
+2. Why metric compatibility
+Metric g gives inner product in each tangent space. If comparing vectors, lengths and angles should behave naturally. Requirement: derivative of inner product along X equals inner product of covariant derivatives. Formula. Consequence: if ∇_{\dotγ}V=0 then length constant. For embedded surface projection rule satisfies this. Need explain: metric compatibility means connection preserves measurements; no artificial stretching.
+
+3. Why torsion-free
+Torsion T(X,Y)=∇_X Y - ∇_Y X - [X,Y]. Torsion-free T=0. Intuition: infinitesimal parallelogram closes? Coordinate directions commute: [∂_i,∂_j]=0, so ∇_{∂_i}∂_j=∇_{∂_j}∂_i. It says no antisymmetric part in how basis changes. If torsion nonzero, moving first in u then v vs v then u leaves a gap. Need not overdo. For surfaces embedded, projection rule has no torsion.
+
+4. Existence and uniqueness (Levi-Civita)
+Theorem: On smooth surface (or Riemannian manifold) there is exactly one connection satisfying metric compatibility and torsion-free. Called Levi-Civita connection. State maybe proof sketch: in coordinates conditions determine Γ^k_{ij}. Need derive.
+
+5. Christoffel symbols
+Coordinates x^1=u, x^2=v. Basis ∂_i = ∂r/∂x^i. Metric components g_{ij}=⟨∂_i,∂_j⟩. Define ∇_{∂_i}∂_j=Γ^k_{ij}∂_k. Torsion-free: Γ^k_{ij}=Γ^k_{ji} (because [∂_i,∂_j]=0). Metric compatibility:
+∂_i g_{jk}=⟨∇_{∂_i}∂_j,∂_k⟩+⟨∂_j,∇_{∂_i}∂_k⟩ = Γ^l_{ij} g_{lk}+Γ^l_{ik} g_{jl} = Γ^k_{ij}+? Wait indices: g_{lk} Γ^l_{ij}+g_{jl} Γ^l_{ik}. Need cyclic permutations:
+(1) ∂_i g_{jk}=Γ^l_{ij} g_{lk}+Γ^l_{ik} g_{jl}
+(2) ∂_j g_{ik}=Γ^l_{ji} g_{lk}+Γ^l_{jk} g_{il}
+(3) ∂_k g_{ij}=Γ^l_{ki} g_{lj}+Γ^l_{kj} g_{li}
+Use symmetry Γ^l_{ji}=Γ^l_{ij}, etc. Add (1)+(2)-(3), then g_{lk} terms? Let's derive standard:
+∂_i g_{jk}+∂_j g_{ik}-∂_k g_{ij} = 2 Γ^l_{ij} g_{lk}. Then invert: Γ^k_{ij}=1/2 g^{kl}(∂_i g_{jl}+∂_j g_{il}-∂_l g_{ij}). Need be careful indices. Standard: Γ^k_{ij}=1/2 g^{kℓ}(∂_i g_{jℓ}+∂_j g_{iℓ}-∂_ℓ g_{ij}). Yes.
+Need explain g^{kl} inverse matrix. Derivation concise.
+
+6. Formula for derivative
+Let V=V^j ∂_j. Then for X=X^i ∂_i:
+∇_X V = (X(V^k)+Γ^k_{ij}X^i V^j)∂_k.
+Along curve γ(t), x^i(t):
+D V^k/dt = dV^k/dt + Γ^k_{ij} \dot x^i V^j.
+Maybe write vector:
+\frac{D V}{dt}=\left(\frac{d V^k}{dt}+Γ^k_{ij}\dot x^i V^j\right)∂_k.
+Explain first term changes components, second corrects for moving basis. If Γ=0 in coordinates, internal derivative equals component derivative.
+Check cylinder: metric g=R^2 du^2+dv^2, constants, Γ=0. Unit tangent V=(1/R)∂_u has constant components, D V/dt=0. Good.
+
+7. Transition to parallel transport
+Equation D V/dt=0. Given initial V(0), unique solution along curve (ODE). This is parallel transport. For embedded surface, same as keeping vector's tangent part? Actually for Levi-Civita. It will lead to path dependence and curvature. End.
+
+Need maybe include illustration:
+- Rисунок 3: two tangent planes and a connection as small arrow mapping? Need exact description and caption. Maybe after section 1: "Рисунок 3. Слева — две соседние касательные плоскости в точках p и q; справа — правило связи: маленькая стрелка показывает, как вектор из T_pM сопоставляется с вектором из T_qM. Подпись: связь не является геометрическим переносом в окружающем пространстве; это правило сравнения, задающее ковариантную производную." Need place before use? In section 1.
+- Maybe Rисунок 4 for torsion: infinitesimal parallelogram with gap? Could be helpful. But don't overdo. Could include one illustration for torsion. Need exact description. Maybe: "Рисунок 4. На поверхности нарисованы два бесконечно малых направления ∂_i и ∂_j. Если идти сначала в направлении ∂_i, затем ∂_j, и наоборот, конечные точки совпадают; кручение показывает, что сопоставленные векторы не совпали бы. Подпись: отсутствие кручения означает симметрию ∇_{∂_i}∂_j=∇_{∂_j}∂_i в координатном базисе." Need not create image. Could include as blockquote.
+
+Need ensure no links invented. Maybe no external links. Need maybe include "Видео"? Not necessary.
+
+Need word count 1200-1600 Russian words. Let's estimate. Need final in Markdown. Need maybe headings. Let's draft and count roughly. Russian words maybe 1300. Need ensure not too long. Let's write.
+
+Potential issue: notation ∂_i. Need introduce before use. We can say: В координатах x^1=u, x^2=v будем писать ∂_i=∂/∂x^i, а соответствующие векторы касательного пространства — ∂_i(r)=∂r/∂x^i. But ∂_i can denote coordinate vector field. Need avoid confusion with partial derivative operator. Could define:
+Пусть x^i=(u,v). Обозначим координатные касательные векторы через e_i=∂r/∂x^i. Then connection coefficients Γ^k_{ij} defined by ∇_{e_i} e_j = Γ^k_{ij} e_k. This may be clearer, consistent with previous r_u, r_v. Use e_i instead of ∂_i? Previous chapter used e_1,e_2 along path. But coordinate basis could be e_i. Need avoid conflict? It's okay. Let's use e_i = ∂r/∂x^i. Then metric g_{ij}=⟨e_i,e_j⟩. Christoffel Γ^k_{ij}. Formula derivative: V=V^i e_i, ∇_X V = (X(V^k)+Γ^k_{ij}X^i V^j)e_k. Along curve: D V^k/dt = dV^k/dt+Γ^k_{ij}\dot x^i V^j. Good.
+
+Need define X(f) as directional derivative. Since reader knows derivatives. Could state: X(f) — производная функции f вдоль векторного поля X; в координатах X(f)=X^i ∂_i f. Need introduce before use in Leibniz.
+
+Need be mathematically correct: connection is C∞-linear in X? If we use ∇_X Y, yes. But if we define via vector fields along curves, maybe easier: A connection is a rule assigning to each vector field V along γ a vector field ∇_{\dotγ}V along γ such that: (i) for functions f, ∇_{f\dotγ}V? Hmm along curve not as clean. Better define on vector fields.
+
+Let's formulate:
+Связность — это правило, которое для каждого векторного поля X и каждого векторного поля Y задаёт поле ∇_X Y. Оно должно вести себя как производная по направлению X:
+1. ∇_{fX}Y=f∇_X Y, ∇_X(Y+Z)=...
+2. ∇_X(fY)=X(f)Y+f∇_X Y.
+Actually also R-linear in X? C∞-linear in X includes R. Need maybe state both: linear in X over functions, linear in Y over numbers, Leibniz in Y. That's enough.
+
+Need maybe mention ∇_X Y is not a tensor in Y because of derivative of components; it is tensor in X. But maybe too detailed. Could mention: "Поэтому ∇_X Y зависит от X только в точке, а от Y — и от изменения компонент." Good.
+
+Metric compatibility: X⟨Y,Z⟩ = ⟨∇_X Y,Z⟩+⟨Y,∇_X Z⟩. Need define X⟨Y,Z⟩ derivative of function p->⟨Y(p),Z(p)⟩ along X. Good.
+
+Torsion: T(X,Y)=∇_X Y-∇_Y X-[X,Y]. Need define Lie bracket? Reader may not know. Could say [X,Y] — скобка Ли, в координатах [e_i,e_j]=0. Need maybe not assume? The target reader knows vectors/matrices, not necessarily Lie bracket. We can explain minimally: скобка Ли измеряет несовпадение путей, идя сначала вдоль X, затем Y, и наоборот; для координатных полей e_i,e_j она равна нулю. That's enough. Torsion-free means T=0. In coordinates e_i: ∇_{e_i}e_j=∇_{e_j}e_i.
+
+Existence uniqueness: Need maybe state theorem:
+Теорема. На гладкой поверхности с метрикой g существует единственная связность, сохраняющая метрику и не имеющая кручения. Её называют связностью Леви-Чивиты.
+Proof sketch: in coordinates, metric compatibility and torsion-free give algebraic equations for Γ. Need derive.
+
+Derivation details:
+Let e_i coordinate basis. Define Γ^k_{ij} by ∇_{e_i}e_j=Γ^k_{ij}e_k.
+Torsion-free: [e_i,e_j]=0 => Γ^k_{ij}=Γ^k_{ji}.
+Metric compatibility:
+e_i g_{jk}=⟨∇_{e_i}e_j,e_k⟩+⟨e_j,∇_{e_i}e_k⟩ = Γ^l_{ij}g_{lk}+Γ^l_{ik}g_{jl}. (Equation A)
+Similarly:
+e_j g_{ik}=Γ^l_{ji}g_{lk}+Γ^l_{jk}g_{il}. (B)
+e_k g_{ij}=Γ^l_{ki}g_{lj}+Γ^l_{kj}g_{li}. (C)
+Using symmetry, add A+B-C:
+e_i g_{jk}+e_j g_{ik}-e_k g_{ij} = ? Let's compute to ensure coefficient 2 Γ^l_{ij} g_{lk}.
+A: Γ^l_{ij} g_{lk} + Γ^l_{ik} g_{jl}
+B: Γ^l_{ji} g_{lk} + Γ^l_{jk} g_{il} = Γ^l_{ij} g_{lk} + Γ^l_{jk} g_{il}
+C: Γ^l_{ki} g_{lj} + Γ^l_{kj} g_{li} = Γ^l_{ik} g_{lj} + Γ^l_{jk} g_{li} (symmetry)
+A+B-C: first terms 2 Γ^l_{ij} g_{lk}. Other terms: Γ^l_{ik}g_{jl} - Γ^l_{ik}g_{lj}=0; Γ^l_{jk}g_{il} - Γ^l_{jk}g_{li}=0. Good.
+Then multiply by g^{mk}? Actually g_{lk} inverse. Let g^{kl} inverse. Multiply by g^{km}? Standard: Γ^m_{ij}=1/2 g^{mk}(∂_i g_{jk}+∂_j g_{ik}-∂_k g_{ij}). Need align: from 2 Γ^l_{ij} g_{lk}=... multiply by g^{km}: 2 Γ^m_{ij}=1/2? Wait if g_{lk}g^{km}=δ^m_l. So Γ^m_{ij}=1/2 g^{mk}(∂_i g_{jk}+∂_j g_{ik}-∂_k g_{ij}). Yes. Use k as dummy. Good.
+
+Need maybe mention all indices run 1,2; summation convention? Could state: повторяющиеся верхний и нижний индексы суммируются. But maybe not necessary? Need introduce if using. We can write explicit sum? For clarity: "повторяющийся индекс l суммируется от 1 до 2". Good.
+
+Formula derivative:
+For V=V^j e_j, X=X^i e_i:
+∇_X V = (X(V^k)+Γ^k_{ij}X^i V^j)e_k.
+Need check: X(V^k) = X^i ∂_i V^k. Good.
+Along curve x(t): \dot x^i. Then:
+\frac{D V^k}{dt} = \frac{dV^k}{dt}+Γ^k_{ij}\dot x^i V^j.
+Maybe write D V/dt = ... e_k. Need connect to previous D V/dt. For embedded surface, this formula equals projection formula. Could state: "Для поверхности в ℝ³, если e_i=∂r/∂x^i, эта формула совпадает с проекцией dV/dt на касательную плоскость." Need verify? Yes for Levi-Civita induced. Could mention.
+
+Need maybe include cylinder check:
+Цилиндр: x^1=u, x^2=v, g_{11}=R^2, g_{22}=1, off 0. All derivatives zero => Γ=0. Unit tangent V=(1/R)e_1. Components constant => D V/dt=0. This matches previous. But if use t=u, dV/dt? components constant. Good.
+
+Need maybe mention Christoffel symbols are not tensor? Could be too much. But maybe important: they depend on coordinates. Could say: "Сами Γ^k_{ij} не являются компонентами тензора: при смене координат они преобразуются с производными. Но формула выше инвариантна." Maybe optional. Since reader knows matrices, but not tensor transformation. Could include one sentence.
+
+Need maintain sequential exposition. Let's outline final:
+# Ковариантная производная и связность Леви-Чивиты
+ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 5
+
+Intro paragraph: previous recipe via embedding. Now need intrinsic rule. We'll define connection, two requirements, theorem, formulas, transition.
+
+## 1. Связность как правило сравнения
+Text + illustration.
+Define X,Y, ∇_X Y. Conditions.
+Maybe include equation:
+\begin{aligned}
+\nabla_{fX}Y=f\nabla_XY,\quad \nabla_X(Y+Z)=...,\quad \nabla_X(fY)=X(f)Y+f\nabla_XY.
+\end{aligned}
+Need define X(f). "Если f — функция на поверхности, X(f) — скорость изменения f вдоль X." Good.
+Explain: This is derivative-like rule. It tells how to compare Y in neighboring points in direction X.
+Illustration: Rисунок 3.
+
+## 2. Два требования к правилу сравнения
+### Сохранение метрики
+Equation metric compatibility. Explain: inner product derivative. Consequence: parallel vectors keep length. For embedded projection rule satisfies.
+### Отсутствие кручения
+Define T. Explain: [X,Y] maybe. For coordinate fields e_i,e_j, [e_i,e_j]=0, so torsion-free gives ∇_{e_i}e_j=∇_{e_j}e_i. Intuition: no gap. Illustration maybe Rисунок 4.
+
+## 3. Единственность и формула Кристоффеля
+State theorem.
+Coordinates: x^1=u,x^2=v, e_i=∂r/∂x^i, g_{ij}=⟨e_i,e_j⟩. Define Γ.
+Torsion-free: Γ^k_{ij}=Γ^k_{ji}.
+Metric compatibility derivation. Show equations. Use summation. Derive formula.
+Maybe include "g^{kl} — обратная матрица к g_{ij}".
+Box formula.
+
+## 4. Производная векторного поля
+V=V^j e_j. General formula. Along curve.
+Explain terms. Check cylinder.
+
+## 5. Переход к параллельному переносу
+Equation D V/dt=0. ODE, unique solution. This is parallel transport. For velocity itself -> geodesic. End.
+
+Need word count. Let's draft in Russian with equations. Count approximate. Need 1200-1600 words. Equations may count? Usually words. Need maybe 1300. Let's write and estimate.
+
+Draft:
+
+# Ковариантная производная и связность Леви-Чивиты
+
+ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 5
+
+В предыдущей главе мы получили первый рецепт: для поверхности в \(\mathbb R^3\) взять обычную производную вектора вдоль пути и отбросить нормальную часть. Этот рецепт работает, но опирается на окружающее пространство. Теперь нужно сделать то же самое внутри поверхности: задать правило сравнения касательных векторов в разных точках, которое использует только метрику.
+
+## 1. Связность как правило сравнения
+
+Пусть \(M\) — гладкая поверхность, \(X\) и \(Y\) — гладкие векторные поля на ней. Связность — это операция \(\nabla\), которая по направлению \(X\) и полю \(Y\) задаёт новое поле
+\[
+\nabla_X Y.
+\]
+Геометрически \(\nabla_X Y\) отвечает на вопрос: как меняется \(Y\), если двигаться вдоль \(X\), когда сами касательные плоскости тоже меняются?
+
+Чтобы это было похоже на производную, требуется:
+\[
+\nabla_{fX}Y=f\nabla_XY,\qquad
+\nabla_X(Y+Z)=\nabla_XY+\nabla_XZ,
+\]
+и правило Лейбница для второй переменной:
+\[
+\nabla_X(fY)=X(f)Y+f\nabla_XY.
+\]
+Здесь \(f\) — функция на поверхности, а \(X(f)\) — скорость изменения \(f\) вдоль поля \(X\). Первое условие говорит, что направление задаётся локально; второе — что при изменении скалярного множителя появляется обычная производная этого множителя.
+
+> **Рисунок 3.** Слева — две соседние касательные плоскости в точках \(p\) и \(q\), приложенные к поверхности. Справа — маленькая схема: связь сопоставляет вектор из \(T_pM\) вектору из \(T_qM\), а затем вычитает исходный вектор, получая \(\nabla_XY\).
+> *Подпись:* связь — это не перенос стрелок в окружающем пространстве, а правило сравнения, которое делает производную внутренней для поверхности.
+
+Для кривой \(\gamma(t)\) и поля \(V(t)\) вдоль неё запись \(\nabla_XY\) превращается в
+\[
+\frac{DV}{dt}=\nabla_{\dot\gamma}V.
+\]
+Это та же буква \(D\), что в предыдущей главе, но теперь она определяется не через нормаль, а через связь.
+
+## 2. Два требования к правилу сравнения
+
+### Сохранение метрики
+
+Метрика \(g\) задаёт скалярное произведение \(\langle Y,Z\rangle\) в каждой касательной плоскости. Естественное требование: производная этого произведения должна считаться так же, как в евклидовом пространстве. Формально:
+\[
+X\langle Y,Z\rangle=\langle \nabla_XY,Z\rangle+\langle Y,\nabla_XZ\rangle.
+\]
+Здесь \(X\langle Y,Z\rangle\) — производная функции \(p\mapsto \langle Y(p),Z(p)\rangle\) вдоль \(X\).
+
+Смысл требования прост. Если вектор \(V(t)\) не меняется по правилу связи, то есть \(DV/dt=0\), то его длина не должна меняться:
+\[
+\frac{d}{dt}\langle V,V\rangle=2\left\langle\frac{DV}{dt},V\right\rangle=0.
+\]
+Также сохраняются углы между параллельно переносимыми векторами. Для поверхности в \(\mathbb R^3\) проекция обычной производной на касательную плоскость удовлетворяет этому условию: нормальная часть не вносит вклада в скалярное произведение касательных векторов.
+
+### Отсутствие кручения
+
+Второе требование связано с тем, как сравниваются изменения в разных направлениях. Определим кручение связи:
+\[
+T(X,Y)=\nabla_XY-\nabla_YX-[X,Y].
+\]
+Скобка Ли \([X,Y]\) измеряет, насколько пути «сначала вдоль \(X\), затем вдоль \(Y\)» и «сначала вдоль \(Y\), затем вдоль \(X\)» дают разные конечные точки. Для координатных полей \(e_i,e_j\) эта скобка равна нулю.
+
+Связность называется без кручения, если \(T(X,Y)=0\). В координатном базисе это означает
+\[
+\nabla_{e_i}e_j=\nabla_{e_j}e_i.
+\]
+Геометрически: если бесконечно малый параллелограмм закрывается, то сопоставление направлений должно быть симметричным. Лишняя антисимметричная часть правила сравнения создавала бы «разрыв» при обходе маленького контура.
+
+> **Рисунок 4.** На поверхности нарисованы два бесконечно малых координатных направления \(e_i\) и \(e_j\). Движение по сторонам малого параллелограмма в обоих порядках приводит к одной точке. Подпись: отсутствие кручения означает, что порядок бесконечно малого обхода не создаёт дополнительной разницы в сопоставленных векторах.
+
+## 3. Связность Леви-Чивиты и символы Кристоффеля
+
+Теперь можно сформулировать главный факт.
+
+**Теорема.** На гладкой поверхности с метрикой \(g\) существует единственная связность, сохраняющая метрику и не имеющая кручения. Она называется связностью Леви-Чивиты.
+
+Докажем её в координатах. Пусть \(x^1=u\), \(x^2=v\), а
+\[
+e_i=\frac{\partial \mathbf r}{\partial x^i}
+\]
+— координатный базис касательных векторов. Метрические коэффициенты
+\[
+g_{ij}=\langle e_i,e_j\rangle
+\]
+образуют матрицу метрики. Обозначим
+\[
+\nabla_{e_i}e_j=\Gamma^k_{ij}e_k,
+\]
+где повторяющийся индекс \(k\) суммируется от 1 до 2. Числа \(\Gamma^k_{ij}\) называются символами Кристоффеля.
+
+Из отсутствия кручения и равенства \([e_i,e_j]=0\) следует
+\[
+\Gamma^k_{ij}=\Gamma^k_{ji}.
+\]
+Это первое семейство уравнений: коэффициенты симметричны по нижним индексам.
+
+Из сохранения метрики получаем
+\[
+e_i g_{jk}=\langle \nabla_{e_i}e_j,e_k\rangle+\langle e_j,\nabla_{e_i}e_k\rangle.
+\]
+Подставляя определения,
+\[
+e_i g_{jk}=\Gamma^l_{ij}g_{lk}+\Gamma^l_{ik}g_{jl}.
+\]
+Аналогично, переставляя индексы,
+\[
+e_j g_{ik}=\Gamma^l_{ji}g_{lk}+\Gamma^l_{jk}g_{il},
+\]
+\[
+e_k g_{ij}=\Gamma^l_{ki}g_{lj}+\Gamma^l_{kj}g_{li}.
+\]
+Сложим первые два равенства и вычтем третье. Используя симметрию \(\Gamma^l_{ji}=\Gamma^l_{ij}\), получаем
+\[
+e_i g_{jk}+e_j g_{ik}-e_k g_{ij}=2\Gamma^l_{ij}g_{lk}.
+\]
+Умножая на обратную матрицу \(g^{kl}\) к \(g_{ij}\), находим
+\[
+\Gamma^k_{ij}=\frac12 g^{kl}\left(e_i g_{jl}+e_j g_{il}-e_l g_{ij}\right).
+\]
+Это и есть формула Кристоффеля для связности Леви-Чивиты. Она показывает, что правило сравнения полностью определено метрикой: его коэффициенты выражаются через метрику и её первые производные.
+
+## 4. Производная поля вдоль пути
+
+Пусть \(V=V^j e_j\) — векторное поле, а \(X=X^i e_i\) — направление. Тогда
+\[
+\nabla_X V=\left(X(V^k)+\Gamma^k_{ij}X^i V^j\right)e_k.
+\]
+Первое слагаемое — обычная производная компонент \(V^k\). Второе — поправка за изменение самого базиса \(e_k\) вдоль движения.
+
+Для кривой \(\gamma(t)\) с координатами \(x^i(t)\) и вектора \(V(t)=V^j(t)e_j(\gamma(t))\) получаем
+\[
+\frac{D V^k}{dt}=\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j.
+\]
+Векторно:
+\[
+\frac{DV}{dt}=\left(\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j\right)e_k.
+\]
+Если в выбранных координатах все \(\Gamma^k_{ij}=0\), внутренняя производная сводится к обычной производной компонент. Для цилиндра \(g=R^2du^2+dv^2\) метрика постоянна, поэтому все символы Кристоффеля равны нулю. Единичная стрелка по окружности \(V=\frac1R e_1\) имеет постоянные компоненты, и \(DV/dt=0\), что совпадает с геометрической картиной предыдущей главы.
+
+## 5. Переход к параллельному переносу
+
+Уравнение
+\[
+\frac{DV}{dt}=0
+\]
+означает, что вектор не меняется по правилу связи, когда точка движется вдоль \(\gamma\). В координатах это система линейных обыкновенных дифференциальных уравнений для компонент \(V^k(t)\). Поэтому, задав начальное значение \(V(0)\), мы можем однозначно восстановить вектор во всех точках пути.
+
+Эта операция называется параллельным переносом. Она отвечает на вопрос, поставленный в начале части: как не поворачивать стрелку при движении по поверхности? Следующая глава построит этот перенос явно и покажет, почему результат обхода замкнутого контура может зависеть от пути.
+
+Need count words. Let's approximate manually. Title etc. Paragraph 1: 55? Let's count more systematically maybe use mental. Need 1200-1600. Draft maybe around 1100? Let's estimate by sections.
+
+Intro: "В предыдущей..." ~45 words.
+Section1: "Пусть M..." ~30; "Геометрически..." ~25; equations not count? "Чтобы..." ~45; "Здесь..." ~45; illustration ~45; "Для кривой..." ~30. Total ~225.
+Section2 metric: ~110; torsion: ~120; illustration ~35. Total 265.
+Section3 theorem: ~30; coordinates: ~50; torsion symmetry ~25; metric derivation: ~100; formula ~30. Total 235.
+Section4: ~120; cylinder ~55. Total 175.
+Section5: ~90.
+Total ~1010? Need maybe 1200. Need add more explanation or detail. Could expand a bit. Need 1200-1600. Add more context, maybe explain why two requirements needed, why uniqueness, maybe more on Christoffel not tensor, maybe more on ODE. Need not too verbose. Add around 200-300 words.
+
+Potential additions:
+- In section 1: explain why connection is extra data: metric alone doesn't determine derivative. Maybe 50 words.
+- In section 2: explain metric compatibility prevents stretching; torsion prevents skew. Maybe 50.
+- In section 3: explain formula uses only first derivatives, no normal; coordinate dependence; in 2D. Maybe 60.
+- In section 4: explain if V is velocity, geodesic. Maybe 30.
+- Maybe add short "Проверка" with cylinder? Already.
+- Add note about Christoffel symbols not tensor? 40.
+- Add more transition.
+
+Need ensure no overexamples. Let's expand carefully.
+
+Add after intro: "Без такого правила метрика знает, сколько весит стрелка в каждой точке, но не знает, как сопоставить стрелку в соседней точке с исходной. Поэтому связность — это дополнительная структура, а не следствие одной лишь метрики; однако для римановой поверхности метрика почти определяет её." Good.
+
+In section 1 after conditions: "Эти требования делают \(\nabla_XY\) похожим на производную, но не превращают его в обычную разность векторов: результат всегда лежит в той же касательной плоскости, что и \(Y\)." Good.
+
+In metric compatibility: "Если бы требование не выполнялось, можно было бы переносить вектор, не меняя его по правилу связи, но при этом растягивать его длину. Это было бы внутренним искажением измерений." Good.
+
+Torsion: "Кручение не видно в одной точке: оно проявляется при сравнении двух бесконечно малых движений. Поэтому требование формулируется через скобку Ли." Good.
+
+Section3: after theorem: "Существование можно проверить по формуле ниже; единственность следует из того, что в базисе \(e_i\) значения \(\nabla_{e_i}e_j\) полностью определяют связь, а условия задают для них замкнутую систему уравнений." Good.
+
+After Christoffel formula: "Здесь \(e_i g_{jl}\) означает производную функции \(g_{jl}\) вдоль координатного вектора \(e_i\). В координатах это \(\partial g_{jl}/\partial x^i\)." Good.
+
+Maybe note: "Сами \(\Gamma^k_{ij}\) при смене координат не преобразуются как компоненты тензора; они меняются с производными новых координат. Поэтому формула для \(\nabla_XV\) инвариантна, хотя коэффициенты зависят от координат." Good.
+
+Section4: "Если взять \(V=\dot\gamma\), уравнение \(DV/dt=0\) скажет, что скорость не поворачивает внутри поверхности. Такие кривые будут геодезическими." Good.
+
+Need maybe include exact illustration descriptions. We have two. Good.
+
+Need ensure notation: In section 3, use e_i g_{jl}. But e_i is vector field; derivative of scalar. Could also write \partial_i g_{jl}. To avoid confusion, define: "Запись \(e_i g_{jk}\) означает \(\partial g_{jk}/\partial x^i\)." Good.
+
+Need maybe use \dot x^i. Good.
+
+Need ensure no "Напомним:" construction. We used "Пусть" not "Напомним". Good.
+
+Need maybe mention "суммируется" before using repeated index. We do in section 3. But in formula for metric compatibility before? We use no repeated indices except maybe none. In section 4 we use repeated i,j,k; need mention summation before? In section 3 we mention. Good.
+
+Need maybe be careful with connection linearity: We wrote \nabla_{fX}Y=f\nabla_XY but not \nabla_X(fY) includes X(f). Good. Also need \nabla_X(Y+Z). Good. But missing R-linearity in X? C∞-linearity in X includes scalar. Good.
+
+Potential mathematical nuance: If connection is C∞-linear in X, then \nabla_{fX}Y=f\nabla_XY. But also \nabla_X(Y+Z) etc. Good.
+
+Need maybe define "гладкая поверхность" and "метрика" already in previous part. Fine.
+
+Need maybe ensure formula for metric compatibility uses X⟨Y,Z⟩. If X is vector field, X(⟨Y,Z⟩) = X^i ∂_i g_{jk}Y^jZ^k. Good.
+
+Need maybe in torsion: [X,Y] for coordinate fields e_i,e_j zero. Good.
+
+Need maybe in section 3 derivation: Use e_i g_{jk} etc. Need ensure indices in final formula: \Gamma^k_{ij}=\frac12 g^{kl}(e_i g_{jl}+e_j g_{il}-e_l g_{ij}). This is correct. But note first term e_i g_{jl}, second e_j g_{il}, third e_l g_{ij}. Good.
+
+Need maybe use \partial_i instead of e_i for scalar derivative to avoid vector field acting on scalar? Could define \partial_i g_{jl}. Since e_i vector field acts on scalar as derivative. Maybe simpler: use \partial_i = \partial/\partial x^i. But we also use e_i as tangent vector. Could write: "Запись \(e_i g_{jk}\) означает \(\partial g_{jk}/\partial x^i\)." Good.
+
+Need maybe include "g^{kl}" inverse matrix. Good.
+
+Need maybe mention in 2D all sums small. Good.
+
+Need final answer only Markdown. Need no analysis. Need maybe include horizontal lines? Fine.
+
+Let's refine and count. I'll write final with expanded text. Need approximate word count. Let's produce final and maybe count roughly. Use Russian words. Let's draft final fully:
+
+# Ковариантная производная и связность Леви-Чивиты
+
+ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 5
+
+В предыдущей главе мы получили первый рецепт: для поверхности в \(\mathbb R^3\) взять обычную производную вектора вдоль пути и отбросить нормальную часть. Этот рецепт работает, но опирается на окружающее пространство. Теперь нужно сделать то же самое внутри поверхности: задать правило сравнения касательных векторов в разных точках, которое использует только метрику. Без такого правила метрика знает, сколько весит стрелка в каждой точке, но не знает, как сопоставить стрелку в соседней точке с исходной. Поэтому связность — это дополнительная структура, а не следствие одной лишь метрики; однако для римановой поверхности метрика почти определяет её.
+
+## 1. Связность как правило сравнения
+
+Пусть \(M\) — гладкая поверхность, \(X\) и \(Y\) — гладкие векторные поля на ней. Связность — это операция \(\nabla\), которая по направлению \(X\) и полю \(Y\) задаёт новое поле
+\[
+\nabla_X Y.
+\]
+Геометрически \(\nabla_X Y\) отвечает на вопрос: как меняется \(Y\), если двигаться вдоль \(X\), когда сами касательные плоскости тоже меняются?
+
+Чтобы это было похоже на производную, требуется:
+\[
+\nabla_{fX}Y=f\nabla_XY,\qquad
+\nabla_X(Y+Z)=\nabla_XY+\nabla_XZ,
+\]
+и правило Лейбница для второй переменной:
+\[
+\nabla_X(fY)=X(f)Y+f\nabla_XY.
+\]
+Здесь \(f\) — функция на поверхности, а \(X(f)\) — скорость изменения \(f\) вдоль поля \(X\). Первое условие говорит, что направление задаётся локально; второе — что при изменении скалярного множителя появляется обычная производная этого множителя. Эти требования делают \(\nabla_XY\) похожим на производную, но не превращают его в обычную разность векторов: результат всегда лежит в той же касательной плоскости, что и \(Y\).
+
+> **Рисунок 3.** Слева — две соседние касательные плоскости в точках \(p\) и \(q\), приложенные к поверхности. Справа — маленькая схема: связь сопоставляет вектор из \(T_pM\) вектору из \(T_qM\), а затем вычитает исходный вектор, получая \(\nabla_XY\).
+> *Подпись:* связь — это не перенос стрелок в окружающем пространстве, а правило сравнения, которое делает производную внутренней для поверхности.
+
+Для кривой \(\gamma(t)\) и поля \(V(t)\) вдоль неё запись \(\nabla_XY\) превращается в
+\[
+\frac{DV}{dt}=\nabla_{\dot\gamma}V.
+\]
+Это та же буква \(D\), что в предыдущей главе, но теперь она определяется не через нормаль, а через связь.
+
+## 2. Два требования к правилу сравнения
+
+### Сохранение метрики
+
+Метрика \(g\) задаёт скалярное произведение \(\langle Y,Z\rangle\) в каждой касательной плоскости. Естественное требование: производная этого произведения должна считаться так же, как в евклидовом пространстве. Формально:
+\[
+X\langle Y,Z\rangle=\langle \nabla_XY,Z\rangle+\langle Y,\nabla_XZ\rangle.
+\]
+Здесь \(X\langle Y,Z\rangle\) — производная функции \(p\mapsto \langle Y(p),Z(p)\rangle\) вдоль \(X\).
+
+Смысл требования прост. Если вектор \(V(t)\) не меняется по правилу связи, то есть \(DV/dt=0\), то его длина не должна меняться:
+\[
+\frac{d}{dt}\langle V,V\rangle=2\left\langle\frac{DV}{dt},V\right\rangle=0.
+\]
+Также сохраняются углы между параллельно переносимыми векторами. Если бы требование не выполнялось, можно было бы переносить вектор, не меняя его по правилу связи, но при этом растягивать его длину. Это было бы внутренним искажением измерений. Для поверхности в \(\mathbb R^3\) проекция обычной производной на касательную плоскость удовлетворяет этому условию: нормальная часть не вносит вклада в скалярное произведение касательных векторов.
+
+### Отсутствие кручения
+
+Второе требование связано с тем, как сравниваются изменения в разных направлениях. Определим кручение связи:
+\[
+T(X,Y)=\nabla_XY-\nabla_YX-[X,Y].
+\]
+Скобка Ли \([X,Y]\) измеряет, насколько пути «сначала вдоль \(X\), затем вдоль \(Y\)» и «сначала вдоль \(Y\), затем вдоль \(X\)» дают разные конечные точки. Для координатных полей \(e_i,e_j\) эта скобка равна нулю.
+
+Связность называется без кручения, если \(T(X,Y)=0\). В координатном базисе это означает
+\[
+\nabla_{e_i}e_j=\nabla_{e_j}e_i.
+\]
+Геометрически: если бесконечно малый параллелограмм закрывается, то сопоставление направлений должно быть симметричным. Лишняя антисимметричная часть правила сравнения создавала бы «разрыв» при обходе маленького контура. Кручение не видно в одной точке: оно проявляется при сравнении двух бесконечно малых движений. Поэтому требование формулируется через скобку Ли.
+
+> **Рисунок 4.** На поверхности нарисованы два бесконечно малых координатных направления \(e_i\) и \(e_j\). Движение по сторонам малого параллелограмма в обоих порядках приводит к одной точке. Подпись: отсутствие кручения означает, что порядок бесконечно малого обхода не создаёт дополнительной разницы в сопоставленных векторах.
+
+## 3. Связность Леви-Чивиты и символы Кристоффеля
+
+Теперь можно сформулировать главный факт.
+
+**Теорема.** На гладкой поверхности с метрикой \(g\) существует единственная связность, сохраняющая метрику и не имеющая кручения. Она называется связностью Леви-Чивиты.
+
+Докажем её в координатах. Пусть \(x^1=u\), \(x^2=v\), а
+\[
+e_i=\frac{\partial \mathbf r}{\partial x^i}
+\]
+— координатный базис касательных векторов. Метрические коэффициенты
+\[
+g_{ij}=\langle e_i,e_j\rangle
+\]
+образуют матрицу метрики. Обозначим
+\[
+\nabla_{e_i}e_j=\Gamma^k_{ij}e_k,
+\]
+где повторяющийся индекс \(k\) суммируется от 1 до 2. Числа \(\Gamma^k_{ij}\) называются символами Кристоффеля.
+
+Из отсутствия кручения и равенства \([e_i,e_j]=0\) следует
+\[
+\Gamma^k_{ij}=\Gamma^k_{ji}.
+\]
+Это первое семейство уравнений: коэффициенты симметричны по нижним индексам.
+
+Из сохранения метрики получаем
+\[
+e_i g_{jk}=\langle \nabla_{e_i}e_j,e_k\rangle+\langle e_j,\nabla_{e_i}e_k\rangle.
+\]
+Подставляя определения,
+\[
+e_i g_{jk}=\Gamma^l_{ij}g_{lk}+\Gamma^l_{ik}g_{jl}.
+\]
+Аналогично, переставляя индексы,
+\[
+e_j g_{ik}=\Gamma^l_{ji}g_{lk}+\Gamma^l_{jk}g_{il},
+\]
+\[
+e_k g_{ij}=\Gamma^l_{ki}g_{lj}+\Gamma^l_{kj}g_{li}.
+\]
+Сложим первые два равенства и вычтем третье. Используя симметрию \(\Gamma^l_{ji}=\Gamma^l_{ij}\), получаем
+\[
+e_i g_{jk}+e_j g_{ik}-e_k g_{ij}=2\Gamma^l_{ij}g_{lk}.
+\]
+Умножая на обратную матрицу \(g^{kl}\) к \(g_{ij}\), находим
+\[
+\Gamma^k_{ij}=\frac12 g^{kl}\left(e_i g_{jl}+e_j g_{il}-e_l g_{ij}\right).
+\]
+Здесь \(e_i g_{jl}\) означает \(\partial g_{jl}/\partial x^i\). Это и есть формула Кристоффеля для связности Леви-Чивиты. Она показывает, что правило сравнения полностью определено метрикой: его коэффициенты выражаются через метрику и её первые производные. Сами \(\Gamma^k_{ij}\) при смене координат не преобразуются как компоненты тензора; они меняются с производными новых координат. Поэтому формула для \(\nabla_XV\) инвариантна, хотя коэффициенты зависят от координат.
+
+## 4. Производная поля вдоль пути
+
+Пусть \(V=V^j e_j\) — векторное поле, а \(X=X^i e_i\) — направление. Тогда
+\[
+\nabla_X V=\left(X(V^k)+\Gamma^k_{ij}X^i V^j\right)e_k.
+\]
+Первое слагаемое — обычная производная компонент \(V^k\). Второе — поправка за изменение самого базиса \(e_k\) вдоль движения.
+
+Для кривой \(\gamma(t)\) с координатами \(x^i(t)\) и вектора \(V(t)=V^j(t)e_j(\gamma(t))\) получаем
+\[
+\frac{D V^k}{dt}=\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j.
+\]
+Векторно:
+\[
+\frac{DV}{dt}=\left(\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j\right)e_k.
+\]
+Если в выбранных координатах все \(\Gamma^k_{ij}=0\), внутренняя производная сводится к обычной производной компонент. Для цилиндра \(g=R^2du^2+dv^2\) метрика постоянна, поэтому все символы Кристоффеля равны нулю. Единичная стрелка по окружности \(V=\frac1R e_1\) имеет постоянные компоненты, и \(DV/dt=0\), что совпадает с геометрической картиной предыдущей главы.
+
+Если взять \(V=\dot\gamma\), уравнение \(DV/dt=0\) скажет, что скорость не поворачивает внутри поверхности. Такие кривые будут геодезическими.
+
+## 5. Переход к параллельному переносу
+
+Уравнение
+\[
+\frac{DV}{dt}=0
+\]
+означает, что вектор не меняется по правилу связи, когда точка движется вдоль \(\gamma\). В координатах это система линейных обыкновенных дифференциальных уравнений для компонент \(V^k(t)\). Поэтому, задав начальное значение \(V(0)\), мы можем однозначно восстановить вектор во всех точках пути.
+
+Эта операция называется параллельным переносом. Она отвечает на вопрос, поставленный в начале части: как не поворачивать стрелку при движении по поверхности? Следующая глава построит этот перенос явно и покажет, почему результат обхода замкнутого контура может зависеть от пути.
+
+Need count. Let's approximate with word counting. I can manually count sections maybe. Use rough: Each line of Russian text. Let's count more accurately? Need 1200-1600. Let's use approximate average. Could be around 1350. Let's count by paragraphs:
+
+Intro paragraph: "В предыдущей главе мы получили первый рецепт: для поверхности в \(\mathbb R^3\) взять обычную производную вектора вдоль пути и отбросить нормальную часть. Этот рецепт работает, но опирается на окружающее пространство. Теперь нужно сделать то же самое внутри поверхности: задать правило сравнения касательных векторов в разных точках, которое использует только метрику. Без такого правила метрика знает, сколько весит стрелка в каждой точке, но не знает, как сопоставить стрелку в соседней точке с исходной. Поэтому связность — это дополнительная структура, а не следствие одной лишь метрики; однако для римановой поверхности метрика почти определяет её."
+Count: В1 предыдущей2 главе3 мы4 получили5 первый6 рецепт7 для8 поверхности9 в10 R3? maybe 11 взять12 обычную13 производную14 вектора15 вдоль16 пути17 и18 отбросить19 нормальную20 часть21 Этот22 рецепт23 работает24 но25 опирается26 на27 окружающее28 пространство29 Теперь30 нужно31 сделать32 то33 же34 самое35 внутри36 поверхности37 задать38 правило39 сравнения40 касательных41 векторов42 в43 разных44 точках45 которое46 использует47 только48 метрику49 Без50 такого51 правила52 метрика53 знает54 сколько55 весит56 стрелка57 в58 каждой59 точке60 но61 не62 знает63 как64 сопоставить65 стрелку66 в67 соседней68 точке69 с70 исходной71 Поэтому72 связность73 это74 дополнительная75 структура76 а77 не78 следствие79 одной80 лишь81 метрики82 однако83 для84 римановой85 поверхности86 метрика87 почти88 определяет89 её90. ~90.
+
+Section1:
+"Пусть M — гладкая поверхность, X и Y — гладкие векторные поля на ней. Связность — это операция ∇, которая по направлению X и полю Y задаёт новое поле ∇_X Y. Геометрически ∇_X Y отвечает на вопрос: как меняется Y, если двигаться вдоль X, когда сами касательные плоскости тоже меняются?"
+Count maybe 45.
+Equations not count? Then "Чтобы это было похоже на производную, требуется: ... и правило Лейбница для второй переменной: ... Здесь f — функция на поверхности, а X(f) — скорость изменения f вдоль поля X. Первое условие говорит, что направление задаётся локально; второе — что при изменении скалярного множителя появляется обычная производная этого множителя. Эти требования делают ∇_X Y похожим на производную, но не превращают его в обычную разность векторов: результат всегда лежит в той же касательной плоскости, что и Y."
+Count: Чтобы1 это2 было3 похоже4 на5 производную6 требуется7 и8 правило9 Лейбница10 для11 второй12 переменной13 Здесь14 f15 функция16 на17 поверхности18 а19 X(f)20 скорость21 изменения22 f23 вдоль24 поля25 X26 Первое27 условие28 говорит29 что30 направление31 задаётся32 локально33 второе34 что35 при36 изменении37 скалярного38 множителя39 появляется40 обычная41 производная42 этого43 множителя44 Эти45 требования46 делают47 ∇XY48 похожим49 на50 производную51 но52 не53 превращают54 его55 в56 обычную57 разность58 векторов59 результат60 всегда61 лежит62 в63 той64 же65 касательной66 плоскости67 что68 и69 Y70. ~70.
+Illustration: "Рисунок 3. Слева — две соседние касательные плоскости в точках p и q, приложенные к поверхности. Справа — маленькая схема: связь сопоставляет вектор из T_pM вектору из T_qM, а затем вычитает исходный вектор, получая ∇_X Y. Подпись: связь — это не перенос стрелок в окружающем пространстве, а правило сравнения, которое делает производную внутренней для поверхности." Count maybe 55.
+"Для кривой γ(t) и поля V(t) вдоль неё запись ∇_X Y превращается в D V/dt=∇_{dotγ}V. Это та же буква D, что в предыдущей главе, но теперь она определяется не через нормаль, а через связь." Count ~35.
+Section1 total ~45+70+55+35=205.
+
+Section2 metric:
+"Метрика g задаёт скалярное произведение <Y,Z> в каждой касательной плоскости. Естественное требование: производная этого произведения должна считаться так же, как в евклидовом пространстве. Формально: ... Здесь X<Y,Z> — производная функции p->... вдоль X." Count ~45.
+"Смысл требования прост. Если вектор V(t) не меняется по правилу связи, то есть DV/dt=0, то его длина не должна меняться: ... Также сохраняются углы между параллельно переносимыми векторами. Если бы требование не выполнялось, можно было бы переносить вектор, не меняя его по правилу связи, но при этом растягивать его длину. Это было бы внутренним искажением измерений. Для поверхности в R3 проекция обычной производной на касательную плоскость удовлетворяет этому условию: нормальная часть не вносит вклада в скалярное произведение касательных векторов." Count ~85.
+Torsion:
+"Второе требование связано с тем, как сравниваются изменения в разных направлениях. Определим кручение связи: T=... Скобка Ли [X,Y] измеряет, насколько пути «сначала вдоль X, затем вдоль Y» и «сначала вдоль Y, затем вдоль X» дают разные конечные точки. Для координатных полей e_i,e_j эта скобка равна нулю." Count ~55.
+"Связность называется без кручения, если T=0. В координатном базисе это означает ... Геометрически: если бесконечно малый параллелограмм закрывается, то сопоставление направлений должно быть симметричным. Лишняя антисимметричная часть правила сравнения создавала бы «разрыв» при обходе маленького контура. Кручение не видно в одной точке: оно проявляется при сравнении двух бесконечно малых движений. Поэтому требование формулируется через скобку Ли." Count ~70.
+Illustration ~35.
+Section2 total ~45+85+55+70+35=290.
+
+Section3:
+"Теперь можно сформулировать главный факт. Теорема. На гладкой поверхности с метрикой g существует единственная связность, сохраняющая метрику и не имеющая кручения. Она называется связностью Леви-Чивиты." Count ~30.
+"Докажем её в координатах. Пусть x1=u, x2=v, а e_i=... — координатный базис касательных векторов. Метрические коэффициенты g_ij=... образуют матрицу метрики. Обозначим ∇_{e_i}e_j=Γ^k_ij e_k, где повторяющийся индекс k суммируется от 1 до 2. Числа Γ^k_ij называются символами Кристоффеля." Count ~55.
+"Из отсутствия кручения и равенства [e_i,e_j]=0 следует Γ^k_ij=Γ^k_ji. Это первое семейство уравнений: коэффициенты симметричны по нижним индексам." Count ~25.
+"Из сохранения метрики получаем e_i g_jk=... Подставляя определения, ... Аналогично, переставляя индексы, ... Сложим первые два равенства и вычтем третье. Используя симметрию ..., получаем ... Умножая на обратную матрицу g^{kl} к g_{ij}, находим ..." Count maybe 70.
+"Здесь e_i g_jl означает ∂g_jl/∂x^i. Это и есть формула Кристоффеля для связности Леви-Чивиты. Она показывает, что правило сравнения полностью определено метрикой: его коэффициенты выражаются через метрику и её первые производные. Сами Γ^k_ij при смене координат не преобразуются как компоненты тензора; они меняются с производными новых координат. Поэтому формула для ∇_XV инвариантна, хотя коэффициенты зависят от координат." Count ~65.
+Section3 total ~245.
+
+Section4:
+"Пусть V=V^j e_j — векторное поле, а X=X^i e_i — направление. Тогда ... Первое слагаемое — обычная производная компонент V^k. Второе — поправка за изменение самого базиса e_k вдоль движения." Count ~35.
+"Для кривой γ(t) с координатами x^i(t) и вектора V(t)=... получаем ... Векторно: ..." Count ~30.
+"Если в выбранных координатах все Γ=0, внутренняя производная сводится к обычной производной компонент. Для цилиндра g=R^2du^2+dv^2 метрика постоянна, поэтому все символы Кристоффеля равны нулю. Единичная стрелка по окружности V=1/R e_1 имеет постоянные компоненты, и DV/dt=0, что совпадает с геометрической картиной предыдущей главы." Count ~55.
+"Если взять V=dotγ, уравнение DV/dt=0 скажет, что скорость не поворачивает внутри поверхности. Такие кривые будут геодезическими." Count ~20.
+Section4 total ~140.
+
+Section5:
+"Уравнение DV/dt=0 означает, что вектор не меняется по правилу связи, когда точка движется вдоль γ. В координатах это система линейных обыкновенных дифференциальных уравнений для компонент V^k(t). Поэтому, задав начальное значение V(0), мы можем однозначно восстановить вектор во всех точках пути." Count ~45.
+"Эта операция называется параллельным переносом. Она отвечает на вопрос, поставленный в начале части: как не поворачивать стрелку при движении по поверхности? Следующая глава построит этот перенос явно и покажет, почему результат обхода замкнутого контура может зависеть от пути." Count ~40.
+Section5 total ~85.
+
+Total ~90+205+290+245+140+85=1055 plus headings/equations maybe 1100. Need 1200-1600. Need add ~150-300 words. Could expand theorem proof/existence uniqueness, maybe explain why metric compatibility + torsion-free are natural, maybe add a short paragraph on "зачем два требования" explicitly. Also maybe add more on connection as extra structure. Need not overdo.
+
+Add after section 2 maybe a paragraph "Почему именно эти два условия?" 100 words. Or in section 3 before theorem. Let's add a short subsection or paragraph:
+
+"Почему именно эти два условия? Первое отвечает за измерения: без него связь может переносить вектор, меняя его длину. Второе отвечает за симметрию координатных направлений: без него уже в плоскости можно было бы выбрать правило, при котором постоянный вектор имел бы ненулевую производную в вращающемся базисе. Вместе они делают связь естественной для римановой поверхности: она уважает метрику и не добавляет искусственного вихря."
+
+Need be careful: "в плоскости можно было бы выбрать правило, при котором постоянный вектор имел бы ненулевую производную в вращающемся базисе" maybe torsion? Actually non-torsion-free connection can have nonzero derivative of constant vector? Yes if connection not Levi-Civita. But okay. Add ~60 words.
+
+Add in section 3: "Существование можно проверить, подставив найденные Γ в определения; единственность следует из того, что значения ∇_{e_i}e_j определяют связь на всех полях, а условия задают для них замкнутую систему." ~35.
+
+Add in section 4: "Формула показывает, что Christoffel symbols are like matrix of basis derivative. In coordinates, ∂e_j/∂x^i = Γ^k_{ij}e_k + normal part for embedded? Actually for coordinate basis, ∂_i e_j = Γ^k_{ij}e_k + II... normal. Could mention: "Для вложенной поверхности это же равенство дополняется нормальной частью, которая исчезает после проекции." Maybe helpful. Add 40.
+
+Add in section 5: "Параллельный перенос можно представить как решение дифференциального уравнения. Матрица коэффициентов строится из Γ и скорости. Это линейное ОДУ, поэтому решение существует и единственно." 35.
+
+Total add ~170. Good.
+
+Need integrate smoothly. Let's revise final with additions.
+
+Potential issue: "вращающемся базисе" in torsion paragraph maybe too much. Keep concise.
+
+Let's insert after section 2 before section 3:
+"Почему именно эти два условия? Первое отвечает за измерения: без него связь может переносить вектор, не меняя его по своему правилу, но растягивая длину. Второе отвечает за симметрию бесконечно малых координатных перемещений: без него порядок обхода маленького контура давал бы дополнительный вклад, не связанный с кривизной. Вместе они делают связь естественной для римановой поверхности: она уважает метрику и не добавляет искусственного вихря."
+~65.
+
+In section3 after theorem: "Существование можно проверить, подставив найденные ниже коэффициенты в определения; единственность следует из того, что значения \(\nabla_{e_i}e_j\) определяют связь на всех полях, а два требования задают для них замкнутую систему уравнений." ~35.
+
+In section4 after formula: "Для вложенной поверхности производная базисного вектора имеет вид \(\partial e_j/\partial x^i=\Gamma^k_{ij}e_k+\) нормальная часть. Ковариантная производная оставляет только первую часть. Поэтому формула с \(\Gamma\) совпадает с проекцией на касательную плоскость." Need check: ∂_i e_j = Γ^k_{ij} e_k + II_{ij} n. Yes. Add ~40.
+
+In section5: "В координатах это система линейных обыкновенных дифференциальных уравнений для компонент \(V^k(t)\). Матрица коэффициентов строится из \(\Gamma^k_{ij}\) и скорости \(\dot x^i\). Поскольку уравнение линейное, решение существует и единственно при заданном \(V(0)\)." ~35.
+
+Total add ~175. New total ~1230. Good.
+
+Need ensure no repeated "напомним". Good.
+
+Need maybe check mathematical correctness of "Связность — это дополнительная структура, а не следствие одной лишь метрики; однако для римановой поверхности метрика почти определяет её." Slight tension: actually metric determines unique LC, but connection as arbitrary extra. "почти" maybe weird. Could say "однако для римановой поверхности метрика определяет одну естественную связь". Better: "Поэтому связь — это дополнительная структура, а не автоматическое следствие метрики; однако для римановой поверхности метрика определяет одну естественную связь." Good.
+
+Need maybe in section 1: "Первое условие говорит, что направление задаётся локально" maybe C∞-linearity in X. Good.
+
+Need maybe in section 2: "Для координатных полей e_i,e_j эта скобка равна нулю." But e_i not introduced until section 3. We introduce e_i in torsion before section 3. Need introduce? We can say "для координатных полей, которые введём ниже, эта скобка равна нулю." Or introduce e_i earlier? In section 2 we can say "Для координатных полей \(e_i,e_j\) (они появятся в следующем разделе)..." But requirement introduce before use. We use e_i in torsion equation. Need introduce e_i before using. Could introduce coordinate basis at start of section 2? Or say "Для координатных полей, которые мы обозначим ниже через \(e_i,e_j\), эта скобка равна нулю." Then equation \nabla_{e_i}e_j uses them. Better: In section 2 before torsion equation, add: "Ниже будем использовать координатные векторные поля \(e_i\); для них \([e_i,e_j]=0\)." But still use. Maybe move torsion coordinate consequence to after introducing e_i in section 3? But torsion section should explain. We can define e_i in section 2: "Пусть в координатах \(x^i\) координатные векторные поля обозначены через \(e_i\)." Then later section 3 uses same. But section 3 also defines e_i = ∂r/∂x^i. Could introduce there first? Maybe restructure: In section 2 torsion, avoid e_i: "В координатном базисе это означает симметрию коэффициентов, что мы увидим в следующем разделе." Then no e_i. But we want equation. Could write: "В координатном базисе это означает \(\nabla_{e_i}e_j=\nabla_{e_j}e_i\)." Need e_i introduced. We can add a sentence before: "В координатах \(x^i\) будем обозначать координатные векторные поля через \(e_i\)." That's enough. Then section 3 can say "Пусть \(x^1=u, x^2=v\), а \(e_i=...\)" maybe redundant. Could adjust: In section 2: "В координатах \(x^i\) будем обозначать координатные векторные поля через \(e_i\)." Then section 3: "Пусть \(x^1=u\), \(x^2=v\). Координатный базис \(e_i\) уже был введён; он равен \(\partial\mathbf r/\partial x^i\)." Good. Need avoid "Напомним". Fine.
+
+Let's modify section 2 torsion:
+"Второе требование... Определим кручение... Скобка Ли... Для координатных полей \(e_i,e_j\) эта скобка равна нулю. В координатах \(x^i\) будем обозначать координатные векторные поля через \(e_i\). Связность называется без кручения..." Wait order: need introduce e_i before "Для координатных полей e_i,e_j". So:
+"В координатах \(x^i\) будем обозначать координатные векторные поля через \(e_i\). Скобка Ли \([X,Y]\) измеряет... Для координатных полей \(e_i,e_j\) эта скобка равна нулю." Good.
+
+Then section 3: "Пусть \(x^1=u\), \(x^2=v\), а \(e_i=\partial\mathbf r/\partial x^i\) — координатный базис касательных векторов." This is okay, not "напомним". It restates.
+
+Need maybe in section 1 use T_pM, already known. Good.
+
+Need maybe in section 3 derivation: Use \(e_i g_{jk}\). Since e_i introduced. Good.
+
+Need maybe in section 4: "Для вложенной поверхности производная базисного вектора имеет вид \(\partial e_j/\partial x^i=\Gamma^k_{ij}e_k+\) нормальная часть." But ∂ here partial derivative in ambient space. Need define? Could say "В окружающем пространстве \(\partial \mathbf r_{x^j}/\partial x^i\)". Maybe avoid if too detailed. But it's correct. Need not overcomplicate. Could write: "Для вложенной поверхности обычная производная базисного вектора содержит, кроме касательной части, нормальную; ковариантная производная оставляет только касательную часть. Поэтому формула с \(\Gamma\) совпадает с проекцией на касательную плоскость." No explicit partial. Good.
+
+Need maybe in section 4: "Если в выбранных координатах все Γ=0" but Christoffel zero only in flat coordinates? For cylinder yes. Good.
+
+Need maybe mention "суммируется" before section 4 uses repeated indices. It was in section 3. Good.
+
+Need maybe in section 3 formula: "Умножая на обратную матрицу \(g^{kl}\) к \(g_{ij}\)" But if we multiply equation with free k? Let's check: We have 2 Γ^l_{ij} g_{lk} = RHS with free k? Actually RHS has free indices i,j,k? Let's see: e_i g_{jk}+... has free i,j,k. LHS 2 Γ^l_{ij}g_{lk} has free i,j,k. To solve for Γ^m_{ij}, multiply by g^{km} and sum over k: 2 Γ^m_{ij} = 1/2? Wait equation: 2 Γ^l_{ij} g_{lk} = S_{ijk}. Multiply by g^{km}: 2 Γ^l_{ij} δ^m_l = S_{ijk}g^{km}. So Γ^m_{ij}=1/2 S_{ijk}g^{km}. Rename m->k, k->l: Γ^k_{ij}=1/2 g^{kl}(S_{ijl}). Good. Text "Умножая на обратную матрицу g^{kl} к g_{ij}, находим" okay.
+
+Need maybe in formula use \(e_i g_{jl}\) but e_i is vector field, okay. Could use \(\partial_i g_{jl}\) to be clearer. Maybe after formula: "В координатах это \(\Gamma^k_{ij}=\frac12 g^{kl}(\partial_i g_{jl}+\partial_j g_{il}-\partial_l g_{ij})\)." This is helpful. Add maybe one line. It adds words but good. Could include as alternative. Need not too long. Add: "В привычной записи: \(\Gamma^k_{ij}=\frac12 g^{kl}(\partial_i g_{jl}+\partial_j g_{il}-\partial_l g_{ij})\)." Good.
+
+Need maybe ensure no invented links. None.
+
+Need maybe final chapter should be only requested material. Good.
+
+Let's produce final with these additions. Need maybe check word count now ~1250. Good.
+
+Potential issue: "связность — это дополнительная структура, а не автоматическое следствие метрики; однако для римановой поверхности метрика определяет одну естественную связь." Good.
+
+Need maybe in section 1: "Первое условие говорит, что направление задаётся локально" but C∞-linearity in X means if X=0 at point, ∇_X Y=0 at point. Good.
+
+Need maybe in section 2: "Если бы требование не выполнялось, можно было бы переносить вектор, не меняя его по правилу связи, но при этом растягивать его длину." Good.
+
+Need maybe in torsion: "Кручение не видно в одной точке: оно проявляется при сравнении двух бесконечно малых движений." Good.
+
+Need maybe in theorem proof: "Докажем её в координатах." Strictly we show uniqueness and formula; existence by plugging. We mention. Good.
+
+Need maybe in section 3: "Существование можно проверить, подставив найденные ниже коэффициенты в определения; единственность следует из того, что значения ∇_{e_i}e_j определяют связь на всех полях, а два требования задают для них замкнутую систему уравнений." Good.
+
+Need maybe in section 4: "Для вложенной поверхности обычная производная базисного вектора содержит, кроме касательной части, нормальную; ковариантная производная оставляет только касательную часть. Поэтому формула с Γ совпадает с проекцией на касательную плоскость." Good.
+
+Need maybe in section 5: "Матрица коэффициентов строится из Γ и скорости." Good.
+
+Let's ensure Markdown headings and equations. Use blockquote for illustrations. Good.
+
+Need maybe include "Рисунок 3" and "Рисунок 4" exact descriptions. Good.
+
+Potential issue: In illustration 3: "связь сопоставляет вектор из T_pM вектору из T_qM, а затем вычитает исходный вектор" This is a bit handwavy: connection not a map between tangent spaces exactly, but infinitesimal. But as illustration okay. Caption says rule. Good.
+
+Potential issue: In section 1, "Для кривой γ(t) и поля V(t) вдоль неё запись ∇_X Y превращается в D V/dt=∇_{\dotγ}V." Strictly if V is field along curve, ∇_{\dotγ}V. Good.
+
+Potential issue: In section 4, formula for ∇_X V: If X and V are vector fields, X(V^k) is derivative of component function. Good.
+
+Potential issue: In section 5, "уравнение DV/dt=0 ... система линейных ОДУ" yes.
+
+Need maybe include "символы Кристоффеля" in title? yes.
+
+Let's final. Ensure no extra commentary. final in Russian. Need maybe word count 1200-1600. Let's final.

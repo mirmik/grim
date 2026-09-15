@@ -1,0 +1,11 @@
+{
+  "model": "qwen3.8-27b-uncensored-q4-mtp",
+  "base_url": "https://192.168.0.173:8080",
+  "started_utc": "2026-09-14T23:53:32Z",
+  "tls_verification": false,
+  "http_status": 200,
+  "response_model": "qwen3.8-27b-uncensored-q4-mtp",
+  "response_system_fingerprint": "b9279-47c0eda9d",
+  "elapsed_seconds": 300.0945863723755,
+  "answer_words_whitespace": 0
+}

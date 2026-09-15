@@ -19,30 +19,34 @@ def safe_file(root: Path, relative: str) -> Path:
     return candidate
 
 
+def validate_manifest(data, root: Path):
+    if not isinstance(data['title'], str) or not data['title'].strip():
+        raise ValueError('Укажите title книги')
+    seen = set()
+    def visit(nodes):
+        if not isinstance(nodes, list):
+            raise ValueError('pages/children должны быть массивами')
+        for node in nodes:
+            if not isinstance(node['id'], str) or not node['id'] or node['id'] in seen:
+                raise ValueError('ID узлов должны быть уникальными строками')
+            if not isinstance(node['title'], str):
+                raise ValueError('title узла должен быть строкой')
+            seen.add(node['id'])
+            if 'path' in node:
+                path = node['path']
+                if not isinstance(path, str) or any(c in path for c in ('?', '#', '\\')) or Path(path).is_absolute() or '..' in Path(path).parts:
+                    raise ValueError('Пути страниц должны быть относительными')
+                if safe_file(root, path).suffix.lower() not in ('.html', '.htm'):
+                    raise ValueError('Страницы должны быть HTML')
+            visit(node.get('children', []))
+    visit(data['pages'])
+    return data
+
+
 def manifest(root: Path):
     try:
         data = json.loads(safe_file(root, 'book.json').read_text(encoding='utf-8'))
-        if not isinstance(data['title'], str) or not data['title'].strip():
-            raise ValueError('Укажите title книги')
-        seen = set()
-        def visit(nodes):
-            if not isinstance(nodes, list):
-                raise ValueError('pages/children должны быть массивами')
-            for node in nodes:
-                if not isinstance(node['id'], str) or not node['id'] or node['id'] in seen:
-                    raise ValueError('ID узлов должны быть уникальными строками')
-                if not isinstance(node['title'], str):
-                    raise ValueError('title узла должен быть строкой')
-                seen.add(node['id'])
-                if 'path' in node:
-                    path = node['path']
-                    if not isinstance(path, str) or any(c in path for c in ('?', '#', '\\')) or Path(path).is_absolute() or '..' in Path(path).parts:
-                        raise ValueError('Пути страниц должны быть относительными')
-                    if safe_file(root, path).suffix.lower() not in ('.html', '.htm'):
-                        raise ValueError('Страницы должны быть HTML')
-                visit(node.get('children', []))
-        visit(data['pages'])
-        return data
+        return validate_manifest(data, root)
     except (KeyError, ValueError, TypeError, OSError, HTTPException) as exc:
         raise HTTPException(422, f'Не удалось прочитать book.json: {exc}') from exc
 

@@ -1,6 +1,29 @@
 {
-  "name": "grim-viewer", "private": true, "version": "0.1.0", "type": "module",
-  "scripts": {"dev": "vite --host 127.0.0.1", "build": "vite build", "check": "svelte-check --tsconfig ./tsconfig.json", "test:ui": "playwright test"},
-  "dependencies": {"svelte": "^5.0.0", "katex": "^0.16.22"},
-  "devDependencies": {"@sveltejs/vite-plugin-svelte": "^5.0.0", "vite": "^6.0.0", "typescript": "^5.7.0", "svelte-check": "^4.0.0", "@playwright/test": "^1.51.0"}
+  "name": "grim-viewer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test:ui": "playwright test",
+    "build:android": "vite build --mode android --outDir dist-android && node scripts/bundle-books.mjs",
+    "preview:android": "vite preview --outDir dist-android --host 127.0.0.1 --port 1420",
+    "tauri": "tauri",
+    "android:build": "tauri android build --apk --debug --target aarch64",
+    "test:android-ui": "playwright test --config playwright.android.config.ts"
+  },
+  "dependencies": {
+    "katex": "^0.16.22",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@tauri-apps/cli": "2.11.4",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  }
 }

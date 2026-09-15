@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Grim",
+  "version": "0.1.0",
+  "identifier": "dev.mirmik.grim",
+  "build": {
+    "beforeBuildCommand": "npm run build:android",
+    "frontendDist": "../dist-android"
+  },
+  "app": {
+    "windows": [{"label": "main", "title": "Grim", "width": 1100, "height": 800, "create": false}],
+    "security": {
+      "capabilities": [],
+      "csp": "default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "category": "Education",
+    "shortDescription": "Живые книги на вашем телефоне",
+    "android": {"minSdkVersion": 24}
+  }
+}

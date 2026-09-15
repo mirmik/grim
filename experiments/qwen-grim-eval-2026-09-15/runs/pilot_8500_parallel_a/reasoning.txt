@@ -1,0 +1,240 @@
+We need answer in Russian, Markdown with LaTeX. Need write chapter "Параллельный перенос" 1200-1600 Russian words, comparable depth/tone. Reader read prior chapters. Need continue sequentially: explain how from initial vector construct field along given path, derive coordinate equation, explain preservation of lengths/angles and path dependence. Give one finished illustrative example of transport on sphere with computed result and description of drawing. End transition to future chapter on geodesics. Must be ready prose, not plan/notes. Don't restate large chunks previous chapter. Need only requested material in Markdown with LaTeX. No invented links. Mathematical correctness. If illustration needed, precise description and caption; don't create images.
+
+Need consider book style: headings? Existing chapters have title, subtitle, sections numbered. We should produce similar. Need 1200-1600 Russian words. Need likely include intro, sections. Need include figure descriptions. Need maybe include exercise? Not required but can. Need avoid overdoing examples. Need one sphere example with computed result. Need path dependence. Need derive coordinate equation. Need preservation lengths/angles. Need transition to geodesics.
+
+Let's plan content.
+
+Chapter title: Параллельный перенос
+Subtitle: ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6? Existing: Chapter 4 vector fields, Chapter 5 covariant derivative. Next chapter parallel transport. In plan: "Параллельный перенос. Как не поворачивать вектор при движении по кривой и почему результат обхода контура может зависеть от пути. следующая глава". So likely Chapter 6? But existing chapter 5 says next chapter parallel transport. We can label ГЛАВА 6. Need consistent.
+
+Intro: We have covariant derivative ∇_w V. Parallel transport along curve γ: field V(t) along γ such that DV/dt = 0 (or ∇_{γ'} V=0). Given initial V0 in T_{γ(0)}M, solve ODE. Existence uniqueness by linear ODE. It constructs vector field along curve. Geometrically: vector doesn't turn inside surface.
+
+Coordinate equation: Let γ(t) coordinates x^i(t). V(t)=V^i(t) e_i. Equation ∇_{γ'} V=0: dV^k/dt + Γ^k_{ij} dot x^i V^j = 0? Need index convention. In ch5: ∇_{e_i} V = (∂_i V^k + Γ^k_{ij} V^j)e_k. For direction w = dot x^i e_i, ∇_{dot γ} V = (d/dt V^k + Γ^k_{ij} dot x^i V^j)e_k = 0. Need be careful with Γ indices: ch5 formula Γ^k_{ij} = 1/2 g^{kℓ}(∂_i g_{jℓ}+∂_j g_{iℓ}-∂_ℓ g_{ij}), where first lower direction, second differentiated vector. Then ∇_{e_i} e_j = Γ^k_{ij} e_k. Thus ∇_{dot γ} V = (dV^k/dt + Γ^k_{ij} dot x^i V^j) e_k. Good.
+
+Preservation lengths/angles: If V,W parallel transported, d/dt g(V,W)=g(∇_{γ'}V,W)+g(V,∇_{γ'}W)=0. Thus inner product constant. In particular length. This follows from metric compatibility. For one vector, length constant.
+
+Path dependence: On flat plane with Euclidean connection, result independent. On curved surface, around closed loop may rotate. Need explain holonomy. Can give sphere example.
+
+Sphere example: Need one finished example with computed result. Need choose simple path and vector. Parallel transport on sphere. Classic: start at north pole? Transport along meridian to equator, then along equator, then back? Or transport around small loop. Need computed result. Maybe easiest: unit sphere, start at north pole? At north pole tangent plane horizontal. Move along meridian to equator, vector initially east? Then along equator? Compute final vector? Need avoid too complex. Could do parallel transport of a vector along a circle of latitude? That yields computed rotation? Maybe easier: on unit sphere, take path: from north pole along meridian to equator, then along equator by angle φ, then back to north pole along meridian. Initial vector at north pole pointing east? Final vector rotated by angle equal to solid angle? For triangular loop with north pole and equator arc, holonomy angle equals enclosed area = 2φ? Need compute. But need explicit coordinates and result. Could present simple: start at north pole N=(0,0,1), initial vector e_θ? Need define coordinates.
+
+Alternative: parallel transport along a great circle on sphere: vector tangent to great circle? If path is great circle, a tangent vector along path is parallel transported? Actually on sphere, geodesic: tangent vector along geodesic is parallel. If path is equator, vector along equator (east) is parallel transported along equator? Let's check: unit sphere, equator γ(t)=(cos t, sin t,0). Tangent dot γ=(-sin t, cos t,0). Is ∇_{γ'} γ'=0? Great circle geodesic yes. So vector along path parallel. But to show path dependence, need closed loop. Could do: start at north pole, go down meridian to equator, then along equator, then back up another meridian. Initial vector at north pole? Need compute final.
+
+Maybe choose initial vector at north pole pointing along the first meridian? Let's set coordinates. Unit sphere S^2 in R^3. Use spherical coords: x^1=θ (colatitude from north pole, 0 to π), x^2=φ (azimuth). Metric g=diag(1, sin^2 θ). Basis e_θ = ∂_θ r, e_φ = ∂_φ r. At north pole θ=0 basis degenerate; need careful. Better start at point on equator? To avoid singularity at pole, choose loop on sphere not including pole? But holonomy easier with pole. Could start at north pole but need limit basis. Maybe okay if initial vector specified as vector in R^3, not components.
+
+Simplest explicit example: Start at north pole N, initial vector V0 = (1,0,0) (east? tangent horizontal). Path: (1) along meridian φ=0 from N to equator point A=(1,0,0). (2) along equator from A to B=(cos φ, sin φ,0). (3) along meridian φ=const back to N. Need compute final vector at N. Known result: vector rotated by angle φ? Let's derive.
+
+Let's do explicit parallel transport using ODE or geometric reasoning.
+
+Path 1: meridian φ=0 from θ=0 to π/2. Parametrize by arc length θ (unit sphere). γ1(θ)=(sin θ,0,cos θ), θ∈[0,π/2]. Initial at N: V0=(1,0,0). Is V0 parallel along this meridian? Need check. At θ=0, tangent plane horizontal. V0=(1,0,0). Along meridian, what is parallel transport? The meridian is a great circle geodesic. The normal curvature? For a geodesic, tangent vector is parallel, but normal vector? On sphere, a vector normal to geodesic in tangent plane is also parallel transported along geodesic? For a geodesic on surface, the Frenet frame: tangent T parallel, normal N (tangent to surface, perpendicular to T) also parallel if geodesic curvature zero? Let's verify. For sphere, meridian is great circle. In ambient R^3, derivative of a vector parallel transported? Parallel transport on sphere: dV/dt = <dV/dt, n_sphere> n_sphere? Actually for vector along curve on unit sphere, tangent vector V(t) (not position) parallel iff dV/dt is normal to sphere (since tangent part zero). For curve γ(θ)=(sinθ,0,cosθ), dot γ=(cosθ,0,-sinθ). Candidate transported V(θ) = (cosθ,0,sinθ)? At θ=0 V=(1,0,0). Is V tangent to sphere? dot with γ = sinθ cosθ + cosθ sinθ? Wait γ=(sinθ,0,cosθ), V=(cosθ,0,sinθ), dot = sinθ cosθ + cosθ sinθ = 2 sinθ cosθ not zero. Not tangent. Need tangent vector perpendicular to γ. At θ=0, γ=N=(0,0,1), V=(1,0,0). Need V(θ) tangent: V·γ=0, length 1, and dV/dt normal to sphere (i.e., parallel to γ). Solve: V(θ)=? The tangent plane basis: T=γ'=(cosθ,0,-sinθ), E? The vector perpendicular to meridian is (0,1,0) constant in R^3. At θ=0, (0,1,0) not V0. Another basis: at θ, vector in tangent plane with no y component: W(θ)=(-sinθ,0,cosθ)? Dot with γ = -sin^2θ + cos^2θ? not zero. Need vector in plane spanned by x,z perpendicular to γ. γ=(sinθ,0,cosθ). A perpendicular vector in xz-plane: (cosθ,0,-sinθ) = γ' (tangent along meridian). That's T. At θ=0, T=(1,0,0)=V0. So V0 is actually tangent direction along meridian, not normal. Then T is parallel transported along geodesic (great circle). Indeed dT/dθ = (-sinθ,0,-cosθ) = -γ = -position, normal to sphere. So T parallel. Thus after leg 1, at A=(1,0,0), vector V=T(A)=(0,0,-1)? Wait T(π/2)= (cos π/2=0,0,-sinπ/2=-1) = (0,0,-1). That's downward vertical. Good.
+
+Leg 2: equator from A φ=0 to B φ=α. γ2(φ)=(cosφ, sinφ,0). At A, V=(0,0,-1) (south pole direction). Is this parallel along equator? Equator is geodesic. Candidate V(φ) constant (0,0,-1) tangent to sphere? Dot with γ2 =0, length 1. dV/dφ=0, normal part? 0 is normal, so parallel. Yes. So along equator, V remains (0,0,-1). At B, V=(0,0,-1).
+
+Leg 3: meridian φ=α from equator θ=π/2 back to north pole θ=0. Parametrize θ from π/2 to 0: γ3(θ)=(sinθ cosα, sinθ sinα, cosθ). At B θ=π/2, position B=(cosα, sinα,0), V=(0,0,-1). Need parallel transport back along geodesic. For a geodesic, the frame (T, N?) parallel. Need find V(θ) satisfying V·γ=0, |V|=1, dV/dθ normal to sphere (parallel to γ). At θ=π/2, V=(0,0,-1). Let's solve. We can express in basis at θ: T(θ)=dγ/dθ=(cosθ cosα, cosθ sinα, -sinθ) (direction increasing θ from pole to equator). But we move from equator to pole, θ decreasing. Another vector in tangent plane: S(θ)=(-sinθ cosα, -sinθ sinα, cosθ)? Dot with γ = -sin^2θ + cos^2θ? not zero. Need tangent vector perpendicular to T and γ. Cross γ × T? Let's compute. γ=(sinθ c, sinθ s, cosθ), T=(cosθ c, cosθ s, -sinθ). Cross γ × T =? determinant: i: sinθ s * (-sinθ) - cosθ * cosθ s = -sin^2θ s - cos^2θ s = -s. j: cosθ c * (-sinθ) - sinθ c * (-sinθ) = -cosθ sinθ c + sinθ cosθ c =0. k: sinθ c * cosθ s - sinθ s * cosθ c =0. So γ×T = ( -sinα, 0, 0)?? That seems independent of θ? Wait c=cosα, s=sinα. Cross product gives (-sinα,0,0). Length |sinα|, not unit generally. That's because T and γ not orthogonal? They are orthogonal: γ·T = sinθ cosθ c^2 + sinθ cosθ s^2 - cosθ sinθ =0. Cross length =1. But computed (-sinα,0,0) length |sinα|, wrong. Let's recalc cross: γ=(sinθ c, sinθ s, cosθ), T=(cosθ c, cosθ s, -sinθ).
+Cross γ×T:
+x = γ_y T_z - γ_z T_y = sinθ s * (-sinθ) - cosθ * cosθ s = -s(sin^2θ+cos^2θ) = -s.
+y = γ_z T_x - γ_x T_z = cosθ * cosθ c - sinθ c * (-sinθ) = c(cos^2θ+sin^2θ)=c.
+z = γ_x T_y - γ_y T_x = sinθ c * cosθ s - sinθ s * cosθ c =0.
+So ( -sinα, cosα, 0). Good. This is horizontal unit vector perpendicular to meridian. At θ=π/2, S=( -sinα, cosα, 0). But our V at B is (0,0,-1), not S. Need another tangent vector: T at θ=π/2 is (0,0,-1). Yes T(π/2)=(0,0,-1). So V(θ)=T(θ) is parallel along meridian (geodesic tangent). But T(θ) points from pole to equator; at B it's (0,0,-1). Moving back to pole, T(θ) remains parallel as function θ (d/dθ T = -γ normal). At θ=0, T(0)=(cosα, sinα,0). Thus final vector at N is (cosα, sinα,0). Initial was (1,0,0). So rotated by angle α in tangent plane at N. Enclosed area of spherical triangle? Loop: meridian φ=0 from N to equator, equator arc α, meridian φ=α back to N. Spherical triangle with angles? Area = α? Let's check: region bounded by two meridians and equator. On unit sphere, area = 2*angle? Actually spherical triangle with vertices N, A, B. Angles: at N = α, at A = π/2, at B = π/2. Area = sum angles - π = α + π/2 + π/2 - π = α. Yes holonomy angle = area = α. Good. Final vector rotated by α counterclockwise? Initial (1,0,0), final (cosα, sinα,0). Good. This is a nice computed example. Need describe drawing.
+
+Need ensure initial vector at north pole: tangent plane horizontal; vector (1,0,0) points along first meridian? Actually at N, (1,0,0) is direction of increasing θ along φ=0, yes tangent to first meridian. After transport around loop, final vector rotated by α relative to initial. Need mention if α small, rotation small; if α=2π? But equator arc 2π returns to A? Loop degenerates? α can be any <2π. For α=π? final (-1,0,0). Good.
+
+Need maybe mention path dependence: two routes from N to A? For example, along different meridian? But example already closed loop. Need explain result depends on path: if go along different loop with different area, final rotation differs. On sphere, holonomy angle equals area enclosed (for simple loop) maybe mention but not prove. Need be mathematically correct: For parallel transport around closed curve on unit sphere, rotation angle equals signed area enclosed (if curve simple and orientation). We can state in example. But don't overclaim for arbitrary loops? It's true for sphere with Levi-Civita connection, holonomy angle equals area modulo 2π for loops based at point, if simply connected? For sphere, yes for loops not passing through base? There are topological issues but okay for simple loop. We can say for this spherical triangle, angle equals its area.
+
+Need derive coordinate equation. Need maybe include existence uniqueness: linear ODE. Need maybe mention parallel transport along curve not same as ambient parallel? For embedded surface, it is projection of ambient derivative? But not restate too much.
+
+Need structure:
+- Title and subtitle.
+- Intro paragraph: We have ∇. Parallel transport is solution ∇_{dotγ}V=0. It gives field along path.
+- Section 1: Equation and construction. Given γ, V0. Define V(t) along γ. Condition. In coordinates equation. Linear ODE, unique solution. Maybe mention if curve reparametrized, equation unchanged? Could be nice.
+- Section 2: Lengths and angles. Metric compatibility. If V,W transported, inner product constant. Consequence: transport is linear isometry between tangent spaces. But not canonical global identification; depends on path.
+- Section 3: Dependence on path. Flat vs curved. Holonomy. Maybe small loop rotation proportional to curvature. But no need tensor yet.
+- Section 4: Example on sphere. Compute. Include figure description.
+- Section 5: Transition to geodesics. If transported vector is velocity dotγ, condition ∇_{dotγ}dotγ=0 defines geodesic. This is next chapter.
+
+Need word count 1200-1600 Russian words. Let's estimate. Existing chapters maybe 1500-2000? Need target. We can write around 1400 words. Need count roughly. Russian words. Let's draft and count mentally or use analysis. We can produce final with maybe 1300-1500. Need be concise but complete.
+
+Need use Markdown with LaTeX. Headings maybe:
+# Параллельный перенос
+## ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6
+Then sections with ## 1. ...? Existing use numbered bold? They use "1. Векторное поле — стрелка в каждой точке" as heading maybe. We can use ## 1. ...
+
+Need no invented links. Could include figure descriptions as blockquotes or italic. Existing: "Рисунок 1. ..." We can do:
+> **Рисунок 1.** ...
+
+Need precise description and caption. For sphere example: figure: unit sphere, base point N, two meridians, equator arc, initial and final vectors. Need caption conclusion: vector rotated by angle α.
+
+Need ensure notation introduced before use. We already have M, p, T_pM, γ, ∇, Γ. Need introduce α. Need define unit sphere. Need define coordinates? For coordinate equation, use x^i. Need maybe use dot x^i. Need ensure index convention. In ch5 they used e_u,e_v and Γ^k_{ij}. We can use same. But for general curve, coordinates x^i(t). Need define dot x^i = dx^i/dt. Need V^i. Equation:
+\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j=0.
+Need mention sum over repeated i,j? We can say sums over u,v. Maybe avoid Einstein summation? Existing not consistently using Einstein. They wrote sums explicitly. We can say "суммируются все значения i,j из {u,v}". Or use explicit. Need not introduce Einstein if not used. But can use compact with note.
+
+Need coordinate equation derivation: ∇_{dotγ}V = (dV^k/dt + Γ^k_{ij} dot x^i V^j)e_k. Set zero. Good.
+
+Need preservation: Let V,W satisfy. Then d/dt g(V,W)=g(∇_{dotγ}V,W)+g(V,∇_{dotγ}W)=0. Need explain metric compatibility from previous chapter. If one vector, length constant.
+
+Need path dependence: The solution depends on γ, not just endpoints. For a fixed endpoint q, different paths from p to q give different isomorphisms T_pM -> T_qM. The map for a closed loop is a linear automorphism of T_pM, called holonomy. On flat plane with Euclidean connection, it is identity. On sphere, nontrivial.
+
+Need example details. Let's write carefully.
+
+Example:
+"Возьмём единичную сферу S^2⊂R^3. Пусть N=(0,0,1) — северный полюс. Начальная стрелка V_0=(1,0,0) лежит в касательной плоскости TN S^2. Пройдём замкнутый маршрут из трёх дуг: (i) меридиан φ=0 от N к A=(1,0,0); (ii) экватор от A к B=(cosα, sinα,0); (iii) меридиан φ=α обратно к N. Все дуги — большие окружности, поэтому их касательные векторы параллельно переносятся вдоль них."
+
+Need compute:
+Leg 1: parametrization γ1(θ)=(sinθ,0,cosθ), θ∈[0,π/2]. Its unit tangent T1(θ)=γ1'(θ)=(cosθ,0,-sinθ). At θ=0 T1=V0. Since dT1/dθ=-γ1, which is normal to sphere, T1 is parallel. At A: V1=(0,0,-1).
+Leg 2: γ2(φ)=(cosφ,sinφ,0), φ∈[0,α]. Constant vector V=(0,0,-1) is tangent to sphere and dV/dφ=0, hence parallel. At B: V2=(0,0,-1).
+Leg 3: γ3(θ)=(sinθ cosα, sinθ sinα, cosθ), θ from π/2 down to 0. Unit tangent in direction of increasing θ is T3(θ)=(cosθ cosα, cosθ sinα,-sinθ). At θ=π/2 T3=(0,0,-1)=V2. dT3/dθ=-γ3 normal, so T3 parallel. At N θ=0: V_final=(cosα, sinα,0).
+Thus final vector rotated from initial (1,0,0) by angle α in tangent plane at N. The spherical triangle NAB has area α (unit sphere), so rotation equals enclosed area. If choose different α or loop, final vector changes.
+
+Need be careful: On leg 3, if moving from B to N, θ decreases. But T3(θ) as function θ is parallel with respect to increasing θ. If we parametrize by θ decreasing, is it still parallel? Parallel transport is independent of orientation? If V(θ)=T3(θ) for θ from π/2 to 0, dV/dt = (dT3/dθ)(dθ/dt). If dθ/dt negative, still normal, so tangent part zero. So yes.
+
+Need figure description:
+> **Рисунок 1.** Единичная сфера. Северный полюс N, точки A и B на экваторе. Зелёная стрелка в N — начальная V0=(1,0,0). Маршрут: меридиан N→A, дуга экватора A→B, меридиан B→N. Красная стрелка в N — результирующая V(1)=(cosα,sinα,0). Угол между стрелками равен α; он совпадает с площадью треугольника NAB.
+
+Need maybe include another figure for coordinate equation? Not necessary. But requirement: if illustration needed, indicate precise description and caption. We can include one for example. Maybe also a small figure for path dependence? Could be too many. One is enough.
+
+Need word count. Let's draft and count approximate.
+
+Draft:
+
+# Параллельный перенос
+
+ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6
+
+После того как ковариантная производная определена, можно задать вопрос: когда вектор, движущийся вдоль кривой, вообще не меняется? Обычная производная равна нулю, если вектор постоянен в окружающем пространстве. Для внутренней геометрии поверхности соответствующее условие — нулевая ковариантная производная. Это и есть параллельный перенос.
+
+Пусть γ(t) — гладкая кривая на M, a≤t≤b, и V0∈T_{γ(a)}M. Мы ищем векторное поле V(t) вдоль γ, такое что V(a)=V0 и
+∇_{dotγ(t)}V(t)=0.
+Здесь dotγ(t) — скорость кривой. Условие означает, что изменение стрелки V(t) объясняется только тем, что мы перешли в новую точку, а не собственным поворотом в касательной плоскости.
+
+## 1. Координатное уравнение
+...
+
+Need maybe not use "После того как" too many. Need maintain style.
+
+Let's write full and count.
+
+Potential final text:
+
+# Параллельный перенос
+
+ДИФФЕРЕНЦИАЛЬНАЯ ГЕОМЕТРИЯ · ЧАСТЬ II · ГЛАВА 6
+
+Когда ковариантная производная уже построена, естественный вопрос: вдоль какого движения стрелка не поворачивается? На плоскости это обычное постоянное направление. На поверхности «не поворачивается» значит, что ковариантная производная равна нулю. Это условие определяет параллельный перенос.
+
+Пусть γ:[a,b]→M — гладкая кривая, а V_0∈T_{γ(a)}M — заданный начальный вектор. Мы хотим построить поле V(t) вдоль γ, такое что V(a)=V_0 и
+\[
+\nabla_{\dot\gamma(t)}V(t)=0\qquad (a\le t\le b).
+\]
+Скорость \dot\gamma(t) задаёт направление движения, а условие говорит, что всякая видимая смена V(t) вызвана только сменой касательной плоскости.
+
+## 1. Как вычислить перенос
+
+Запишем кривую в координатах: γ(t) имеет координаты x^i(t), i=u,v. Поле вдоль пути представим как
+\[
+V(t)=V^u(t)e_u+V^v(t)e_v,
+\]
+где e_u,e_v — координатный базис в текущей точке. Из формулы ковариантной производной предыдущей главы
+\[
+\nabla_{\dot\gamma}V=
+\left(\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j\right)e_k,
+\]
+где суммы берутся по i,j,k∈{u,v}. Параллельный перенос требует, чтобы каждая компонента в скобках равнялась нулю:
+\[
+\frac{dV^k}{dt}+\Gamma^k_{ij}\dot x^i V^j=0,\qquad k=u,v.
+\]
+Это система линейных дифференциальных уравнений для компонент V^k(t). Линейность гарантирует существование и единственность решения при заданном V_0. Таким образом, начальный вектор однозначно продолжается вдоль выбранного пути.
+
+Важно, что уравнение не зависит от выбора параметра t. Если заменить t на s, то и \dot x^i, и dV^k/dt пересчитаются так, что условие остаётся тем же. Поэтому перенос определяется самим маршрутом, а не скоростью, с которой мы его прошли.
+
+## 2. Сохранение длин и углов
+
+Пусть V(t) и W(t) — два поля, параллельно переносимые вдоль одной кривой γ. Тогда
+\[
+\frac{d}{dt}g(V,W)=g(\nabla_{\dot\gamma}V,W)+g(V,\nabla_{\dot\gamma}W)=0.
+\]
+Первое слагаемое равно нулю по условию переноса V, второе — по условию для W. Следовательно, скалярное произведение g(V,W) постоянно. В частности, длина одной стрелки не меняется.
+
+Это следствие согласованности связности Леви-Чивиты с метрикой. Параллельный перенос переводит касательное пространство в одной точке в касательное пространство в другой точке как линейное изометрическое отображение: он сохраняет длины и углы. Но из этого ещё не следует, что конечная стрелка зависит только от начальной и конечной точек.
+
+## 3. Зависимость от пути
+
+На евклидовой плоскости с обычной связностью параллельный перенос не изменяет вектор: стрелка, отнесённая к концу пути, совпадает с начальной. На поверхности это уже не так. Если из точки p в точку q провести два разных маршрута, то одно и то же V_0 может дать две различные стрелки в T_qM. Для замкнутого контура, начинающегося и заканчивающегося в p, перенос возвращает вектор в то же касательное пространство, но, как правило, поворачивает его.
+
+Этот поворот называют голономией контура. Он зависит от формы и площади контура, а не только от его концов. На плоской поверхности голономия тривиальна; на искривлённой — нет. Мелкий контур даёт малый поворот, пропорциональный гауссовой кривизне и площади контура; точное тензорное выражение появится позже.
+
+## 4. Пример: треугольник на сфере
+
+Возьмём единичную сферу S^2⊂\mathbb R^3. Пусть N=(0,0,1) — северный полюс, а начальная стрелка
+\[
+V_0=(1,0,0)
+\]
+лежит в касательной плоскости T_NS^2. Пройдём замкнутый маршрут из трёх дуг больших окружностей: сначала меридиан φ=0 от N к точке A=(1,0,0), затем экватор от A к B=(\cos\alpha,\sin\alpha,0), и наконец меридиан φ=α обратно к N. Угол α∈(0,2π) задаёт длину дуги экватора.
+
+Первая дуга параметризуется как
+\[
+\gamma_1(\theta)=(\sin\theta,0,\cos\theta),\qquad 0\le\theta\le\frac\pi2.
+\]
+Её единичная касательная
+\[
+T_1(\theta)=\gamma_1'(\theta)=(\cos\theta,0,-\sin\theta)
+\]
+при θ=0 равна V_0. Поскольку dT_1/dθ=-\gamma_1, она направлена по нормали к сфере; касательная часть изменения равна нулю, значит T_1 параллельно переносится. В точке A получаем
+\[
+V_1=T_1(\pi/2)=(0,0,-1).
+\]
+
+Вдоль экватора
+\[
+\gamma_2(\varphi)=(\cos\varphi,\sin\varphi,0),\qquad 0\le\varphi\le\alpha,
+\]
+вектор V=(0,0,-1) остаётся касательным к сфере и не меняется в окружающем пространстве. Его производная равна нулю, а значит и ковариантная производна равна нулю. В точке B стрелка та же:
+\[
+V_2=(0,0,-1).
+\]
+
+Третья дуга — меридиан φ=α:
+\[
+\gamma_3(\theta)=(\sin\theta\cos\alpha,\sin\theta\sin\alpha,\cos\theta),
+\qquad \frac\pi2\ge\theta\ge0.
+\]
+Её касательная в направлении роста θ
+\[
+T_3(\theta)=\gamma_3'(\theta)=(\cos\theta\cos\alpha,\cos\theta\sin\alpha,-\sin\theta)
+\]
+при θ=π/2 равна V_2, а её производна dT_3/dθ=-\gamma_3 снова нормальна сфере. Поэтому при движении к полюсу стрелка остаётся параллельной. При θ=0 получаем
+\[
+V_{\text{fin}}=T_3(0)=(\cos\alpha,\sin\alpha,0).
+\]
+
+Начальная стрелка была (1,0,0), а конечная — (cosα,sinα,0). В касательной плоскости в N это поворот на угол α. Площадь сферического треугольника NAB на единичной сфере равна α, поэтому в этом примере угол голономии совпадает с площадью обходного контура.
+
+> **Рисунок 1.** Единичная сфера. Точки N, A и B образуют сферический треугольник. Зелёная стрелка в N — начальная V_0=(1,0,0). Маршрут показан линией: N→A по меридиану, A→B по экватору, B→N по другому меридиану. Красная стрелка в N — результат переноса V_fin=(cosα,sinα,0). Угол между зелёной и красной стрелками равен α; он равен площади треугольника NAB.
+
+Если пройти тот же путь с другим α или выбрать другую замкнутую кривую, конечная стрелка изменится. Даже при одинаковых начальной и конечной точках результат зависит от маршрута.
+
+## 5. К геодезическим
+
+Параллельный перенос задаёт естественный способ спрашивать, не поворачивает ли сам путь. Возьмём не произвольное поле, а скорость кривой: V(t)=\dot\gamma(t). Если скорость параллельно переносится вдоль кривой, то
+\[
+\nabla_{\dot\gamma}\dot\gamma=0.
+\]
+Это уравнение геодезической. Оно означает, что кривая не имеет внутреннего ускорения: её скорость не поворачивает в касательной плоскости. В следующей главе мы разберём это уравнение, покажем, что геодезические — это внутренние «прямые» поверхности, и свяжем их с локально кратчайшими путями.
+
+Need check word count. Let's count roughly. I'll count by sections.
+
+Title/subtitle: maybe 8 words.
+Intro paragraph: "Когда ковариантная... перенос." Count: Когда1 ковариантная2 производная3 уже4 построена,5 естественный6 вопрос:7 вдоль8 какого9 движения10 стрелка11 не12 поворачивается?13 На14 плоскости15 это16 обычное17 постоянное18 направление.19 На20 поверхности21 «не22 поворачивается»23 значит,24 что25 ковариантная26 производная27 равна28 нулю.29 Это30 условие31 определяет32 параллельный33 перенос.34
+Next: Пусть... 34? Let's count entire maybe 1200? Need more exact.
+
+Let's use approximate word count by line. I can manually count final text. Need target 1200-1600. My draft maybe 1100? Let's estimate.
+
+Section 1:
+"Запишем... пути." etc. Let's count all words maybe. I'll copy draft into mental count? Could be around 1250. Need ensure not under 1200. Let's count systematically.
+
+I'll write final text and count words (Russian tokens separated by spaces, punctuation attached maybe count as word). Use manual.
+
+Title:
+1 Параллельный 2 перенос
+Subtitle: 3 ДИФФЕРЕНЦИАЛЬНАЯ 4 ГЕОМЕТРИЯ 5 · 6 ЧАСТЬ 7 II 8 · 9 ГЛАВА 10 6? Maybe count symbols? Not important.
+
+Intro:
+11 Когда 12 ковариантная 13 производная 14 уже 15 построена, 16 естественный 17 вопрос: 18 вдоль 19 какого 20 движения 21 стрелка 22 не 23 поворачивается? 24 На 25 плоскости 26 это 27 обычное 28 постоянное 29 направление. 30 На 31 поверхности 32

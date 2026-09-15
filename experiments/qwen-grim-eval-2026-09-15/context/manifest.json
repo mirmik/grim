@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/book.json",
+    "sha256": "9c03570f639d9182499d9e43704147e3040d93de105aa87e86819156b9c820b0"
+  },
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/chapters/covariant-derivative-and-connection.html",
+    "sha256": "bd1434862505d42a9587271bdc8abbc9f33a090f2f96c833c2080af47542bdb0"
+  },
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/chapters/introduction.html",
+    "sha256": "d92ff7dc0c306dcdad45583fcb12f3591d9777ff0e27583a5d6f6426e1731eda"
+  },
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/chapters/normal-and-curvature.html",
+    "sha256": "bd48b24772a0f1c615bb5f39f91db14f2b37f4fe353eb209dfc814a139c51d69"
+  },
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/chapters/parametrization-and-metric.html",
+    "sha256": "c4736175d80e03e04fad17465f9ee98daa8509b4cdb8380eb282daf8bfc6eed2"
+  },
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/chapters/vector-fields-and-comparison.html",
+    "sha256": "cb1be165dd885617be9c12023935a5ecdd5aeca1dd2311d5c1a04fc9194f1a84"
+  },
+  {
+    "path": "/home/mirmik/.grim/books/b7702eec3fb94ee1bcf89775608688ad/chapters/why-curvature-matters.html",
+    "sha256": "040083f6aedd273160ae3d978d78ad5e3ba7aa8fe2a413c5a673a11389aa9e65"
+  },
+  {
+    "path": "/home/mirmik/project/grim/docs/how-to-write-learning-materials.md",
+    "sha256": "0539bd3d9a65203193d0d1286979c3cae97186c6259c632d597217aa8ff5b3d3"
+  }
+]

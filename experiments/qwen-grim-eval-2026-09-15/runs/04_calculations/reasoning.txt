@@ -1,0 +1,864 @@
+We need answer in Russian, Markdown with LaTeX. Need write two small educational analyses in style Grim: intuition, computations, geometric derivation. Total 700-1100 words. Need compute all results.
+
+Task 1: Plane in polar coordinates (r,θ), r>0: metric ds²=dr²+r²dθ². In coordinate basis (∂r,∂θ) find nonzero Christoffel symbols. Constant Cartesian vector V=(1,0) write in this basis and compute ∇_{∂r}V and ∇_{∂θ}V. Explain how coefficients relate to flat curvature. Then orthonormal basis E1=∂r, E2=(1/r)∂θ compute ∇_{E1}E2−∇_{E2}E1 and torsion T(E1,E2).
+
+Need be careful: coordinate basis ∂_r, ∂_θ. Metric components g_rr=1, g_θθ=r², g_rθ=0. Inverse g^rr=1, g^θθ=1/r². Christoffels: Γ^r_{θθ} = -r, Γ^θ_{rθ}=Γ^θ_{θr}=1/r. Nonzero.
+
+Constant Cartesian vector V=(1,0) in Cartesian coordinates (x,y). Polar: x=r cosθ, y=r sinθ. ∂_r = (cosθ, sinθ), ∂_θ = (-r sinθ, r cosθ). V=(1,0). Need express V = a ∂_r + b ∂_θ. a = V·∂_r? Since ∂_r unit, ∂_θ length r orthogonal. a = cosθ, b = V·∂_θ / r²? ∂_θ = r e_θ, V·∂_θ = -r sinθ, so b = -sinθ/r. Check: cosθ ∂_r - (sinθ/r) ∂_θ = cosθ(cosθ,sinθ) - sinθ/r (-r sinθ, r cosθ) = (cos²+sin², cos sin - sin cos) = (1,0). Good.
+
+Compute ∇_{∂r}V and ∇_{∂θ}V in coordinate basis. In flat plane, ∇ is Euclidean connection. For vector V = V^i ∂_i, ∇_X V = X(V^i) ∂_i + V^i Γ^j_{ik} X^k ∂_j.
+
+For X=∂_r: components V^r=cosθ, V^θ=-sinθ/r. ∂_r V^r=0, ∂_r V^θ=0. Γ^r_{r?}: Γ^r_{rr}=0, Γ^r_{rθ}=0; Γ^θ_{rr}=0. So ∇_{∂r}V = 0. Indeed V constant and ∂_r tangent to radial line? Moving radially, direction of V relative to polar basis? V components constant? yes because θ fixed, V^r=cosθ constant, V^θ=-sinθ/r changes with r but derivative wrt r at fixed θ? -sinθ/r derivative -sinθ/r² not zero. Wait V^θ = -sinθ/r, ∂_r V^θ = sinθ/r²? Actually derivative of -sinθ/r wrt r = + sinθ/r². But Γ^θ_{rθ}=1/r, V^θ Γ^θ_{rθ} = (-sinθ/r)*(1/r)= -sinθ/r². Sum zero. Good.
+
+For X=∂_θ: ∂_θ V^r = -sinθ. ∂_θ V^θ = -cosθ/r. Γ terms: For j=r: V^r Γ^r_{rθ}+V^θ Γ^r_{θθ} = cosθ*0 + (-sinθ/r)*(-r)= sinθ. So r-component = ∂_θ V^r + sinθ = -sinθ+sinθ=0. j=θ: V^r Γ^θ_{rθ}+V^θ Γ^θ_{θθ}=cosθ*(1/r)+0=cosθ/r. θ-component = ∂_θ V^θ + cosθ/r = -cosθ/r + cosθ/r=0. So ∇_{∂θ}V=0. Good.
+
+Explain coefficients relate to flat curvature: Christoffels nonzero due to curvilinear coordinates; Riemann tensor zero. Could compute R^r_{θrθ}? Need maybe explain: nonzero symbols reflect basis rotation/stretching; curvature is second derivative/commutator. For flat, e.g. R^r_{θ r θ}=0, R^θ_{r θ r}=0. Maybe compute one to show? The prompt: "Объясни, как соотносятся полученные коэффициенты с кривизной плоскости." Could say coefficients are connection coefficients, not curvature; flatness means all Riemann components vanish, e.g. R^r_{θ r θ}=∂_r Γ^r_{θθ} - ∂_θ Γ^r_{rθ}+... = -1 -0 + Γ^r_{rλ}Γ^λ_{θθ} - Γ^r_{θλ}Γ^λ_{rθ}. Need compute: R^r_{θ r θ} = ∂_r Γ^r_{θθ} - ∂_θ Γ^r_{rθ} + Γ^r_{rλ}Γ^λ_{θθ} - Γ^r_{θλ}Γ^λ_{rθ}. λ=θ: Γ^r_{rθ}=0; second Γ^r_{θθ} Γ^θ_{rθ}=(-r)(1/r)=-1. So -1 -0 +0 -(-1)=0. Good. Or R^θ_{r θ r}=0. Could mention.
+
+Then orthonormal basis E1=∂r, E2=(1/r)∂θ. Compute ∇_{E1}E2 - ∇_{E2}E1 and torsion T(E1,E2). Need define torsion T(X,Y)=∇_X Y - ∇_Y X - [X,Y]. For Levi-Civita torsion zero. But if they ask compute torsion T(E1,E2), likely zero. Need compute commutator? Let's compute ∇_{E1}E2 and ∇_{E2}E1.
+
+E1=∂_r. E2=(1/r)∂_θ. ∇_{E1}E2 = ∇_{∂_r}((1/r)∂_θ) = ∂_r(1/r)∂_θ + (1/r)∇_{∂_r}∂_θ = (-1/r²)∂_θ + (1/r) Γ^θ_{rθ} ∂_θ = (-1/r² + 1/r²)∂_θ = 0.
+
+∇_{E2}E1 = ∇_{(1/r)∂_θ}∂_r = (1/r)∇_{∂_θ}∂_r = (1/r) Γ^r_{θ r} ∂_r? Γ^r_{θ r}=Γ^r_{rθ}=0? Wait nonzero Γ^r_{θθ}=-r, Γ^θ_{rθ}=1/r. For ∇_{∂_θ}∂_r: component j: Γ^j_{r θ}. Γ^r_{rθ}=0, Γ^θ_{rθ}=1/r. So ∇_{∂_θ}∂_r = (1/r)∂_θ. Then times 1/r gives (1/r²)∂_θ = (1/r) E2? Since E2=(1/r)∂θ, (1/r²)∂θ = (1/r) E2. So ∇_{E2}E1 = (1/r)E2.
+
+Then ∇_{E1}E2 - ∇_{E2}E1 = 0 - (1/r)E2 = -(1/r)E2.
+
+Torsion T(E1,E2)=∇_{E1}E2 - ∇_{E2}E1 - [E1,E2]. Need [E1,E2] = [∂_r, (1/r)∂_θ] = ∂_r(1/r)∂_θ - (1/r)∂_θ(1)∂_r? More generally [f∂θ, ∂r] = -f ∂r(∂θ?)? Let's compute: [∂r, f ∂θ] = ∂r(f) ∂θ + f [∂r,∂θ] - f ∂θ(1?) Actually [X, fY] = X(f)Y + f[X,Y]. Here X=∂r, Y=∂θ, f=1/r. X(f)=-1/r², [∂r,∂θ]=0. So [E1,E2]= -1/r² ∂θ = -(1/r)E2. Then torsion = -(1/r)E2 - (-(1/r)E2)=0. Good.
+
+But note if they ask "вычисли ∇_{E1}E2−∇_{E2}E1 и кручение T(E1,E2)" maybe they expect ∇ difference = -(1/r)E2, torsion=0. Need explain: difference not zero because basis not coordinate? Actually E1,E2 are not coordinate basis; their commutator equals difference. Torsion zero.
+
+Task 2: Regular surface r(u,v)=(u+v, v, ((u+v)²+2v²)/2), normal chosen with positive third component. At point (0,0) find matrices of first and second fundamental forms, shape operator S=-dn, principal curvatures and directions. Explain in what sense shape operator symmetric, and compute normal curvature of direction with coordinate components (1,0).
+
+Need compute carefully. Surface param: x = u+v, y=v, z = ((u+v)^2 + 2v^2)/2. At (0,0): x=0,y=0,z=0.
+
+r_u = (1,1, u+v)?? derivative z wrt u: ((2(u+v)*1 + 0)/2) = u+v. At (0,0): r_u=(1,1,0). r_v = (1,1, (2(u+v)+4v)/2?) derivative z wrt v: ((2(u+v)*1 + 4v)/2) = u+v+2v = u+3v. At (0,0): r_v=(1,1,0). Wait both same? That would be degenerate? Check: x=u+v => x_u=1, x_v=1. y=v => y_u=0, y_v=1. Ah I mistakenly y_u=0. So r_u=(1,0,u+v) at 0 (1,0,0). r_v=(1,1,u+3v) at 0 (1,1,0). Good.
+
+First fundamental form at 0: E = r_u·r_u =1+0+0=1. F = r_u·r_v =1*1+0*1+0=1. G = r_v·r_v=1+1+0=2. Matrix I = [[1,1],[1,2]].
+
+Normal chosen positive third component. Cross product r_u × r_v. r_u=(1,0,0), r_v=(1,1,0). Cross = (0*0-0*1, 0*1-1*0, 1*1-0*1) = (0,0,1). Positive third, unit? length 1. So n=(0,0,1). Good.
+
+Second fundamental form coefficients: e = r_{uu}·n, f = r_{uv}·n, g = r_{vv}·n. Need compute second derivatives at 0.
+
+r(u,v) = (u+v, v, 1/2(u+v)^2 + v^2). z_u = u+v; z_v = u+3v. z_uu =1; z_uv=1; z_vv=3. x second zero, y second zero. So r_uu=(0,0,1), r_uv=(0,0,1), r_vv=(0,0,3). Dot with n=(0,0,1): e=1, f=1, g=3. Matrix II = [[1,1],[1,3]].
+
+Shape operator S = -dn. In coordinates, S matrix relative to basis (r_u, r_v) satisfies II_{ij} = I_{ik} S^k_j? Need conventions. Usually Weingarten: dn_p(v) = -S(v). In coordinate basis, S^i_j = g^{ik} b_{kj} where b_{ij}=r_{ij}·n = II_{ij}. Or matrix S = I^{-1} II (if acting on column coordinate vectors? Need check). Since II(v,w)=<S v, w> = v^T I S w? If S matrix columns are S(e_j), then II_{ij}= <S(r_i), r_j> = (I S)_{ij}? Let's derive: Let S^k_j such that S(∂_j)=S^k_j ∂_k. Then II_{ij}=g_{kl} S^l_j ∂_i^k? = g_{i l} S^l_j. So II = I S (matrix). Thus S = I^{-1} II. Some use S = -dn, matrix = I^{-1} II. Good.
+
+I inverse: [[1,1],[1,2]] det=1, inverse [[2,-1],[-1,1]]. Multiply by II [[1,1],[1,3]]: S = [[2*1 + -1*1, 2*1 + -1*3], [-1*1+1*1, -1*1+1*3]] = [[1, -1], [0, 2]]. Let's check: [[2,-1],[-1,1]] * [[1,1],[1,3]] = [[2-1,2-3],[-1+1,-1+3]] = [[1,-1],[0,2]]. Eigenvalues 1 and 2. Principal curvatures 1,2. Directions: eigenvectors. For λ=1: (S-I) = [[0,-1],[0,1]] -> -v=0 => v=0, u free. Direction (1,0). For λ=2: S-2I = [[-1,-1],[0,0]] -> u+v=0 => (1,-1). Need maybe normalized? Coordinate components. Principal directions in tangent plane: for k=1 vector r_u (since (1,0)); for k=2 vector r_u - r_v? (1,-1). In actual 3D: r_u=(1,0,0), r_u - r_v = (0,-1,0). So principal directions are x-axis and y-axis at point. Normal curvature of direction with coordinate components (1,0): II(I? formula) κ_n = II(v,v)/I(v,v) for v=(1,0): II=1, I=1 => 1. Since it's principal direction k=1. Need maybe mention if direction not normalized? coordinate components (1,0) vector is r_u, unit since E=1, so normal curvature =1.
+
+Explain shape operator symmetric: S is self-adjoint with respect to first fundamental form: <S X, Y> = <X, S Y> = II(X,Y). Not necessarily symmetric in coordinate matrix; here S matrix not symmetric but I-self-adjoint. Could compute: I S = II symmetric. Or S^T I = I S? Check S^T I = [[1,0],[-1,2]] [[1,1],[1,2]] = [[1,1],[1,3]] yes. So self-adjoint. In orthonormal frame it would be symmetric.
+
+Need total 700-1100 words. Need style Grim: intuition, computations, geometric derivation. Maybe two sections. Need not too verbose. Need include all computations. Need maybe no images. If illustration needed, exact description and caption. Could include one or two? The prompt says if needed. Maybe no images to save words. But editorial requirements: start with intuitive? For each analysis maybe start with intuitive sentence. Need total 700-1100 words. We need count roughly. Russian words. Need ensure 700-1100. Let's draft around 850-1000 words. Need Markdown with LaTeX. Need no invented links.
+
+Let's plan structure:
+
+# Разбор 1. Плоскость в полярных координатах
+
+Intro: плоскость плоская, но полярные координаты изогнуты; Christoffels encode basis change.
+
+Metric: ds² = dr² + r² dθ², g_rr=1, g_θθ=r². Inverse. Christoffel formula maybe state: Γ^k_{ij}=1/2 g^{kℓ}(∂_i g_{jℓ}+...), only nonzero: Γ^r_{θθ}=-r, Γ^θ_{rθ}=Γ^θ_{θr}=1/r.
+
+Vector V=(1,0). Express: ∂r=(cosθ,sinθ), ∂θ=(-r sinθ,r cosθ). V=cosθ ∂r - (sinθ/r) ∂θ.
+
+Compute ∇_{∂r}V. Show formula. For ∂r: components derivative and Christoffel cancel:
+∇_{∂r}V = (0)∂r + (sinθ/r² - sinθ/r²)∂θ=0.
+For ∂θ:
+∇_{∂θ}V = [(-sinθ)+sinθ]∂r + [(-cosθ/r)+cosθ/r]∂θ=0.
+Interpretation: V constant in Euclidean sense; nonzero Christoffels exactly compensate changing polar basis. Curvature not in Γ but in Riemann. Example R^r_{θ r θ}=...=0. Thus flat.
+
+Orthonormal frame: E1=∂r, E2=1/r ∂θ. Compute:
+∇_{E1}E2 = -1/r² ∂θ + 1/r² ∂θ=0.
+∇_{E2}E1 = 1/r ∇_{∂θ}∂r = 1/r² ∂θ = 1/r E2.
+Difference = -1/r E2.
+Commutator [E1,E2] = -1/r² ∂θ = -1/r E2. Torsion T = difference - commutator =0. Geometric: E2 rotates as move along E1? Actually ∇_{E2}E1 nonzero: radial direction changes when moving angularly? Wait ∇_{E2}E1 = (1/r)E2: moving angularly, radial unit vector tilts toward angular direction. ∇_{E1}E2=0: moving radially, angular unit vector doesn't change? In polar, e_θ direction at fixed θ is constant as r changes, yes. Torsion zero because noncommuting basis accounts for difference.
+
+# Разбор 2. Поверхность
+
+Param. At (0,0), r_u=(1,0,0), r_v=(1,1,0). I matrix. n = r_u×r_v / |...| = (0,0,1).
+Second derivatives: r_uu=(0,0,1), r_uv=(0,0,1), r_vv=(0,0,3). II matrix.
+Shape operator: S=I^{-1}II = [[1,-1],[0,2]]. Explain symmetry: self-adjoint w.r.t I: <S X,Y>=II(X,Y); matrix satisfies S^T I = I S = II.
+Eigenvalues/directions: λ=1 eigenvector (1,0); λ=2 eigenvector (1,-1). In 3D directions (1,0,0), (0,-1,0) (or y-axis). Normal curvature for coordinate direction (1,0): κ_n = II((1,0),(1,0))/I((1,0),(1,0)) =1/1=1.
+
+Need maybe include "регулярная поверхность" check? At (0,0) cross nonzero. Could mention.
+
+Need ensure mathematical correctness: Check second fundamental form sign convention. They specify S=-dn. If n=(0,0,1), dn? For surface z=f(x,y) with f=1/2(x^2+? Wait param not graph in x,y? Let's see x=u+v, y=v => u=x-y, v=y. z=1/2(x^2+2y^2). At origin graph z=1/2 x² + y². Upward normal (0,0,1). For graph z=f(x,y), second fundamental form with upward normal? Usually II = -r_{ij}·n? Wait convention varies. They define S=-dn. For graph with upward normal, principal curvatures? Let's check. Surface z=f(x,y), upward normal n = (-f_x,-f_y,1)/W. At origin f_x=f_y=0, n=(0,0,1). dn? For small x, n_x ≈ (-f_xx,0,0)/W? Actually n = (-f_x,-f_y,1)/sqrt(1+f_x²+f_y²). At origin derivative n_x = (-f_xx,0,0) = (-1,0,0). S=-dn maps tangent vector r_x=(1,0,0) to (1,0,0) => k=1. For y direction r_y=(0,1,0), n_y=(0,-f_yy,0)=(0,-2,0), S(r_y)=(0,2,0) => k=2. So II coefficients positive e=1, f=0? Wait in graph coordinates x,y, f_xy=0. But our param u,v not x,y. We got II [[1,1],[1,3]]. Does that correspond? Let's map coordinate basis r_u=(1,0,0) (x direction), r_v=(1,1,0) (x+y direction). Principal directions x and y. In u,v basis, y direction is r_v - r_u = (0,1,0). II for r_u:1, r_v-r_u:2. Cross II(r_u, r_v-r_u)=? II(r_u,r_v)-II(r_u,r_u)=1-1=0. Good. II(r_v,r_v)=? II(r_u+r_y, r_u+y)=1+0+0+2=3. Good. So consistent. Shape operator in u,v basis: S(r_u)=r_u (λ1), S(r_v)=S(r_u)+S(y)=r_u+2y = r_u+2(r_v-r_u)=2r_v - r_u. Coordinates ( -1,2 )? Wait column for basis vector r_v: S(r_v)= -1 r_u + 2 r_v. Our S matrix [[1,-1],[0,2]] acting on column (u,v): S(e_u)=(1,0), S(e_v)=(-1,2). Yes. Eigen λ=2 vector (1,-1) = r_u - r_v? But y direction is r_v - r_u = (-1,1) also eigenvector. (1,-1) = r_u - r_v = -y direction. Good.
+
+Need check shape operator formula S=-dn. In coordinates, dn(∂_i) = -S(∂_i). But also dn(∂_i) = ∂_i n = -S^j_i ∂_j. And b_{ij}=r_{ij}·n = -dn(∂_i)·∂_j? Let's derive: r_i·n=0 => ∂_j(r_i·n)=0 => r_{ij}·n + r_i·n_j=0 => b_{ij} = -r_i·n_j = -<∂_i, dn(∂_j)> = <S ∂_i, ∂_j>. So II_{ij}=<S∂_i,∂_j>. Matrix II = S^T I? If S^k_j columns, <S∂_i,∂_j>=g_{iℓ} S^ℓ_j. That's (I S)_{ij}. So II=I S. Good. S=I^{-1}II. Good.
+
+Need maybe mention "матрицы первой и второй фундаментальных форм" as 2x2. Good.
+
+Need total word count. Let's draft and count approximate. Need 700-1100 words. Russian words count maybe by spaces. Let's write concise but enough.
+
+Draft:
+
+## 1. Плоскость в полярных координатах
+
+Плоскость геометрически плоская, но полярные координаты «изгибают» базис: векторы ∂r и ∂θ меняют направление и длину при движении. Поэтому символы Кристоффеля могут быть ненулевыми, хотя кривизна равна нулю.
+
+Метрика ... etc.
+
+Need include formulas. Let's count later.
+
+Potential issue: "В координатном базисе (∂r,∂θ) найди ненулевые символы Кристоффеля." Use ∂_r notation. Good.
+
+Need maybe define ∇ as Levi-Civita connection. Could say "Для связности Леви-Чивита".
+
+Need compute Christoffel maybe show one: Γ^r_{θθ}= -1/2 g^{rr} ∂_r g_{θθ}= -r. Γ^θ_{rθ}=1/2 g^{θθ} ∂_r g_{θθ}=1/r. Good.
+
+Need maybe mention Γ^r_{rθ}=0 etc.
+
+Vector expression: V = cosθ ∂_r - (sinθ/r)∂_θ.
+
+Computations: Need be clear with indices. For ∇_{∂r}V:
+∇_{∂r}V = (∂_r V^r + V^i Γ^r_{ir})∂_r + (∂_r V^θ + V^i Γ^θ_{ir})∂_θ.
+But maybe not too formal. Show result with cancellation.
+
+For ∂r: V^r=cosθ, V^θ=-sinθ/r. ∂_r V^θ = sinθ/r². Γ^θ_{rθ}=1/r, V^θ Γ^θ_{rθ}= -sinθ/r². Sum 0. r component 0.
+
+For ∂θ: ∂_θ V^r=-sinθ; V^θ Γ^r_{θθ}=(-sinθ/r)(-r)=sinθ; sum 0. θ: ∂_θ V^θ=-cosθ/r; V^r Γ^θ_{rθ}=cosθ/r; sum 0.
+
+Curvature: "Сами Γ не равны кривизне. Кривизна — тензор Римана, получающийся из коммутатора ∇. Например ... =0." Need compute maybe exactly:
+R(∂_θ,∂_r)∂_r? Need choose. Let's compute one component correctly to avoid sign errors.
+
+Definition: R^l_{kij} = ∂_i Γ^l_{jk} - ∂_j Γ^l_{ik} + Γ^l_{i m} Γ^m_{j k} - Γ^l_{j m} Γ^m_{i k}. Then R(X,Y)Z = R^l_{kij} X^i Y^j Z^k ∂_l? There are conventions. To avoid sign, say "например, компонентная комбинация ... даёт 0". Need ensure formula matches. Let's pick R^r_{θ r θ} maybe. Using above with l=r, k=θ? Wait notation R^l_{k i j}. If we want R^r_{θ r θ}: l=r, k=θ, i=r, j=θ. Formula: ∂_r Γ^r_{θθ} - ∂_θ Γ^r_{rθ} + Γ^r_{r m}Γ^m_{θθ} - Γ^r_{θ m}Γ^m_{rθ}. Γ^r_{rθ}=0, Γ^r_{r m}: only m? Γ^r_{rθ}=0, Γ^r_{rr}=0. Γ^r_{θ m}: m=θ gives -r. Γ^θ_{rθ}=1/r. So = ∂_r(-r) - 0 + 0 - (-r)(1/r) = -1 +1=0. Good. If using R^r_{θ r θ}. Good.
+
+Orthonormal frame: Need maybe define torsion: T(X,Y)=∇_X Y - ∇_Y X - [X,Y]. Compute.
+
+Potential subtlety: For orthonormal basis E1,E2, connection coefficients: ∇_{E1}E2=0, ∇_{E2}E1=(1/r)E2. Is that correct? Let's double-check ∇_{E2}E1: E2=(1/r)∂θ. ∇_{E2}E1=(1/r)∇_{∂θ}∂r. ∇_{∂θ}∂r = Γ^r_{rθ}∂r + Γ^θ_{rθ}∂θ = (1/r)∂θ. Times 1/r = 1/r² ∂θ = (1/r)E2. Yes.
+
+Then difference ∇_{E1}E2 - ∇_{E2}E1 = -1/r E2. Commutator [E1,E2] = [∂r, 1/r ∂θ] = -1/r² ∂θ = -1/r E2. T=0. Good.
+
+Maybe geometric explanation: "Разность не равна нулю, потому что E1,E2 не образуют координатный базис: [E1,E2]≠0. Для связности Леви-Чивита эта разность равна коммутатору, а кручение исчезает." Good.
+
+## 2. Поверхность
+
+Need maybe start intuition: surface near origin is graph z=1/2(x²+2y²); principal axes x,y. But we compute in (u,v). Could include.
+
+Param: r(u,v)=... At (0,0). r_u=(1,0,0), r_v=(1,1,0). I = [[1,1],[1,2]]. n = (r_u×r_v)/|...| = (0,0,1).
+
+Second derivatives: r_uu=(0,0,1), r_uv=(0,0,1), r_vv=(0,0,3). II = [[1,1],[1,3]].
+
+Shape operator: S=I^{-1}II. I^{-1} = [[2,-1],[-1,1]]. S = [[1,-1],[0,2]]. It is not symmetric as ordinary matrix, but self-adjoint w.r.t I: S^T I = I S = II. In orthonormal tangent basis it would be symmetric.
+
+Principal curvatures: eigenvalues of S: 1,2. Eigenvectors: for 1: (1,0); for 2: (1,-1). In 3D: (1,0,0) and (0,-1,0) (or y-axis). Need maybe normalized? For coordinate direction (1,-1), length sqrt(I(v,v))? I((1,-1),(1,-1)) = 1 -2 +2 =1. Actually vector r_u - r_v = (0,-1,0), unit. Good. (1,0) unit. So normalized same. Could mention.
+
+Normal curvature direction (1,0): κ_n = II(v,v)/I(v,v)=1/1=1. It equals principal curvature.
+
+Need ensure "нормаль выбрана с положительной третьей компонентой" we use n=(0,0,1). Good.
+
+Need maybe "оператор формы S=-dn" in coordinates: dn(∂_i) = -S(∂_i). We can explain: since r_i·n=0, differentiating gives r_{ij}·n = -r_i·dn(∂_j) = <S r_i, r_j>. Thus II = I S. Good.
+
+Need total word count. Let's draft full and count. I'll write in final. But need count to be within 700-1100. Let's approximate.
+
+Draft text:
+
+## 1. Плоскость в полярных координатах
+
+Плоскость геометрически плоская, но полярные координаты «изгибают» координатный базис: векторы \(\partial_r\) и \(\partial_\theta\) меняют направление и длину при движении. Поэтому символы Кристоффеля могут быть ненулевыми, хотя кривизна равна нулю.
+
+Метрика задана как
+\[
+ds^2=dr^2+r^2d\theta^2,
+\]
+так что \(g_{rr}=1\), \(g_{\theta\theta}=r^2\), \(g^{rr}=1\), \(g^{\theta\theta}=1/r^2\). Ненулевые символы Кристоффеля для связности Леви-Чивита равны
+\[
+\Gamma^r_{\theta\theta}=-r,\qquad
+\Gamma^\theta_{r\theta}=\Gamma^\theta_{\theta r}=\frac1r.
+\]
+Например, \(\Gamma^r_{\theta\theta}=-\frac12 g^{rr}\partial_r g_{\theta\theta}\), а \(\Gamma^\theta_{r\theta}=\frac12 g^{\theta\theta}\partial_r g_{\theta\theta}\).
+
+Постоянный декартов вектор \(V=(1,0)\) запишем в полярном базисе. Так как
+\[
+\partial_r=(\cos\theta,\sin\theta),\qquad
+\partial_\theta=(-r\sin\theta,r\cos\theta),
+\]
+получаем
+\[
+V=\cos\theta\,\partial_r-\frac{\sin\theta}{r}\,\partial_\theta.
+\]
+Обозначим компоненты \(V^r=\cos\theta\), \(V^\theta=-\sin\theta/r\). Тогда
+\[
+\nabla_{\partial_r}V
+=
+\left(\partial_r V^r+V^\theta\Gamma^\theta_{r\theta}\right)\partial_\theta
+=
+\left(0+\frac{\sin\theta}{r^2}-\frac{\sin\theta}{r^2}\right)\partial_\theta=0,
+\]
+а
+\[
+\nabla_{\partial_\theta}V
+=
+\left(\partial_\theta V^r+V^\theta\Gamma^r_{\theta\theta}\right)\partial_r
++
+\left(\partial_\theta V^\theta+V^r\Gamma^\theta_{r\theta}\right)\partial_\theta.
+\]
+Подставляя,
+\[
+\partial_\theta V^r=-\sin\theta,\quad V^\theta\Gamma^r_{\theta\theta}=\sin\theta,
+\]
+\[
+\partial_\theta V^\theta=-\frac{\cos\theta}{r},\quad V^r\Gamma^\theta_{r\theta}=\frac{\cos\theta}{r},
+\]
+поэтому \(\nabla_{\partial_\theta}V=0\). Это означает, что вектор действительно постоянный в евклидовом смысле: ненулевые \(\Gamma\) лишь компенсируют изменение полярного базиса.
+
+Кривизна не читается по отдельным \(\Gamma\), а определяется тензором Римана. Например,
+\[
+R^r_{\theta r\theta}
+=
+\partial_r\Gamma^r_{\theta\theta}
+-\partial_\theta\Gamma^r_{r\theta}
++\Gamma^r_{r\lambda}\Gamma^\lambda_{\theta\theta}
+-\Gamma^r_{\theta\lambda}\Gamma^\lambda_{r\theta}
+=
+-1-0+0-(-r)\frac1r=0.
+\]
+Все компоненты Римана обращаются в ноль, поэтому плоскость плоская.
+
+Перейдём к ортонормированному базису
+\[
+E_1=\partial_r,\qquad E_2=\frac1r\partial_\theta.
+\]
+Вычислим
+\[
+\nabla_{E_1}E_2
+=
+\nabla_{\partial_r}\left(\frac1r\partial_\theta\right)
+=
+-\frac1{r^2}\partial_\theta+\frac1r\frac1r\partial_\theta=0,
+\]
+и
+\[
+\nabla_{E_2}E_1
+=
+\frac1r\nabla_{\partial_\theta}\partial_r
+=
+\frac1r\frac1r\partial_\theta
+=
+\frac1rE_2.
+\]
+Следовательно,
+\[
+\nabla_{E_1}E_2-\nabla_{E_2}E_1=-\frac1rE_2.
+\]
+Коммутатор
+\[
+[E_1,E_2]=\left[\partial_r,\frac1r\partial_\theta\right]
+=
+-\frac1{r^2}\partial_\theta=-\frac1rE_2.
+\]
+Кручение определяется как
+\[
+T(X,Y)=\nabla_XY-\nabla_YX-[X,Y],
+\]
+поэтому
+\[
+T(E_1,E_2)=0.
+\]
+Разность производных не равна нулю, потому что \(E_1,E_2\) — не координатный базис; для связности Леви-Чивита она равна коммутатору, и кручение исчезает.
+
+## 2. Поверхность в параметрах \((u,v)\)
+
+Поверхность
+\[
+r(u,v)=\left(u+v,\ v,\ \frac{(u+v)^2+2v^2}{2}\right)
+\]
+вблизи точки \((0,0)\) есть график \(z=\frac12x^2+y^2\), где \(x=u+v\), \(y=v\). Это подсказывает, что главные направления будут вдоль координатных осей \(x\) и \(y\).
+
+В точке \((0,0)\):
+\[
+r_u=(1,0,0),\qquad r_v=(1,1,0).
+\]
+Первая фундаментальная форма:
+\[
+I=\begin{pmatrix}
+r_u\cdot r_u & r_u\cdot r_v\\
+r_v\cdot r_u & r_v\cdot r_v
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 1\\
+1 & 2
+\end{pmatrix}.
+\]
+Нормаль с положительной третьей компонентой:
+\[
+n=\frac{r_u\times r_v}{\|r_u\times r_v\|}=(0,0,1).
+\]
+Вторые производные:
+\[
+r_{uu}=(0,0,1),\quad r_{uv}=(0,0,1),\quad r_{vv}=(0,0,3).
+\]
+Поэтому вторая фундаментальная форма
+\[
+II=\begin{pmatrix}
+r_{uu}\cdot n & r_{uv}\cdot n\\
+r_{uv}\cdot n & r_{vv}\cdot n
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 1\\
+1 & 3
+\end{pmatrix}.
+\]
+
+Оператор формы \(S=-dn\) связан с формами соотношением
+\[
+II(X,Y)=\langle S X,Y\rangle,
+\]
+поэтому в координатном базисе \((r_u,r_v)\) его матрица равна
+\[
+S=I^{-1}II.
+\]
+Здесь
+\[
+I^{-1}=\begin{pmatrix}2&-1\\-1&1\end{pmatrix},
+\]
+откуда
+\[
+S=\begin{pmatrix}2&-1\\-1&1\end{pmatrix}
+\begin{pmatrix}1&1\\1&3\end{pmatrix}
+=
+\begin{pmatrix}1&-1\\0&2\end{pmatrix}.
+\]
+Матрица \(S\) не симметрична в обычном смысле, но она самосопряжённая относительно первой формы:
+\[
+S^T I=IS=II.
+\]
+Именно это означает симметричность оператора формы: \(\langle SX,Y\rangle=\langle X,SY\rangle\). В ортонормированном базисе касательного пространства такая матрица была бы симметричной.
+
+Собственные значения \(S\): \(1\) и \(2\). Собственный вектор при \(\lambda=1\) имеет координаты \((1,0)\), а при \(\lambda=2\) — \((1,-1)\). В декартовом виде это направления
+\[
+r_u=(1,0,0),\qquad r_u-r_v=(0,-1,0),
+\]
+то есть оси \(x\) и \(y\).
+
+Для направления с координатными компонентами \(v=(1,0)\) нормальная кривизна равна
+\[
+\kappa_n=\frac{II(v,v)}{I(v,v)}
+=
+\frac{1}{1}=1.
+\]
+Это совпадает с соответствующей главной кривизной, поскольку \(v\) — собственное направление оператора формы.
+
+Need count words. Let's count roughly. Use manual? Let's estimate. Section 1:
+Title 5? "1. Плоскость в полярных координатах" 5.
+Paragraph: Плоскость(1) геометрически2 плоская,3 но4 полярные5 координаты6 «изгибают»7 координатный8 базис:9 векторы10 ∂r11 и12 ∂θ13 меняют14 направление15 и16 длину17 при18 движении.19 Поэтому20 символы21 Кристоффеля22 могут23 быть24 ненулевыми,25 хотя26 кривизна27 равна28 нулю.29.
+Metric paragraph: Метрика1 задана2 как3 ds²... maybe formulas count? Words in text: так что g... maybe many. Hard.
+Need total maybe 800-900. Let's count more systematically maybe using word tokens? We can approximate by line.
+
+Maybe final word count around 850. Need ensure 700-1100. Let's count with a rough script mentally? Could use analysis. I'll copy draft and count words by spaces maybe. But formulas count as words? Usually word count includes LaTeX tokens? The requirement likely human words. Need safe within range. If too short? Let's count approximate human words excluding formulas? The final includes many formulas. Need 700-1100 words. My draft likely ~750-850. Good.
+
+Let's count more accurately by splitting into words (Russian words and math symbols maybe). I'll number.
+
+Section 1:
+"## 1. Плоскость в полярных координатах" -> 1? maybe 5.
+1 Плоскость
+2 геометрически
+3 плоская,
+4 но
+5 полярные
+6 координаты
+7 «изгибают»
+8 координатный
+9 базис:
+10 векторы
+11 ∂r
+12 и
+13 ∂θ
+14 меняют
+15 направление
+16 и
+17 длину
+18 при
+19 движении.
+20 Поэтому
+21 символы
+22 Кристоффеля
+23 могут
+24 быть
+25 ненулевыми,
+26 хотя
+27 кривизна
+28 равна
+29 нулю.
+
+"Метрика задана как" 30 Метрика 31 задана 32 как
+formula ds...
+"так что" 33 так 34 что
+g_rr=1, 35 g_rr=1,
+g_θθ=r², 36
+g^rr=1, 37
+g^θθ=1/r². 38
+"Ненулевые символы Кристоффеля для связности Леви-Чивита равны" 39 Ненулевые 40 символы 41 Кристоффеля 42 для 43 связности 44 Леви-Чивита 45 равны
+formulas.
+"Например, Γ... а Γ..." 46 Например, 47 Γ... (maybe count as one?) 48 а 49 Γ...
+
+"Постоянный декартов вектор V=(1,0) запишем в полярном базисе." 50 Постоянный 51 декартов 52 вектор 53 V=(1,0) 54 запишем 55 в 56 полярном 57 базисе.
+"Так как" 58 Так 59 как
+formulas.
+"получаем" 60
+formula.
+"Обозначим компоненты V^r=cosθ, V^θ=-sinθ/r." 61 Обозначим 62 компоненты 63 V^r=cosθ, 64 V^θ=-sinθ/r.
+"Тогда" 65
+formula.
+"а" 66
+formula.
+"Подставляя," 67
+formulas.
+"поэтому ∇=0." 68 поэтому 69 ∇=0.
+"Это означает, что вектор действительно постоянный в евклидовом смысле: ненулевые Γ лишь компенсируют изменение полярного базиса." 70 Это 71 означает, 72 что 73 вектор 74 действительно 75 постоянный 76 в 77 евклидовом 78 смысле: 79 ненулевые 80 Γ 81 лишь 82 компенсируют 83 изменение 84 полярного 85 базиса.
+
+"Кривизна не читается по отдельным Γ, а определяется тензором Римана. Например," 86 Кривизна 87 не 88 читается 89 по 90 отдельным 91 Γ, 92 а 93 определяется 94 тензором 95 Римана. 96 Например,
+formula.
+"Все компоненты Римана обращаются в ноль, поэтому плоскость плоская." 97 Все 98 компоненты 99 Римана 100 обращаются 101 в 102 ноль, 103 поэтому 104 плоскость 105 плоская.
+
+"Перейдём к ортонормированному базису" 106 Перейдём 107 к 108 ортонормированному 109 базису
+formula.
+"Вычислим" 110
+formula.
+"и" 111
+formula.
+"Следовательно," 112
+formula.
+"Коммутатор" 113
+formula.
+"Кручение определяется как" 114 Кручение 115 определяется 116 как
+formula.
+"поэтому" 117
+formula.
+"Разность производных не равна нулю, потому что E1,E2 — не координатный базис; для связности Леви-Чивита она равна коммутатору, и кручение исчезает." 118 Разность 119 производных 120 не 121 равна 122 нулю, 123 потому 124 что 125 E1,E2 126 — 127 не 128 координатный 129 базис; 130 для 131 связности 132 Леви-Чивита 133 она 134 равна 135 коммутатору, 136 и 137 кручение 138 исчезает.
+
+Section 2:
+"## 2. Поверхность в параметрах (u,v)" 139 2. 140 Поверхность 141 в 142 параметрах 143 (u,v)
+"Поверхность" 144
+formula
+"вблизи точки (0,0) есть график z=1/2 x²+y², где x=u+v, y=v. Это подсказывает, что главные направления будут вдоль координатных осей x и y." 145 вблизи 146 точки 147 (0,0) 148 есть 149 график 150 z=... 151 где 152 x=... 153 y=v. 154 Это 155 подсказывает, 156 что 157 главные 158 направления 159 будут 160 вдоль 161 координатных 162 осей 163 x 164 и 165 y.
+
+"В точке (0,0):" 166 В 167 точке 168 (0,0):
+formula.
+"Первая фундаментальная форма:" 169 Первая 170 фундаментальная 171 форма:
+formula.
+"Нормаль с положительной третьей компонентой:" 172 Нормаль 173 с 174 положительной 175 третьей 176 компонентой:
+formula.
+"Вторые производные:" 177 Вторые 178 производные:
+formula.
+"Поэтому вторая фундаментальная форма" 179 Поэтому 180 вторая 181 фундаментальная 182 форма
+formula.
+
+"Оператор формы S=-dn связан с формами соотношением" 183 Оператор 184 формы 185 S=-dn 186 связан 187 с 188 формами 189 соотношением
+formula.
+"поэтому в координатном базисе (r_u,r_v) его матрица равна" 190 поэтому 191 в 192 координатном 193 базисе 194 (r_u,r_v) 195 его 196 матрица 197 равна
+formula.
+"Здесь" 198
+formula.
+"откуда" 199
+formula.
+"Матрица S не симметрична в обычном смысле, но она самосопряжённая относительно первой формы:" 200 Матрица 201 S 202 не 203 симметрична 204 в 205 обычном 206 смысле, 207 но 208 она 209 самосопряжённая 210 относительно 211 первой 212 формы:
+formula.
+"Именно это означает симметричность оператора формы: <SX,Y>=<X,SY>. В ортонормированном базисе касательного пространства такая матрица была бы симметричной." 213 Именно 214 это 215 означает 216 симметричность 217 оператора 218 формы: 219 <SX,Y>=<X,SY>. 220 В 221 ортонормированном 222 базисе 223 касательного 224 пространства 225 такая 226 матрица 227 была 228 бы 229 симметричной.
+
+"Собственные значения S: 1 и 2." 230 Собственные 231 значения 232 S: 233 1 234 и 235 2.
+"Собственный вектор при λ=1 имеет координаты (1,0), а при λ=2 — (1,-1)." 236 Собственный 237 вектор 238 при 239 λ=1 240 имеет 241 координаты 242 (1,0), 243 а 244 при 245 λ=2 246 — 247 (1,-1).
+"В декартовом виде это направления" 248 В 249 декартовом 250 виде 251 это 252 направления
+formula.
+"то есть оси x и y." 253 то 254 есть 255 оси 256 x 257 и 258 y.
+
+"Для направления с координатными компонентами v=(1,0) нормальная кривизна равна" 259 Для 260 направления 261 с 262 координатными 263 компонентами 264 v=(1,0) 265 нормальная 266 кривизна 267 равна
+formula.
+"Это совпадает с соответствующей главной кривизной, поскольку v — собственное направление оператора формы." 268 Это 269 совпадает 270 с 271 соответствующей 272 главной 273 кривизной, 274 поскольку 275 v 276 — 277 собственное 278 направление 279 оператора 280 формы.
+
+This count 280 if formulas as one word? Too low? Wait I counted only Russian words and some formula tokens as one. But actual word count with LaTeX tokens maybe higher. The requirement 700-1100 words likely counts all words including math? In Markdown, LaTeX commands are tokens. My draft may be around 600-700? Need be safe. I need expand to ~800-1000. The above count is rough undercount because formulas like \[ ... \] contain many words/tokens. But human word count maybe 350? Let's estimate: The text has about 300 Russian words plus formulas. If word counter counts LaTeX commands as words, maybe 800. But to be safe, need 700-1100 by typical word count (spaces). Let's count spaces in draft? Could be ~700. Let's approximate: Each line with formulas has many tokens. The draft length visually ~1000 words? Let's use rough: 280 counted Russian + formula tokens maybe 200 = 480? Hmm.
+
+Let's count more realistically by splitting on spaces in final draft. I'll copy and count tokens (including math as tokens separated by spaces). But LaTeX has many tokens without spaces inside. Word counters often count LaTeX commands as words if separated by spaces? Hard. The requirement likely human evaluation, not exact. 700-1100 words. Need ensure not too short. My draft maybe 750 words? Let's estimate using character count. Draft length maybe 4500 characters. Russian word average 6 chars + spaces => ~700 words. Good. Let's count characters? Section 1 maybe 2500 chars, section 2 2200, total 4700. /7 = 670. Maybe close. Need add a bit to be safe, maybe 800-900. Add explanations and computations, but avoid redundancy. Need total 700-1100. We can expand with more intuitive and geometric derivation. Add a small illustration description? Could add one illustration for polar basis? But prompt says if needed. Adding illustration description adds words. Maybe not necessary.
+
+Need ensure "Все результаты вычисли, не ограничивайся общими формулами." We did.
+
+Potential issue: In ∇_{∂r}V calculation I wrote only θ component, omitted r component. Need show r component zero? Could be okay but maybe better explicit:
+\nabla_{∂r}V = (∂_r V^r + V^θ Γ^r_{θr})∂r + ... But Γ^r_{θr}=0. Maybe write full to avoid missing.
+
+Potential issue: In Christoffel formula, Γ^r_{θθ} = -1/2 g^{rr} ∂_r g_{θθ} = -r. Good.
+
+Potential issue: R^r_{θ r θ} formula: I used \Gamma^r_{r\lambda}\Gamma^\lambda_{\theta\theta}; since Γ^r_{rλ}=0. Good. But sign? Let's verify with another convention maybe. If reader uses R^l_{kij}=∂_i Γ^l_{jk}-... then R^r_{θ r θ}=0. Good. Could avoid sign by saying "одна из компонент". Good.
+
+Potential issue: Torsion T(E1,E2) maybe they expect "кручение" of basis? In Riemannian geometry torsion of connection zero. We computed. Good.
+
+Potential issue: Shape operator sign. They define S=-dn. We used II positive. Need check if second fundamental form convention aligns with S=-dn. Usually II(X,Y)=<S X,Y>. Yes. But some define II=-dn(X)·Y. Same. Good.
+
+Potential issue: Normal chosen positive third component. At (0,0), cross product r_u×r_v = (0,0,1). Good.
+
+Potential issue: Surface regular? r_u and r_v independent at 0. Good.
+
+Need maybe include "матрицы первой и второй фундаментальных форм" exactly. Good.
+
+Need maybe "главные направления" as coordinate components and 3D. Good.
+
+Need maybe "нормальную кривизну направления с координатными компонентами (1,0)". We computed. Good.
+
+Need style Grim: intuition, computations, geometric derivation. Could add a bit of intuition for surface: graph ellipse z=... principal curvatures 1 and 2. Good.
+
+Need maybe no "Напомним". We don't use.
+
+Need maybe "Не выдумывай ссылки". No links.
+
+Need maybe if illustration: Could add one for polar: [Иллюстрация: ...] but not create image. It might help. But word count. Maybe include one short illustration description in section 1: after E1,E2? "Иллюстрация: ..." But prompt says if needed. Not necessary.
+
+Need final only requested material in Markdown with LaTeX. Could have two sections.
+
+Let's refine text to be more polished and ensure word count. Maybe add a short "Маршрут" at beginning? Editorial requirement: start with purpose and route. But user asks two small analyses. Could start with a one-sentence route: "Сначала посмотрим, как плоская геометрия проявляется в криволинейных координатах, затем вычислим форму поверхности." But total. Could add.
+
+Need maybe "В начале книги держи предварительный план" but this is an excerpt. Could include a mini plan: "В первом разборе ... Во втором ...". Good.
+
+Let's craft final with a brief intro:
+
+"Ниже два разбора. Первый показывает, что ненулевые символы Кристоффеля — это эффект координат, а не кривизны. Второй вычисляет формы поверхности в точке и показывает самосопряжённость оператора формы." This adds route.
+
+Need maybe not too much.
+
+Let's rewrite final with improved clarity and maybe more words.
+
+Potential final:
+
+Ниже два разбора. В первом мы увидим, как плоская геометрия выглядит в криволинейных координатах: символы Кристоффеля ненулевые, но тензор Римана равен нулю. Во втором вычислим формы поверхности в точке и проясним смысл симметрии оператора формы.
+
+## 1. Плоскость в полярных координатах
+
+... etc.
+
+Add maybe "Маршрут: метрика → Γ → постоянный вектор → Риман → ортонормированный базис." Could be too much. But helpful.
+
+Need word count. Let's produce final around 900 words. I'll expand some computations and explanations.
+
+Let's draft final fully and count approximate with a manual token count? Maybe use character count. I can estimate.
+
+Final draft:
+
+Ниже два разбора. В первом мы увидим, как плоская геометрия выглядит в криволинейных координатах: символы Кристоффеля ненулевые, но тензор Римана равен нулю. Во втором вычислим формы поверхности в точке и проясним смысл симметрии оператора формы.
+
+## 1. Плоскость в полярных координатах
+
+Плоскость геометрически плоская, но полярные координаты «изгибают» координатный базис: векторы \(\partial_r\) и \(\partial_\theta\) меняют направление и длину при движении. Поэтому символы Кристоффеля могут быть ненулевыми, хотя кривизна равна нулю.
+
+Метрика
+\[
+ds^2=dr^2+r^2d\theta^2
+\]
+даёт \(g_{rr}=1\), \(g_{\theta\theta}=r^2\), \(g^{rr}=1\), \(g^{\theta\theta}=1/r^2\). Ненулевые символы Кристоффеля для связности Леви-Чивита равны
+\[
+\Gamma^r_{\theta\theta}=-r,\qquad
+\Gamma^\theta_{r\theta}=\Gamma^\theta_{\theta r}=\frac1r.
+\]
+Например, \(\Gamma^r_{\theta\theta}=-\frac12 g^{rr}\partial_r g_{\theta\theta}\), а \(\Gamma^\theta_{r\theta}=\frac12 g^{\theta\theta}\partial_r g_{\theta\theta}\).
+
+Постоянный декартов вектор \(V=(1,0)\) запишем в полярном базисе. Так как
+\[
+\partial_r=(\cos\theta,\sin\theta),\qquad
+\partial_\theta=(-r\sin\theta,r\cos\theta),
+\]
+получаем
+\[
+V=\cos\theta\,\partial_r-\frac{\sin\theta}{r}\,\partial_\theta.
+\]
+Обозначим \(V^r=\cos\theta\), \(V^\theta=-\sin\theta/r\). Тогда
+\[
+\nabla_{\partial_r}V
+=
+\left(\partial_r V^r+V^\theta\Gamma^\theta_{r\theta}\right)\partial_\theta
+=
+\left(0+\frac{\sin\theta}{r^2}-\frac{\sin\theta}{r^2}\right)\partial_\theta=0,
+\]
+а
+\[
+\nabla_{\partial_\theta}V
+=
+\left(\partial_\theta V^r+V^\theta\Gamma^r_{\theta\theta}\right)\partial_r
++
+\left(\partial_\theta V^\theta+V^r\Gamma^\theta_{r\theta}\right)\partial_\theta.
+\]
+Подставляя,
+\[
+\partial_\theta V^r=-\sin\theta,\quad V^\theta\Gamma^r_{\theta\theta}=\sin\theta,
+\]
+\[
+\partial_\theta V^\theta=-\frac{\cos\theta}{r},\quad V^r\Gamma^\theta_{r\theta}=\frac{\cos\theta}{r},
+\]
+поэтому \(\nabla_{\partial_\theta}V=0\). Вектор действительно постоянный в евклидовом смысле: ненулевые \(\Gamma\) лишь компенсируют изменение полярного базиса.
+
+Кривизна не читается по отдельным \(\Gamma\), а определяется тензором Римана. Например,
+\[
+R^r_{\theta r\theta}
+=
+\partial_r\Gamma^r_{\theta\theta}
+-\partial_\theta\Gamma^r_{r\theta}
++\Gamma^r_{r\lambda}\Gamma^\lambda_{\theta\theta}
+-\Gamma^r_{\theta\lambda}\Gamma^\lambda_{r\theta}
+=
+-1-0+0-(-r)\frac1r=0.
+\]
+Все компоненты Римана обращаются в ноль, поэтому плоскость плоская.
+
+Перейдём к ортонормированному базису
+\[
+E_1=\partial_r,\qquad E_2=\frac1r\partial_\theta.
+\]
+Вычислим
+\[
+\nabla_{E_1}E_2
+=
+\nabla_{\partial_r}\left(\frac1r\partial_\theta\right)
+=
+-\frac1{r^2}\partial_\theta+\frac1r\frac1r\partial_\theta=0,
+\]
+и
+\[
+\nabla_{E_2}E_1
+=
+\frac1r\nabla_{\partial_\theta}\partial_r
+=
+\frac1r\frac1r\partial_\theta
+=
+\frac1rE_2.
+\]
+Следовательно,
+\[
+\nabla_{E_1}E_2-\nabla_{E_2}E_1=-\frac1rE_2.
+\]
+Коммутатор
+\[
+[E_1,E_2]=\left[\partial_r,\frac1r\partial_\theta\right]
+=
+-\frac1{r^2}\partial_\theta=-\frac1rE_2.
+\]
+Кручение определяется как
+\[
+T(X,Y)=\nabla_XY-\nabla_YX-[X,Y],
+\]
+поэтому
+\[
+T(E_1,E_2)=0.
+\]
+Разность производных не равна нулю, потому что \(E_1,E_2\) — не координатный базис; для связности Леви-Чивита она равна коммутатору, и кручение исчезает.
+
+## 2. Поверхность в параметрах \((u,v)\)
+
+Поверхность
+\[
+r(u,v)=\left(u+v,\ v,\ \frac{(u+v)^2+2v^2}{2}\right)
+\]
+вблизи точки \((0,0)\) есть график \(z=\frac12x^2+y^2\), где \(x=u+v\), \(y=v\). Это подсказывает, что главные направления будут вдоль координатных осей \(x\) и \(y\).
+
+В точке \((0,0)\):
+\[
+r_u=(1,0,0),\qquad r_v=(1,1,0).
+\]
+Первая фундаментальная форма:
+\[
+I=\begin{pmatrix}
+r_u\cdot r_u & r_u\cdot r_v\\
+r_v\cdot r_u & r_v\cdot r_v
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 1\\
+1 & 2
+\end{pmatrix}.
+\]
+Нормаль с положительной третьей компонентой:
+\[
+n=\frac{r_u\times r_v}{\|r_u\times r_v\|}=(0,0,1).
+\]
+Вторые производные:
+\[
+r_{uu}=(0,0,1),\quad r_{uv}=(0,0,1),\quad r_{vv}=(0,0,3).
+\]
+Поэтому вторая фундаментальная форма
+\[
+II=\begin{pmatrix}
+r_{uu}\cdot n & r_{uv}\cdot n\\
+r_{uv}\cdot n & r_{vv}\cdot n
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 1\\
+1 & 3
+\end{pmatrix}.
+\]
+
+Оператор формы \(S=-dn\) связан с формами соотношением
+\[
+II(X,Y)=\langle S X,Y\rangle,
+\]
+поэтому в координатном базисе \((r_u,r_v)\) его матрица равна
+\[
+S=I^{-1}II.
+\]
+Здесь
+\[
+I^{-1}=\begin{pmatrix}2&-1\\-1&1\end{pmatrix},
+\]
+откуда
+\[
+S=\begin{pmatrix}2&-1\\-1&1\end{pmatrix}
+\begin{pmatrix}1&1\\1&3\end{pmatrix}
+=
+\begin{pmatrix}1&-1\\0&2\end{pmatrix}.
+\]
+Матрица \(S\) не симметрична в обычном смысле, но она самосопряжённая относительно первой формы:
+\[
+S^T I=IS=II.
+\]
+Именно это означает симметричность оператора формы: \(\langle SX,Y\rangle=\langle X,SY\rangle\). В ортонормированном базисе касательного пространства такая матрица была бы симметричной.
+
+Собственные значения \(S\): \(1\) и \(2\). Собственный вектор при \(\lambda=1\) имеет координаты \((1,0)\), а при \(\lambda=2\) — \((1,-1)\). В декартовом виде это направления
+\[
+r_u=(1,0,0),\qquad r_u-r_v=(0,-1,0),
+\]
+то есть оси \(x\) и \(y\).
+
+Для направления с координатными компонентами \(v=(1,0)\) нормальная кривизна равна
+\[
+\kappa_n=\frac{II(v,v)}{I(v,v)}
+=
+\frac{1}{1}=1.
+\]
+Это совпадает с соответствующей главной кривизной, поскольку \(v\) — собственное направление оператора формы.
+
+Need maybe count. Let's count tokens by spaces roughly. I'll do a more formal count with line tokens. But maybe enough. Let's estimate character count: I can approximate. The final has about 4900 characters? Let's count lines:
+Intro 2 lines ~ 250 chars.
+Section 1: many lines. Maybe 3000 chars. Section 2 2500. Total 5750. /6.5 = 885. Good. Within 700-1100.
+
+Need check if "ds^2=dr^2+r^2d\theta^2" in LaTeX okay. Use \( ... \) or \[ ... \]. Good.
+
+Need maybe "r" as position vector and coordinate r in polar conflict? In section 1 use r coordinate. In section 2 use r(u,v) position vector. Could be okay separate sections. Maybe use \mathbf r for surface to avoid confusion. Let's use \(\mathbf r(u,v)\). In formulas, use \mathbf r_u etc. Good.
+
+Need maybe in section 1 use \partial_r not ∂r. Good.
+
+Need maybe in section 1, for ∇_{∂r}V, I omitted r-component. To be fully correct, maybe write:
+\[
+\nabla_{\partial_r}V
+=
+\left(\partial_r V^r+V^\theta\Gamma^r_{\theta r}\right)\partial_r
++
+\left(\partial_r V^\theta+V^\theta\Gamma^\theta_{r\theta}\right)\partial_\theta
+=0.
+\]
+But Γ^r_{θr}=0, ∂r V^r=0. Let's adjust to show both components. However the previous formula only θ component might seem missing. Let's rewrite that part:
+
+Тогда
+\[
+\nabla_{\partial_r}V
+=
+\left(\partial_r V^r+V^\theta\Gamma^r_{\theta r}\right)\partial_r
++
+\left(\partial_r V^\theta+V^\theta\Gamma^\theta_{r\theta}\right)\partial_\theta.
+\]
+Здесь \(\partial_r V^r=0\), \(\Gamma^r_{\theta r}=0\), \(\partial_r V^\theta=\sin\theta/r^2\), а \(V^\theta\Gamma^\theta_{r\theta}=-\sin\theta/r^2\), поэтому \(\nabla_{\partial_r}V=0\).
+
+This is clearer. Add words. Good.
+
+Need maybe in ∇_{∂θ}V, include full. Good.
+
+Need maybe in Riemann formula, use \lambda summation. Good.
+
+Need maybe "Все компоненты Римана обращаются в ноль" is strong; we only computed one. But for 2D metric with one independent component, if one zero then all zero? In 2D, R has one independent component. Could say "В двумерном случае достаточно одной независимой компоненты; она равна нулю, поэтому плоскость плоская." Better. Let's adjust: "В двумерном случае достаточно проверить одну независимую компоненту; она равна нулю, поэтому плоскость плоская." Good.
+
+Need maybe in section 2, shape operator symmetry: "S^T I = I S = II". Let's verify S^T I: S^T [[1,0],[-1,2]] times I [[1,1],[1,2]] = [[1,1],[1,3]] yes. I S = [[1,1],[1,2]] [[1,-1],[0,2]] = [[1,-1],[1,3]]? Wait compute I S: row1: [1*1+1*0=1, 1*(-1)+1*2=1]; row2: [1*1+2*0=1, 1*(-1)+2*2=3] => [[1,1],[1,3]] yes. Good.
+
+Need maybe "II(X,Y)=<S X,Y>" but with S=-dn. Good.
+
+Need maybe "нормальная кривизна направления с координатными компонентами (1,0)" if direction not unit? Formula works for any nonzero vector. Good.
+
+Need maybe "главные кривизны и главные направления" we gave. Good.
+
+Potential issue: In section 2, "вблизи точки (0,0) есть график z=1/2 x^2 + y^2" Actually exact: x=u+v, y=v, z=1/2 x² + y². Yes exact globally. Good.
+
+Potential issue: At (0,0), r_u=(1,0,0), r_v=(1,1,0). The graph in x,y has tangent basis ∂_x=(1,0,0), ∂_y=(0,1,0). r_v = ∂_x+∂_y. Good.
+
+Need maybe "нормаль выбрана с положительной третьей компонентой" cross product gives n=(0,0,1). Good.
+
+Need maybe "оператор формы S=-dn" in coordinates: We can add one line: "Дифференцируя условие r_u·n=0, получаем r_{uu}·n=-r_u·dn(r_u), и так далее." This explains. But maybe too much. Could add to clarify. The prompt asks explain in what sense symmetric. We did. Maybe add derivation of S=I^{-1}II. Good enough.
+
+Need maybe "Все результаты вычисли" yes.
+
+Need maybe "Не выдумывай ссылки" no links.
+
+Need maybe "Если нужна иллюстрация, укажи рядом точное описание и подпись; сами изображения сейчас не создавай." We don't include illustration. Fine.
+
+Need maybe final only requested material. Good.
+
+Let's consider if total word count might be under 700. To be safe, add a bit more explanatory text, maybe 100 words. Where? Add in section 1 after Christoffels: "Геометрически: Γ^r_{θθ}=-r — это то, что при движении по окружности радиус r центробежная поправка нужна, чтобы остаться в полярном базисе; Γ^θ_{rθ}=1/r — угловой базис растягивается с r." This adds intuition. Add in section 2: "Матрицы I и II записаны в базисе (r_u,r_v), поэтому они не обязаны быть симметричными в обычном смысле? Actually I and II are symmetric matrices because basis not orthonormal? I and II are symmetric by definition. S not." Could add.
+
+Need avoid redundancy. Add concise.
+
+Maybe add after Christoffels:
+"Геометрически смысл ясен: \(\Gamma^r_{\theta\theta}=-r\) — это центробежная поправка при движении по окружности, а \(\Gamma^\theta_{r\theta}=1/r\) отражает растяжение углового базиса с ростом \(r\)." Good. Adds 30 words.
+
+Add in section 2 after I,II: "Матрицы \(I\) и \(II\) симметричны, потому что соответствующие билинейные формы симметричны; матрица \(S\) в том же базисе может выглядеть несимметрично." Good. Adds.
+
+Need maybe "главные направления" normalized? Could add "оба вектора единичны в метрике I: I((1,0),(1,0))=1, I((1,-1),(1,-1))=1." This is nice and computed. Add before normal curvature. It also verifies. Add:
+"Оба направления единичны: \(I((1,0),(1,0))=1\), \(I((1,-1),(1,-1))=1\)." Good.
+
+Need maybe "нормальная кривизна" formula. Good.
+
+Let's incorporate these additions. Ensure not too long.
+
+Revised section 1 after Christoffels:
+"Геометрически смысл ясен: ..." Good.
+
+Revised ∇_{∂r}V full.
+
+Revised Riemann: "В двумерном случае достаточно одной независимой компоненты; она равна нулю, поэтому плоскость плоская." Good.
+
+Revised section 2: add "Матрицы I и II симметричны..." after II.
+
+Add unit principal directions.
+
+Let's produce final. Need ensure no "Напомним". Good.
+
+Double-check all formulas:
+
+In ∇_{∂r}V full:
+\[
+\nabla_{\partial_r}V
+=
+\left(\partial_r V^r+V^\theta\Gamma^r_{\theta r}\right)\partial_r
++
+\left(\partial_r V^\theta+V^\theta\Gamma^\theta_{r\theta}\right)\partial_\theta.
+\]
+Here Γ^r_{θr}=0. ∂r V^r=0. ∂r V^θ = derivative -sinθ/r wrt r = sinθ/r². V^θ Γ^θ_{rθ}=(-sinθ/r)(1/r)=-sinθ/r². Sum 0. Good.
+
+In ∇_{∂θ}V:
+r component: ∂θ V^r + V^r Γ^r_{rθ}+V^θ Γ^r_{θθ}. I wrote only V^θ Γ^r_{θθ}, omitted V^r Γ^r_{rθ}=0. Fine. θ component: ∂θ V^θ + V^r Γ^θ_{rθ}+V^θ Γ^θ_{θθ}=0. I wrote only V^r Γ^θ_{rθ}. Good.
+
+Riemann formula: I use R^r_{θ r θ}. Need ensure lower indices order: R^l_{k i j}. In formula I wrote ∂_r Γ^r_{θθ} - ∂_θ Γ^r_{rθ} + Γ^r_{rλ}Γ^λ_{θθ} - Γ^r_{θλ}Γ^λ_{rθ}. This matches i=r, j=θ, k=θ. Good. Value: ∂r(-r)=-1; -∂θ(0)=0; first product 0; second: Γ^r_{θθ}Γ^θ_{rθ}=(-r)(1/r)=-1, with minus gives +1. Sum 0. In text I wrote "-1-0+0-(-r)1/r=0". Good.
+
+Orthonormal: ∇_{E1}E2: ∂r(1/r)=-1/r²; (1/r)∇_{∂r}∂θ = (1/r) Γ^θ_{rθ}∂θ = (1/r)(1/r)∂θ = 1/r²∂θ. Sum 0. Good.
+
+∇_{E2}E1: (1/r)∇_{∂θ}∂r = (1/r) Γ^θ_{rθ}∂θ = 1/r²∂θ = 1/r E2. Good.
+
+Commutator: [∂r, f∂θ] = ∂r(f)∂θ + f[∂r,∂θ] = -1/r²∂θ. Good.
+
+Torsion: 0 - 1/rE2 - (-1/rE2)=0. Wait difference ∇E1E2 - ∇E2E1 = -1/rE2. T = difference - commutator = -1/rE2 - (-1/rE2)=0. Good.
+
+Section 2: I inverse correct. S matrix correct. Eigenvalues: trace 3, det 2? Matrix [[1,-1],[0,2]] det=2, eigen 1,2. Eigenvectors: λ=1: (1,0). λ=2: solve -u - v=0? (S-2I) = [[-1,-1],[0,0]], -u-v=0 => u=-v, vector (1,-1). Good.
+
+3D directions: r_u - r_v = (0,-1,0). Good. Unit: I((1,-1),(1,-1)) = [1,-1] [[1,1],[1,2]] [1,-1]^T? Compute v^T I v = 1*1 + (-1)*1 + 1*(-1)+2*1? Let's do: I v = [1*1+1*(-1)=0, 1*1+2*(-1)=-1]; dot v = 0*1 + (-1)*(-1)=1. Good.
+
+Normal curvature: II(v,v)=1. Good.
+
+Need maybe "S=-dn" matrix could be negative if convention? Let's verify with graph: S matrix in x,y basis would diag(1,2). In u,v basis, S(r_u)=r_u, S(r_v)=S(x+y)=x+2y = x+2(x? wait y=r_v-r_u) = x+2(r_v-r_u)=2r_v - r_u. Coordinates (-1,2). Matrix columns (1,0), (-1,2). Good.
+
+Check II=I S: I S = [[1,1],[1,2]] [[1,-1],[0,2]] = [[1,1],[1,3]]. Good.
+
+Symmetry: S^T I = [[1,0],[-1,2]] [[1,1],[1,2]] = [[1,1],[1,3]]. Good.
+
+Potential issue: "II(X,Y)=<S X,Y>" with S=-dn. If S self-adjoint, II symmetric. Good.
+
+Need maybe "оператор формы симметричен" could be misunderstood: S is symmetric as a linear operator with respect to I, not matrix symmetric. We explain.
+
+Need maybe "нормальную кривизну направления с координатными компонентами (1,0)" If they mean direction in tangent plane with coordinate components (1,0) i.e. r_u. Good.
+
+Need maybe "регулярная поверхность" at point: cross product nonzero. We can mention "В этой точке поверхность регулярна, так что \(r_u\times r_v\ne0\)." Add maybe.
+
+Let's add: "В этой точке поверхность регулярна, так что \(r_u\times r_v\ne0\)." after derivatives. Good.
+
+Need final word count maybe 950. Good.
+
+Let's produce final in Russian. Ensure Markdown. No images. Use LaTeX. final only.

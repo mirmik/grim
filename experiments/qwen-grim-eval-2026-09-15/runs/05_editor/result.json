@@ -1,0 +1,36 @@
+{
+  "model": "qwen3.8-27b-uncensored-q4-mtp",
+  "base_url": "http://192.168.0.173:8096",
+  "started_utc": "2026-09-15T00:43:59Z",
+  "tls_verification": false,
+  "sse_done": true,
+  "http_status": 200,
+  "response_model": "qwen3.8-27b-uncensored-q4-mtp",
+  "response_system_fingerprint": "b9279-47c0eda9d",
+  "first_content_seconds": 473.3436152935028,
+  "finish_reason": "stop",
+  "usage": {
+    "completion_tokens": 23897,
+    "prompt_tokens": 1200,
+    "total_tokens": 25097,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "response_timings": {
+    "cache_n": 0,
+    "prompt_n": 1200,
+    "prompt_ms": 1169.934,
+    "prompt_per_token_ms": 0.974945,
+    "prompt_per_second": 1025.6988855781608,
+    "predicted_n": 23897,
+    "predicted_ms": 509016.606,
+    "predicted_per_token_ms": 21.30043963677449,
+    "predicted_per_second": 46.94738780290402,
+    "draft_n": 23289,
+    "draft_n_accepted": 16133
+  },
+  "elapsed_seconds": 510.89705777168274,
+  "complete": true,
+  "answer_words_whitespace": 828
+}

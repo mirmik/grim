@@ -1,0 +1,8 @@
+{
+  "model": "qwen3.8-27b-uncensored-q4-mtp",
+  "base_url": "https://192.168.0.173:8080",
+  "started_utc": "2026-09-14T23:47:52Z",
+  "tls_verification": false,
+  "error": "HTTP Error 401: Unauthorized",
+  "elapsed_seconds": 0.017623424530029297
+}

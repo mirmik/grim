@@ -1,0 +1,50 @@
+[
+  {
+    "path": "runs/05_editor/events.jsonl.gz",
+    "original_bytes": 6738925,
+    "compressed_bytes": 118928,
+    "uncompressed_sha256": "8ec07c9eda4cab891402f766dcba2a9f1cef88cb7c865effa92c2c90338959a9"
+  },
+  {
+    "path": "runs/01_parallel_a/events.jsonl.gz",
+    "original_bytes": 9557039,
+    "compressed_bytes": 162363,
+    "uncompressed_sha256": "5f98cb10aaa8833ed62b07878e8dd52f4c77ce504e2937560da6233239453d1e"
+  },
+  {
+    "path": "runs/02_parallel_b/events.jsonl.gz",
+    "original_bytes": 9137090,
+    "compressed_bytes": 154837,
+    "uncompressed_sha256": "5581af6827f45e603a64e0fda8e3cfac6142d5c87a6e1fd8760c7d75e598eb28"
+  },
+  {
+    "path": "runs/03_connection/events.jsonl.gz",
+    "original_bytes": 6024598,
+    "compressed_bytes": 110829,
+    "uncompressed_sha256": "44e2909af4cdbe46ae212b9745833886c2048842825a94f224e1f4a0f507baba"
+  },
+  {
+    "path": "runs/06_without_examples/events.jsonl.gz",
+    "original_bytes": 7855470,
+    "compressed_bytes": 137951,
+    "uncompressed_sha256": "0c17112dadec40d9ee413988bdc00bbbcd8294bf88c2e973194f1f1b9b2d5685"
+  },
+  {
+    "path": "runs/04_calculations/events.jsonl.gz",
+    "original_bytes": 6063337,
+    "compressed_bytes": 92076,
+    "uncompressed_sha256": "40c14bf3fe749df10db9a078fffed80262ae6439d88a1392323c34d20bd18dec"
+  },
+  {
+    "path": "excluded_no_thinking/01_parallel_a/events.jsonl.gz",
+    "original_bytes": 845400,
+    "compressed_bytes": 15745,
+    "uncompressed_sha256": "f8783b6e4f6fdbe6b43d61e47dd5a1f5faae813a5ae81bbd82b9b3cc444e264a"
+  },
+  {
+    "path": "excluded_no_thinking/02_parallel_b/events.jsonl.gz",
+    "original_bytes": 334082,
+    "compressed_bytes": 6514,
+    "uncompressed_sha256": "ef44952fbb45ae501e0cb1bd4b69bebcf432ea256be39fef610ecc69e67a1a6c"
+  }
+]

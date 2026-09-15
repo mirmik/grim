@@ -1,0 +1,32 @@
+[
+  {
+    "chapter": "covariant-derivative-and-connection",
+    "russian_words": 1476,
+    "characters": 12813
+  },
+  {
+    "chapter": "introduction",
+    "russian_words": 773,
+    "characters": 6422
+  },
+  {
+    "chapter": "normal-and-curvature",
+    "russian_words": 1123,
+    "characters": 9953
+  },
+  {
+    "chapter": "parametrization-and-metric",
+    "russian_words": 990,
+    "characters": 8872
+  },
+  {
+    "chapter": "vector-fields-and-comparison",
+    "russian_words": 1307,
+    "characters": 11296
+  },
+  {
+    "chapter": "why-curvature-matters",
+    "russian_words": 1703,
+    "characters": 13975
+  }
+]

@@ -1,0 +1,967 @@
+We need answer in Russian. User asks: create beginning of textbook on differential geometry in Russian. No samples, table. Write introduction with preliminary study plan of whole book, and first two full chapters. Content, order, names, route, examples choose. In intro indicate prerequisites and what learn. First chapters should realize plan. Audience knows derivatives, vectors, matrices, no diff geom. Target 2400-3200 Russian words. Need text not application or brief notes. If figures needed, give exact descriptions and captions near explanation.
+
+Need produce Markdown with LaTeX. Need maybe word count 2400-3200 Russian words. Need carefully craft. Need include intro + two chapters. Need mathematical correctness. Need not invent references. Need maybe figures: describe exact and caption. Need editorial requirements: explain purpose/route, start chapter with visual, introduce notation before use, illustrations, no unnecessary repeats, sequential, concise, not too detailed, examples not too many, insertions right place.
+
+Need decide content. Differential geometry for audience with derivatives, vectors, matrices. Could start with curves in Euclidean space: parametrized curves, tangent, speed, arclength, curvature, Frenet frame. Then surfaces: parametrized surfaces, tangent plane, first fundamental form. That is natural. Intro plan: Part I curves, Part II surfaces, Part III intrinsic geometry/Gauss map? Need preliminary plan for whole book. Since only first two chapters, plan can be: 1 curves, 2 surfaces and first fundamental form, 3 second fundamental form, 4 Gaussian/mean curvature, 5 geodesics, 6 Gauss-Bonnet? Or maybe include frames and moving frames. Need first two chapters realize plan: Chapter 1: Plane curves? Or space curves? Audience vectors/matrices. Maybe start with curve in R^3, arclength, tangent, curvature, torsion. But to start with something visual: a particle moving along curve, tangent vector. Chapter 2: surfaces: graph, parametrization, tangent plane, metric.
+
+Need 2400-3200 Russian words. Let's estimate. Intro maybe 500 words. Chapter 1 maybe 1000-1200. Chapter 2 maybe 1000-1200. Total ~3000. Need not too long. Need include LaTeX.
+
+Need ensure notation introduced before use. Use \mathbf r(t), \mathbf T, ds, etc. For surfaces: \mathbf r(u,v), \mathbf r_u, \mathbf r_v, E,F,G.
+
+Need maybe figures: In chapter 1: figure of curve with point P, tangent vector, normal, binormal? Need exact description and caption. In chapter 2: figure of surface patch with coordinate curves and tangent vectors. Need place near explanation.
+
+Need Russian. Need Markdown headings.
+
+Potential structure:
+# Дифференциальная геометрия: первые главы
+## Введение
+- цель: геометрия объектов через локальные координаты и производные.
+- что нужно: анализ одного и нескольких переменных, векторы в R^3, скалярное произведение, матрицы, производные, якобианы? Maybe not assume Jacobian? They know matrices, derivatives. We'll introduce.
+- чему научится: описывать кривые и поверхности, касательные, метрики, кривизны.
+- план: Глава 1 кривые; Глава 2 поверхности и первая квадратичная форма; Глава 3 вторая квадратичная форма и нормальные кривизны; Глава 4 гауссова кривизна и теорема о виде; Глава 5 геодезические; Глава 6 инварианты и глобальная геометрия (гаусс-бонне). Maybe include moving frames? Need plan whole book. Could be: 1. Кривые в R^3. 2. Поверхности и первая квадратичная форма. 3. Нормаль и вторая квадратичная форма. 4. Кривизны поверхности. 5. Геодезические и параллельный перенос. 6. Теорема Гаусса-Бонне. Good.
+
+Need first two chapters:
+# Глава 1. Кривые в евклидовом пространстве
+Start visual: particle trajectory. Define curve r: I -> R^3 smooth, regular if r'(t) != 0. Tangent vector, unit tangent T = r'/|r'|. Speed v=|r'|. Arclength s(t)=∫ |r'|. Reparameterize by s: ds/dt = |r'|. Curvature κ = |dT/ds| = |r' × r''|/|r'|^3. Normal N = (dT/ds)/κ. Binormal B = T × N. Torsion τ = -B'·N? Need define after B. Frenet formulas maybe. Need maybe not too much? But full chapter. Need include example? Maybe circle: r(s) = (R cos(s/R), R sin(s/R), 0), κ=1/R. Or helix? Maybe one example enough. Need figure.
+
+Need ensure notation: I interval, \mathbf r(t) = (x(t),y(t),z(t)). Derivative \dot{\mathbf r}. Use dot for t derivative? Could use prime. Need introduce. Maybe use \dot{\mathbf r} for derivative wrt t, and prime for s? To avoid confusion. Let's define: \dot{\mathbf r}(t)=d\mathbf r/dt. Speed v=|\dot r|. Arclength s. If reparam by s, use \mathbf r(s), derivative \mathbf r_s or \mathbf T. Maybe use \mathbf r'(s). But if t and s both prime ambiguous. Use \dot for t, and \mathbf r_s = d\mathbf r/ds. Or use \mathbf r'(s) after saying prime for s. Simpler: Use \dot{\mathbf r} for arbitrary parameter; for arclength use \mathbf T = d\mathbf r/ds. Curvature formula in t: κ = |\dot r × \ddot r|/|\dot r|^3. Need introduce cross product? Audience vectors; okay. Maybe define cross product? Not necessary? They know vectors; but can assume. Need not overexplain.
+
+Need figure 1: curve, point P, tangent arrow, osculating circle? Caption: "Кривая, касательная в точке P и окружность кривизны; радиус равен 1/κ." Need exact description. Place after curvature definition.
+
+Maybe include Frenet frame: T,N,B. Need define N only if κ>0. B = T×N. Torsion τ = -B_s·N = (dot r × r'' × r''')/|dot r × r''|^2? Could include formula. Frenet equations:
+T_s = κ N
+N_s = -κ T + τ B
+B_s = -τ N
+Need derive? Maybe state with brief explanation. Need ensure correct signs. Standard Frenet-Serret: T' = κ N, N' = -κ T + τ B, B' = -τ N. Yes.
+
+Need maybe not too detailed. But full chapter. Need start with visual: "Представьте частицу...".
+
+# Глава 2. Поверхности и первая квадратичная форма
+Start visual: small patch of surface, grid of curves u=const, v=const. Define surface patch: \mathbf r(u,v): U⊂R^2 -> R^3 smooth, regular if \mathbf r_u × \mathbf r_v ≠ 0. Coordinate curves. Tangent plane spanned by \mathbf r_u, \mathbf r_v. Normal \mathbf n = (r_u × r_v)/|...|. Metric coefficients E = r_u·r_u, F = r_u·r_v, G = r_v·r_v. First fundamental form I = E du^2 + 2F du dv + G dv^2. Length of curve on surface: ds^2 = I(du,dv). Area element dA = sqrt(EG-F^2) du dv. Example: graph z=f(x,y) or sphere? Need maybe one example. Maybe sphere parameterization: r(θ,φ)=(R sinθ cosφ, R sinθ sinφ, R cosθ). Compute E=R^2, F=0, G=R^2 sin^2θ. This shows metric. Or plane. Need not too many examples. Maybe use sphere as example, because relevant. Need figure: surface patch with coordinate curves and tangent vectors. Caption: "Параметризованная поверхность: координатные кривые u=const, v=const и базисные векторы r_u, r_v в точке P." Place after tangent plane definition.
+
+Need maybe include local isometry? Not in first two? Maybe mention plan: first fundamental form measures lengths and angles, but not bending. Good.
+
+Need ensure notation introduced before use: In intro plan, maybe not use E,F,G? It's okay as plan? But editorial says introduce before use. In intro if mention "первая квадратичная форма" no notation. In chapter define.
+
+Need word count. Let's draft and estimate. Need 2400-3200 Russian words. Russian words count maybe by spaces. Need produce around 2800. Let's craft with headings. Need not too long. Let's write in Russian. Need include LaTeX.
+
+Potential text:
+
+# Дифференциальная геометрия: первые главы
+
+## Введение
+... (approx 550 words)
+
+Need include prerequisites:
+- векторы в R^3, скалярное и векторное произведения, линейные отображения/матрицы;
+- функции нескольких переменных, частные производные, якобианы? maybe not assume? They know derivatives, vectors, matrices. We'll say: производные функций одной и нескольких переменных, линейные операторы.
+- smoothness C^2/C^3? Need define smooth. We'll introduce "гладкая" as имеющая нужные непрерывные производные.
+
+What learn: describe curves and surfaces locally, tangent, arclength, curvature, torsion, tangent plane, metric, area.
+
+Plan:
+1. Кривые в R^3: regular curves, arclength, Frenet frame, curvature/torsion.
+2. Surfaces: parametrization, tangent plane, first fundamental form, lengths/angles/area.
+3. Normal and second fundamental form: normal curvature, principal curvatures.
+4. Gaussian and mean curvature, Theorema Egregium.
+5. Geodesics and parallel transport.
+6. Gauss-Bonnet.
+
+Need maybe "методический маршрут": local coordinates -> linear approximations -> invariants. Good.
+
+Chapter 1. Need maybe sections:
+### 1.1 Параметрическая кривая и касательная
+### 1.2 Длина дуги и естественная параметризация
+### 1.2? Curvature and Frenet frame
+### 1.3 Кривизна, кручение и формулы Френе
+### Пример? circle/helix.
+
+Need maybe not too many sections. Let's draft.
+
+Chapter 1 text:
+"Начнём с наглядной ситуации: частица движется по гладкой кривой..." Define \mathbf r: I -> R^3. Regular. Tangent. Speed.
+
+Need figure 1 maybe after tangent? Or after curvature. We can include one figure after curvature: curve with tangent and osculating circle. Need exact description: "На рисунке изображена гладкая кривая в R^3 (для наглядности в плоскости), точка P, вектор T, выходящий из P, и малая окружность, касающаяся кривой в P; центр окружности на нормали. Подпись: Касательная и окружность кривизны; радиус равен 1/κ." Good.
+
+Need define arclength: s(t)=∫_{t0}^t |dot r(τ)| dτ. If regular, s strictly increasing, invert. Reparam: \mathbf r(s). Then T = d r/ds, |T|=1. Differentiate: T·T=1 -> T·T_s=0. Curvature κ=|T_s|. If κ>0, N=T_s/κ. Then B=T×N. Torsion τ = -B_s·N. Frenet formulas. Derive quickly: T_s=κN. Differentiate N·N=1 -> N·N_s=0. N·B=0 -> N_s·B = -N·B_s. Define τ = -B_s·N. Also T·N_s = -κ. Then N_s = -κ T + τ B. B_s = -τ N. Good.
+
+Need formula κ in arbitrary parameter: since T = dot r/v, T_s = (1/v) d/dt (dot r/v). Compute? State: κ = |dot r × r_double|/|dot r|^3. Need ensure notation: \ddot{\mathbf r}. Good. Torsion formula maybe: τ = ((dot r, r_double, r_triple))/|dot r × r_double|^2. Need define triple product? Could state scalar triple product \det(\dot r, \ddot r, \dddot r). Audience matrices. Good.
+
+Need example: circle radius R. Parameter by s: r(s)=R(cos(s/R), sin(s/R),0). T=(-sin(s/R), cos(s/R),0), κ=1/R, τ=0. Maybe mention plane curves have τ=0. Or helix: r(t)=(a cos t, a sin t, b t), κ=a/(a^2+b^2), τ=b/(a^2+b^2). Maybe one example enough. Circle enough. But to show torsion nonzero maybe helix? Could include short: "Для винтовой линии ...". But not too many examples. Maybe one example with circle and note helix? Need not overdo. Since chapter should be full. Maybe include one example: circle and helix? The editorial says not many examples. One or two. Maybe circle is enough for curvature; torsion formula maybe no example. But to see torsion, helix is useful. Could include a compact example: "Винтовая линия ... имеет постоянные κ и τ". That's okay.
+
+Need maybe "осциллирующая плоскость"? Could mention spanned by T,N. But not necessary.
+
+Chapter 2:
+Start visual: "Поверхность — это уже не одна кривая, а семейство кривых, заполняющих область." Define patch. Need maybe "локальная поверхность" vs global. Use U open in R^2. \mathbf r(u,v). Regular. Coordinate curves. Tangent plane. Normal. Figure.
+
+Need define tangent vector to curve on surface: If γ(t)=(u(t),v(t)), then γ' = u' r_u + v' r_v. Thus tangent plane is image of derivative map d r_{(u,v)}: (du,dv) -> u' r_u + v' r_v. This is linear map; matrix columns r_u, r_v. Good, uses matrices.
+
+First fundamental form: For two tangent vectors A= a r_u + b r_v, B= c r_u + d r_v, dot product = E ac + F(ad+bc)+G bd. For infinitesimal displacement (du,dv), ds^2 = E du^2 + 2F du dv + G dv^2. Define E,F,G. Need ensure positive definite: EG-F^2>0. This is determinant of Gram matrix. Area element: parallelogram area = |r_u × r_v| du dv = sqrt(EG-F^2) du dv. Good.
+
+Example: sphere. Parameterization: r(θ,φ)=R(sinθ cosφ, sinθ sinφ, cosθ), θ∈(0,π), φ∈[0,2π). Compute r_θ = R(cosθ cosφ, cosθ sinφ, -sinθ); r_φ = R(-sinθ sinφ, sinθ cosφ, 0). Dot: E=R^2, F=0, G=R^2 sin^2θ. Metric ds^2=R^2(dθ^2+sin^2θ dφ^2). Area element R^2 sinθ dθ dφ. Good. Maybe mention plane: E=G=1,F=0. But not necessary. Could mention as check.
+
+Need maybe "первая квадратичная форма измеряет внутреннюю геометрию: длины и углы, но не говорит о том, как поверхность согнута в пространстве". Good transition to plan.
+
+Need ensure no "Напомним". Good.
+
+Need word count. Let's draft in full and count roughly. Need maybe 2800 words. Let's write carefully.
+
+Potential final:
+
+# Дифференциальная геометрия: первые главы
+
+## Введение
+Дифференциальная геометрия изучает формы, используя производные... (Need about 600 words). Let's draft:
+
+"Цель книги — показать, как локальные линейные приближения описывают кривизну и метрику кривых и поверхностей. Мы будем работать в евклидовом пространстве R^3, но методы переносимы."
+
+Prerequisites:
+"Читатель должен уметь: вычислять производные функций одной и нескольких переменных; работать с векторами в R^3, скалярным и векторным произведениями; понимать матрицы как линейные операторы. Понятие гладкости: функция класса C^k, если производные до порядка k непрерывны."
+
+What learn:
+"К концу первых двух глав читатель сможет: параметризовать кривую, находить касательную, длину дуги, кривизну и кручение; параметризовать поверхность, строить касательную плоскость, вычислять длины, углы и площади с помощью первой квадратичной формы."
+
+Plan:
+"1. Кривые... 2. Поверхности... 3. Нормаль... 4. Кривизны... 5. Геодезические... 6. Гаусс-Бонне."
+
+Need maybe route: "Сначала кривые, потому что поверхность содержит кривые; затем поверхность как двумерное семейство; затем нормальная кривизна; затем инварианты." Good.
+
+Need maybe "Обозначения: жирные буквы — векторы, точка — скалярное произведение, крестик — векторное, |v| — длина." Introduce before use. Good. Put in intro.
+
+Let's include notation block:
+- \mathbf v, \mathbf w; \mathbf v·\mathbf w; \mathbf v×\mathbf w; |\mathbf v|.
+- \det(\mathbf a,\mathbf b,\mathbf c) scalar triple product.
+Maybe introduce in intro before chapters.
+
+Need not too long. But notation before use. Good.
+
+Now chapter 1. Need ensure all notation introduced. Use \dot{\mathbf r}. Need define second derivative \ddot{\mathbf r}. Good.
+
+Let's draft chapter 1 in Russian:
+
+## Глава 1. Кривые в евклидовом пространстве
+
+### 1.1. Касательная и скорость
+Начнём с наглядной модели: частица... Кривая — гладкое отображение \mathbf r: I\to\mathbb R^3. Если \dot{\mathbf r}(t)\ne0, то кривая регулярна. Вектор \dot{\mathbf r} направлен вдоль касательной; его длина v=|\dot r| — скорость. Единичный касательный \mathbf T = \dot r/v. Он задаёт направление движения. Если параметр меняется, T invariant? Actually T changes sign if orientation reversed. Good.
+
+Maybe mention "касательная прямая: \mathbf r(t)+λ\dot r(t)". Good.
+
+### 1.2. Длина дуги
+Define s(t)=∫_{t0}^t v(τ)dτ. Since v>0, invert. Reparam by s. Then \mathbf r_s = \mathbf T, |T|=1. This parameter is natural: one unit of s is one unit of length. Derivative with respect to s denoted by prime? Need decide. We can say "Далее штрих будет означать производную по s: \mathbf r'=\mathbf r_s=\mathbf T." But if use \dot for t. Good.
+
+Need maybe "Если кривая задана в произвольном параметре, производные по s связаны: d/ds = (1/v)d/dt." Good.
+
+### 1.3. Кривизна и триада Френе
+Since |T|=1, T·T_s=0. If T_s≠0, T_s perpendicular to T. Define κ=|T_s|, N=T_s/κ. If κ=0, locally straight. B=T×N. Right-handed orthonormal frame. Figure.
+
+Need figure after B? Maybe after curvature: "Рис. 1. ..." Exact description: "Гладкая плоская кривая, точка P, касательный вектор T, нормальный вектор N, направленный к центру окружности, и окружность радиуса 1/κ, касающаяся кривой в P." Caption: "Касательная и окружность кривизны: кривизна κ равна скорости поворота касательной, радиус окружности равен 1/κ." Good.
+
+Then torsion: B_s perpendicular to B. It lies in plane span(T,N). Define τ=-B_s·N. Then Frenet formulas. Derive briefly:
+T_s=κN.
+N_s: N·N_s=0, B·N_s = -N·B_s = τ, T·N_s = -(T_s·N)= -κ. So N_s=-κT+τB.
+B_s=-τN.
+Good.
+
+Need formula for κ in arbitrary parameter:
+κ = |\dot r × \ddot r|/|\dot r|^3.
+Maybe derive? State follows from T=dot r/v and d/ds=(1/v)d/dt. Good.
+Torsion:
+τ = det(\dot r, \ddot r, \dddot r)/|\dot r × \ddot r|^2.
+Need ensure if κ>0. Good.
+
+### 1.4. Пример: окружность и винтовая линия
+Maybe one subsection. Circle: \mathbf r(s)=R(cos(s/R), sin(s/R),0). T=... κ=1/R, τ=0. Helix: \mathbf r(t)=(a cos t,a sin t,bt). Compute? Need not show full computation? Could state. Let's compute to ensure correct:
+r' = (-a sin t, a cos t, b); |r'|^2 = a^2+b^2.
+r'' = (-a cos t, -a sin t, 0).
+r'×r'': determinant: i: a cos t*0 - b*(-a sin t)=ab sin t; j: b*(-a cos t) - (-a sin t)*0 = -ab cos t? Need cross product formula: (x1,y1,z1)×(x2,y2,z2)=(y1z2-z1y2, z1x2-x1z2, x1y2-y1x2). x1=-a sin, y1=a cos, z1=b; x2=-a cos, y2=-a sin, z2=0. y1z2-z1y2=0 - b(-a sin)=ab sin. z1x2-x1z2=b(-a cos)-0=-ab cos. x1y2-y1x2=(-a sin)(-a sin) - (a cos)(-a cos)=a^2 sin^2 + a^2 cos^2=a^2. So cross=(ab sin, -ab cos, a^2). Norm = a sqrt(b^2 sin^2+b^2 cos^2+a^2)=a sqrt(a^2+b^2). κ = a sqrt(a^2+b^2)/(a^2+b^2)^{3/2}=a/(a^2+b^2). Good.
+Triple product det(r',r'',r''')? r'''=(a sin t,a cos t,0). Dot (r'×r'')·r''' = ab sin*a sin + (-ab cos)*a cos + a^2*0 = a^2 b(sin^2+cos^2)=a^2 b. Denominator |cross|^2 = a^2(a^2+b^2). τ=b/(a^2+b^2). Good. If b>0 positive. Good.
+
+Need maybe not too detailed. But okay.
+
+Chapter 2. Need maybe sections:
+### 2.1. Параметрическая поверхность и касательная плоскость
+### 2.2. Первая квадратичная форма
+### 2.3. Площадь и пример: сфера
+
+Need figure after tangent plane: "Рис. 2. ..." Exact description: "Локальный кусок поверхности, две координатные кривые u=const и v=const, точка P, векторы r_u и r_v, выходящие из P, и нормаль n." Caption: "Касательная плоскость порождается векторами r_u и r_v; координатные кривые дают координатную сетку на поверхности." Good.
+
+Need define: \mathbf r: U⊂R^2 -> R^3, U open. Smooth. Regular if \mathbf r_u×\mathbf r_v≠0. Then coordinate curves: u=const, v=const. Partial derivatives \mathbf r_u = ∂\mathbf r/∂u, \mathbf r_v. They are tangent to coordinate curves. Tangent plane: set of all \mathbf r(u,v)+ a\mathbf r_u + b\mathbf r_v. Normal \mathbf n = (r_u×r_v)/|r_u×r_v|. Orientation.
+
+Need tangent vector of arbitrary curve on surface: γ(t)=(u(t),v(t)), then \dot γ = u'\mathbf r_u + v'\mathbf r_v. This uses chain rule. Good.
+
+First fundamental form: Define E,F,G. For displacement (du,dv), squared length: ds^2 = E du^2 + 2F du dv + G dv^2. This is quadratic form. Matrix [[E,F],[F,G]]. Positive definite because EG-F^2=|r_u×r_v|^2>0. It measures lengths and angles. Angle between curves with tangent directions (du,dv) and (d\tilde u,d\tilde v): cos θ = (E du d\tilde u + F(du d\tilde v + dv d\tilde u)+G dv d\tilde v)/(sqrt(...)*sqrt(...)). Maybe include formula? Could be too much but useful. Need not too detailed. Maybe state "углы вычисляются из этой же формы". Could include compact formula.
+
+Area: infinitesimal parallelogram spanned by r_u du and r_v dv has area |r_u×r_v| du dv = sqrt(EG-F^2) du dv. Good.
+
+Example sphere. Compute. Need ensure parameter notation: θ polar angle from north pole, φ azimuth. Domain θ∈(0,π), φ∈[0,2π). r(θ,φ)=R(sinθ cosφ, sinθ sinφ, cosθ). Then r_θ, r_φ. E=R^2, F=0, G=R^2 sin^2θ. Metric ds^2=R^2(dθ^2+sin^2θ dφ^2). Area element R^2 sinθ dθ dφ. Good. Maybe mention "метрика сферы не является плоской: коэффициент sin^2θ зависит от θ". But that's intrinsic? It indicates not Euclidean. Good.
+
+Need maybe "Первая квадратичная форма — это внутренняя геометрия; она не определяет, как поверхность загнута в R^3. Для этого нужна вторая квадратичная форма — следующая глава." Good transition.
+
+Need word count. Let's estimate. We need 2400-3200 Russian words. My draft maybe 2500? Need ensure enough. Let's write full and count approximate. I can manually estimate. Need maybe final around 2800. Let's produce with detailed but concise.
+
+Need maybe include "Предварительный план" in intro. Need first two chapters full. Need not include table of contents? Could include plan as list. Good.
+
+Need mathematical correctness: For Frenet, if κ=0, N undefined. State assume κ>0 for frame. For torsion formula, require κ>0. Good.
+
+Need notation: Use \mathbb R^3. Use \cdot, \times. Use \det. Introduce in intro.
+
+Need maybe "гладкая" before use: In intro: "Гладкое отображение — имеющее непрерывные производные нужного порядка; для кривых кривизны — C^3, для поверхностей — C^2." Good.
+
+Need maybe "регулярная" defined. Good.
+
+Potential issue: In chapter 1, we use \ddot{\mathbf r} before defining? We define \dot as derivative, so double dot natural. Could state "Вторые и третьи производные обозначаем \ddot{\mathbf r}, \dddot{\mathbf r}." Good.
+
+Need maybe "штрих" after s. Use \mathbf r_s? Let's decide. Use \dot for t, and for s use \mathbf r' = d\mathbf r/ds. But if we use \dot for t, then in formulas with s, use prime. Need introduce: "Далее, когда параметром является длина дуги s, будем писать \mathbf r'(s)=d\mathbf r/ds." Good. Then T = r'. But T is unit tangent. Maybe use \mathbf T = \mathbf r'. Good.
+
+Need in curvature formula in arbitrary parameter: use \dot. Good.
+
+Need ensure no conflict: In Frenet formulas, use prime for s: \mathbf T' = κ \mathbf N, etc. Good.
+
+Need maybe "Если κ=0 на отрезке, кривая там — отрезок прямой". Good.
+
+Need maybe "Осциллирующая плоскость" not necessary.
+
+Need maybe "Кривизна как скорость поворота касательной" intuitive. Good.
+
+Need maybe "Кручение измеряет, насколько кривая уходит из осциллирующей плоскости". Good.
+
+Need figure descriptions: Need exact description and caption. In Markdown, maybe use blockquote or paragraph. For figure, we can write:
+
+> **Рис. 1.** ...
+> *Описание:* ...
+> *Подпись:* ...
+
+But requirement: "Если нужна иллюстрация, укажи рядом точное описание и подпись; сами изображения сейчас не создавай." So we can include:
+
+**Рис. 1.** Гладкая кривая в плоскости, точка P, вектор T, нормаль N, окружность радиуса 1/κ.
+Подпись: Касательная и окружность кривизны; радиус равен 1/κ.
+
+Need "точная описание" maybe more detailed. We can include "Описание: ..." and "Подпись: ...". Good.
+
+Need maybe two figures. Good.
+
+Need ensure no references invented. No "как известно" maybe okay. No external references.
+
+Need maybe "Не выдумывай ссылки" means no citations. Good.
+
+Need final only requested material in Markdown with LaTeX. So no meta.
+
+Let's draft final in Russian. Need count. Let's write and estimate word count. I'll compose in analysis then final.
+
+Draft:
+
+# Дифференциальная геометрия: первые главы
+
+## Введение
+
+Дифференциальная геометрия отвечает на вопрос: как измерить форму объекта, если он изогнут? Мы будем рассматривать кривые и поверхности в евклидовом пространстве \(\mathbb R^3\). Основная идея состоит в том, что вблизи каждой точки объект хорошо приближается линейным объектом: кривая — касательной прямой, поверхность — касательной плоскостью. Производные позволяют измерить, насколько объект отклоняется от этого линейного приближения.
+
+Предварительный план книги следующий.
+1. **Кривые в \(\mathbb R^3\).** Регулярные кривые, касательная, длина дуги, кривизна, кручение и триада Френе.
+2. **Поверхности и первая квадратичная форма.** Параметризация, касательная плоскость, lengths, angles, area.
+3. **Нормаль и вторая квадратичная форма.** Нормальная кривизна, главные направления и главные кривизны.
+4. **Кривизны поверхности.** Гауссова и средняя кривизна, теорема о виде.
+5. **Геодезические и параллельный перенос.** Короткие кривые на поверхности и перенос векторов без изменения угла.
+6. **Инварианты и глобальная геометрия.** Теорема Гаусса-Бонне.
+
+Route: curves first because surfaces contain curves; first fundamental form measures internal geometry; second measures bending.
+
+What reader should know: derivatives of functions one/several variables, vectors in R3, scalar/vector products, matrices as linear maps. Smoothness: C^k. What learn: by end first two chapters: parameterize curve, tangent, arclength, curvature/torsion; parameterize surface, tangent plane, compute lengths/angles/areas via first fundamental form.
+
+Notation: bold vectors; dot scalar; cross vector; |v| length; det(a,b,c) scalar triple product.
+
+Need maybe "lengths" in Russian: длины. Good.
+
+Chapter 1:
+
+## Глава 1. Кривые в евклидовом пространстве
+
+### 1.1. Касательная и скорость
+
+Начнём с наглядной модели: частица движется по гладкой кривой. Её положение в момент t задаётся вектором \(\mathbf r(t)\), t∈I. Кривая называется регулярной, если \(\dot{\mathbf r}(t)\ne 0\). Here dot derivative. \dot r is tangent vector. Speed v=|\dot r|. Unit tangent \mathbf T = \dot r/v. Tangent line: \mathbf r(t)+λ\dot r(t). If parameter reversed, T changes sign; direction of motion matters.
+
+### 1.2. Длина дуги и естественный параметр
+
+Length from t0 to t: s(t)=∫ v dτ. Since v>0, invert. Reparam: \mathbf r(s). Then d/ds = (1/v)d/dt. Unit tangent \mathbf T = d\mathbf r/ds. We denote derivative wrt s by prime: \mathbf r'=\mathbf T. |T|=1.
+
+### 1.3. Кривизна и триада Френе
+
+Since |T|=1, T·T'=0. If T'≠0, T' perpendicular to T. Curvature κ=|T'|. If κ>0, principal normal N=T'/κ. Binormal B=T×N. Frame (T,N,B) orthonormal right-handed. If κ=0, locally straight.
+
+Figure 1.
+
+Torsion: B' perpendicular to B. Define τ = -B'·N. Then Frenet formulas:
+T'=κN,
+N'=-κT+τB,
+B'=-τN.
+Brief derivation.
+
+In arbitrary parameter:
+κ = |\dot r × \ddot r|/|\dot r|^3.
+τ = det(\dot r,\ddot r,\dddot r)/|\dot r × \ddot r|^2.
+Need define \ddot, \dddot.
+
+### 1.4. Пример
+
+Circle: ... κ=1/R, τ=0.
+Helix: ... κ=a/(a^2+b^2), τ=b/(a^2+b^2). Shows constant curvature/torsion.
+
+Chapter 2:
+
+## Глава 2. Поверхности и первая квадратичная форма
+
+### 2.1. Параметризация и касательная плоскость
+
+Visual: surface patch, grid. Surface patch: \mathbf r: U⊂R^2 -> R^3, U open, smooth. Regular if r_u×r_v≠0. Partial derivatives. Coordinate curves. Tangent plane: \mathbf r(u,v)+a r_u + b r_v. Normal n = (r_u×r_v)/|...|.
+
+Figure 2.
+
+Arbitrary curve on surface: γ(t)=(u(t),v(t)); tangent \dot γ = u' r_u + v' r_v. Thus tangent vectors are linear combinations.
+
+### 2.2. Первая квадратичная форма
+
+Define E=r_u·r_u, F=r_u·r_v, G=r_v·r_v. For displacement (du,dv), squared length ds^2 = E du^2 + 2F du dv + G dv^2. Matrix. Positive definite EG-F^2=|r_u×r_v|^2>0. It gives lengths and angles. Angle formula maybe:
+cos φ = (E du dv_tilde + F(du dv_tilde + dv du_tilde)+G dv dv_tilde)/(sqrt(...)*sqrt(...)). Need be careful notation. Could use (du,dv) and (d\tilde u,d\tilde v). Good.
+
+### 2.3. Площадь и пример: сфера
+
+Area element: |r_u×r_v| du dv = sqrt(EG-F^2) du dv.
+
+Sphere example. Parameterization. Compute E,F,G. Metric. Area element. Note coefficient sin^2θ.
+
+Transition: first form internal, second bending.
+
+Need maybe "длина кривой на поверхности" formula: If curve γ(t), length = ∫ sqrt(E (u')^2 + 2F u'v' + G (v')^2) dt. Good to include. It realizes first form. Add in 2.2.
+
+Need ensure notation: use u', v' derivatives wrt t. Good.
+
+Need maybe "первая квадратичная форма" as I. Define I = E du^2+2F dudv+G dv^2. Good.
+
+Need maybe "векторные произведения" in intro. Good.
+
+Now word count. Let's estimate by sections.
+
+Intro: maybe 550-650 words. Chapter1: 1000. Chapter2: 1000. Total 2600-2700. Good.
+
+Need maybe final word count 2400-3200. Let's make robust. Could be around 2700. Need not count exactly. But ensure not too short. Let's write full with enough detail.
+
+Potential issue: "lengths, angles" in Russian. Good.
+
+Need maybe "методический маршрут" in intro: "Сначала... затем...". Good.
+
+Need maybe "предварительный план всей книги" not just first two. Good.
+
+Need maybe "первые главы должны действительно начать реализовывать план". Yes.
+
+Need maybe "Не выдумывай ссылки". No references.
+
+Need maybe "Математическая корректность важнее уверенного тона". Use "называем", "определим". Good.
+
+Need maybe "Если нужна иллюстрация, укажи рядом точное описание и подпись". We'll include two figures with description and caption. Good.
+
+Need maybe "сами изображения сейчас не создавай". We won't use image tags, just text.
+
+Need maybe "Верни только запрошенный материал в Markdown с LaTeX." So final should be only the textbook text. No preface like "Вот...".
+
+Let's craft final carefully.
+
+Need check mathematical details:
+
+Frenet derivation:
+- T' = κN.
+- N' = -κT + τB.
+- B' = -τN.
+Proof:
+T·T=1 -> T·T'=0.
+N·N=1 -> N·N'=0.
+N·B=0 -> N'·B + N·B'=0. Define τ = -B'·N, so N'·B=τ.
+T·N=0 -> T'·N + T·N'=0 -> κ + T·N'=0 -> T·N'=-κ.
+Since N' in span(T,B), N' = -κT + τB. B' perpendicular to B; also B'·T? B=T×N -> B' = T'×N + T×N' = κN×N + T×(-κT+τB)=0 + τ T×B = τ T×(T×N). T×B = T×(T×N) = T(T·N)-N(T·T) = -N. So B' = -τ N. Good. Or simpler. We can state.
+
+Torsion sign: Some conventions τ = -B'·N = (r',r'',r''')/|r'×r''|^2. With our Frenet B'=-τN, yes. For helix with b>0, triple product positive a^2b, denominator positive, τ positive. Good.
+
+Curvature formula: Need ensure if \dot r × \ddot r = 0 then κ=0. Good.
+
+Arclength: s(t)=∫_{t0}^t |dot r(τ)| dτ. If t<t0? We can assume t≥t0 or use absolute? For regular and orientation, s increasing if t>t0. Could define s(t)=∫_{t0}^t v dτ, strictly increasing. Good.
+
+Reparam: \mathbf r(s). Then \mathbf r_s = \dot r / |\dot r|. Good.
+
+Surface: regular if r_u × r_v ≠ 0. Then EG-F^2 = |r_u×r_v|^2. Good.
+
+Angle formula: Need correct:
+Given two tangent directions represented by (du,dv) and (d\tilde u,d\tilde v). Dot product = E du d\tilde u + F(du d\tilde v + dv d\tilde u) + G dv d\tilde v. Norms sqrt(E du^2+2F du dv+G dv^2) and similarly. Good.
+
+Length of curve on surface: If γ(t) = r(u(t),v(t)), speed squared = E (u')^2 + 2F u'v' + G (v')^2. Length = ∫ sqrt(...) dt. Good.
+
+Area: If parameter domain D, area = ∫_D sqrt(EG-F^2) du dv. Good.
+
+Sphere: Need compute r_φ: derivative of R(sinθ cosφ, sinθ sinφ, cosθ) wrt φ = R(-sinθ sinφ, sinθ cosφ, 0). Good. Dot r_θ·r_φ = R^2[cosθ cosφ*(-sinθ sinφ)+cosθ sinφ*(sinθ cosφ)+(-sinθ)*0] = R^2[-cosθ sinθ cosφ sinφ + cosθ sinθ sinφ cosφ]=0. G = R^2 sin^2θ (cos^2+sin^2). Good.
+
+Need maybe "коэффициент sin^2θ исчезает в полюсах, что соответствует вырождению параметризации". Could mention? Maybe not necessary. But mathematical correctness: at θ=0,π regularity fails. Domain open (0,π). Good.
+
+Need maybe "первая квадратичная форма сферы показывает, что окружности широты имеют длину 2πR sinθ". Not necessary.
+
+Need maybe "плоскость: E=G=1,F=0". Could mention as sanity check. But not too many examples. Maybe one sentence: "Для плоскости z=0 параметризация (u,v,0) даёт E=G=1,F=0, и ds^2=du^2+dv^2." This is useful. But examples not too many. Could include in 2.2 or 2.3. Maybe one sentence.
+
+Need maybe "векторная площадь"? No.
+
+Need maybe "инварианты" in plan. Good.
+
+Need maybe "теорема о виде" (Theorema Egregium) in plan. Good.
+
+Need maybe "геодезические" in plan. Good.
+
+Need maybe "параллельный перенос" in plan. Good.
+
+Need maybe "гаусс-бонне" in plan. Good.
+
+Need maybe "дифференциальная геометрия" not "дифференциальной геометрии"? Title okay.
+
+Need maybe use Russian typography? Fine.
+
+Let's write final. Need ensure word count. I'll produce around 2800. Let's count roughly after writing.
+
+Full draft in final:
+
+# Дифференциальная геометрия: первые главы
+
+## Введение
+
+... (I'll write about 650 words)
+
+Need maybe include "Предварительный план" as numbered list. Good.
+
+Let's draft final text now in analysis to estimate:
+
+---
+
+# Дифференциальная геометрия: первые главы
+
+## Введение
+
+Дифференциальная геометрия отвечает на вопрос: как измерить форму объекта, если он изогнут? Мы будем рассматривать кривые и поверхности в евклидовом пространстве \(\mathbb{R}^3\). Основная идея состоит в том, что вблизи каждой точки объект хорошо приближается линейным объектом: кривая — касательной прямой, поверхность — касательной плоскостью. Производные позволяют измерить, насколько объект отклоняется от этого линейного приближения.
+
+Предварительный план книги следующий.
+
+1. **Кривые в \(\mathbb{R}^3\).** Регулярные кривые, касательная, длина дуги, кривизна, кручение и триада Френе.
+2. **Поверхности и первая квадратичная форма.** Параметризация, касательная плоскость, длины, углы и площади на поверхности.
+3. **Нормаль и вторая квадратичная форма.** Нормальная кривизна, главные направления и главные кривизны.
+4. **Кривизны поверхности.** Гауссова и средняя кривизна, теорема о виде.
+5. **Геодезические и параллельный перенос.** Короткие кривые на поверхности и перенос векторов без изменения угла.
+6. **Инварианты и глобальная геометрия.** Теорема Гаусса-Бонне.
+
+Маршрут выбран последовательно: сначала изучаем кривые, потому что любая поверхность содержит кривые; затем переходим к двумерным объектам; после этого вводим нормаль и измеряем изгиб; в конце связываем локальные величины с глобальными свойствами.
+
+До начала книги читатель должен знать производные функций одной и нескольких переменных, уметь работать с векторами в \(\mathbb{R}^3\), скалярным и векторным произведениями, а также понимать матрицы как линейные отображения. Под гладким отображением будем понимать отображение, имеющее непрерывные производные нужного порядка: для кривизны кривой достаточно класса \(C^3\), для первой квадратичной формы поверхности — класса \(C^2\).
+
+К концу первых двух глав читатель научится параметризовать кривую, находить её касательную, длину дуги, кривизну и кручение; параметризовать поверхность, строить касательную плоскость и вычислять длины, углы и площади с помощью первой квадратичной формы.
+
+Обозначения. Жирные буквы обозначают векторы: \(\mathbf v,\mathbf w\). Скалярное произведение пишем как \(\mathbf v\cdot\mathbf w\), векторное — как \(\mathbf v\times\mathbf w\), длина вектора — как \(|\mathbf v|\). Через \(\det(\mathbf a,\mathbf b,\mathbf c)\) обозначим смешанное произведение, то есть определитель матрицы с этими векторами в качестве столбцов.
+
+## Глава 1. Кривые в евклидовом пространстве
+
+### 1.1. Касательная и скорость
+
+Начнём с наглядной модели: частица движется по гладкой кривой. Её положение в момент \(t\) задаётся вектором \(\mathbf r(t)\), где \(t\) принадлежит интервалу \(I\). Производную по \(t\) будем обозначать точкой: \(\dot{\mathbf r}(t)=d\mathbf r/dt\). Кривая называется регулярной, если \(\dot{\mathbf r}(t)\ne 0\) во всех рассматриваемых точках. Вектор \(\dot{\mathbf r}\) направлен вдоль касательной к кривой, а его длина
+\[
+v(t)=|\dot{\mathbf r}(t)|
+\]
+называется скоростью движения. Единичный касательный вектор определяется формулой
+\[
+\mathbf T(t)=\frac{\dot{\mathbf r}(t)}{|\dot{\mathbf r}(t)|}.
+\]
+Он задаёт направление движения. Касательная прямая в точке \(\mathbf r(t)\) имеет вид
+\[
+\mathbf r(t)+\lambda \dot{\mathbf r}(t),\qquad \lambda\in\mathbb R.
+\]
+Если параметр изменит направление, то \(\mathbf T\) поменяет знак, поэтому касательная как прямая не зависит от выбора ориентации, а единичный вектор \(\mathbf T\) — зависит.
+
+### 1.2. Длина дуги и естественный параметр
+
+Длина дуги от \(t_0\) до \(t\) равна
+\[
+s(t)=\int_{t_0}^{t} |\dot{\mathbf r}(\tau)|\,d\tau.
+\]
+Поскольку кривая регулярна, скорость положительна, поэтому \(s(t)\) строго возрастает и можно считать \(t\) функцией от \(s\). Параметризуя кривую длиной дуги, получаем отображение \(\mathbf r(s)\). При этом
+\[
+\frac{d}{ds}=\frac{1}{|\dot{\mathbf r}|}\frac{d}{dt},
+\]
+а единичный касательный вектор равен
+\[
+\mathbf T=\frac{d\mathbf r}{ds}.
+\]
+Далее, когда параметром является длина дуги, будем писать штрих для производной по \(s\): \(\mathbf r'(s)=d\mathbf r/ds\). Тогда \(\mathbf T=\mathbf r'\) и \(|\mathbf T|=1\). Длина дуги — естественный параметр, потому что изменение параметра на единицу соответствует изменению длины на единицу.
+
+### 1.3. Кривизна и триада Френе
+
+Из равенства \(|\mathbf T|=1\) следует, что \(\mathbf T\cdot\mathbf T'=0\). Если \(\mathbf T'\ne 0\), вектор \(\mathbf T'\) перпендикулярен касательной. Его длина
+\[
+\kappa=|\mathbf T'|
+\]
+называется кривизной. Кривизна измеряет скорость поворота касательной при движении вдоль кривой. Если \(\kappa=0\) на отрезке, то кривая на этом отрезке является отрезком прямой.
+
+При \(\kappa>0\) определим главную нормаль
+\[
+\mathbf N=\frac{\mathbf T'}{\kappa}
+\]
+и бинормаль
+\[
+\mathbf B=\mathbf T\times\mathbf N.
+\]
+Тройка \((\mathbf T,\mathbf N,\mathbf B)\) называется триадой Френе. Она ортонормирована и правоправлена. Вектор \(\mathbf N\) направлен к стороне, куда кривая «изгибается», а \(\mathbf B\) перпендикулярен осциллирующей плоскости, порождённой \(\mathbf T\) и \(\mathbf N\).
+
+> **Рис. 1.** Гладкая плоская кривая, точка \(P\), касательный вектор \(\mathbf T\), нормальный вектор \(\mathbf N\), направленный к центру окружности, и окружность радиуса \(1/\kappa\), касающаяся кривой в \(P\).
+>
+> **Подпись.** Касательная и окружность кривизны: радиус окружности равен \(1/\kappa\), а кривизна равна скорости поворота касательной.
+
+Вектор \(\mathbf B\) тоже единичный, поэтому \(\mathbf B'\perp\mathbf B\). Его проекция на \(\mathbf N\) определяет кручение:
+\[
+\tau=-\mathbf B'\cdot\mathbf N.
+\]
+Кручение измеряет, насколько кривая уходит из осциллирующей плоскости. Из свойств триады Френе получаются формулы Френе:
+\[
+\mathbf T'=\kappa\mathbf N,
+\]
+\[
+\mathbf N'=-\kappa\mathbf T+\tau\mathbf B,
+\]
+\[
+\mathbf B'=-\tau\mathbf N.
+\]
+Первая формула — определение кривизны и нормали. Вторая следует из того, что \(\mathbf N'\) лежит в плоскости \((\mathbf T,\mathbf B)\) и имеет проекции \(-\kappa\) на \(\mathbf T\) и \(\tau\) на \(\mathbf B\). Третья выводится из \(\mathbf B=\mathbf T\times\mathbf N\) или из ортонормированности триады.
+
+Если кривая задана в произвольном параметре \(t\), то кривизна вычисляется по формуле
+\[
+\kappa=\frac{|\dot{\mathbf r}\times\ddot{\mathbf r}|}{|\dot{\mathbf r}|^3}.
+\]
+Здесь \(\ddot{\mathbf r}\) — вторая производная по \(t\). При \(\kappa>0\) кручение равно
+\[
+\tau=\frac{\det(\dot{\mathbf r},\ddot{\mathbf r},\dddot{\mathbf r})}{|\dot{\mathbf r}\times\ddot{\mathbf r}|^2}.
+\]
+Обе формулы не зависят от выбора параметра, потому что выражаются через геометрические величины.
+
+### 1.4. Пример: окружность и винтовая линия
+
+Окружность радиуса \(R\) можно параметризовать длиной дуги:
+\[
+\mathbf r(s)=R\left(\cos\frac{s}{R},\sin\frac{s}{R},0\right).
+\]
+Тогда
+\[
+\mathbf T=\left(-\sin\frac{s}{R},\cos\frac{s}{R},0\right),
+\]
+поэтому \(\mathbf T'=-\frac1R\mathbf T^\perp\) и \(\kappa=1/R\). Кручение равно нулю, поскольку кривая плоская.
+
+Винтовая линия
+\[
+\mathbf r(t)=(a\cos t,a\sin t,bt),\qquad a>0,
+\]
+имеет постоянные кривизну и кручение:
+\[
+\kappa=\frac{a}{a^2+b^2},\qquad \tau=\frac{b}{a^2+b^2}.
+\]
+Если \(b=0\), получаем окружность. Если \(b\ne0\), кривая не плоская, и кручение отличает её от плоской кривой.
+
+## Глава 2. Поверхности и первая квадратичная форма
+
+### 2.1. Параметризация и касательная плоскость
+
+Поверхность локально можно представить как двумерную сетку кривых. Пусть \(U\subset\mathbb R^2\) — открытая область, а
+\[
+\mathbf r(u,v):U\to\mathbb R^3
+\]
+— гладкое отображение. Если
+\[
+\mathbf r_u\times\mathbf r_v\ne 0,
+\]
+где \(\mathbf r_u=\partial\mathbf r/\partial u\), \(\mathbf r_v=\partial\mathbf r/\partial v\), то параметризация называется регулярной. Кривые \(u=\text{const}\) и \(v=\text{const}\) называются координатными кривыми. Векторы \(\mathbf r_u\) и \(\mathbf r_v\) касательны к соответствующим координатным кривым.
+
+Касательная плоскость к поверхности в точке \(\mathbf r(u,v)\) состоит из всех векторов вида
+\[
+\mathbf r(u,v)+a\mathbf r_u+b\mathbf r_v,
+\qquad a,b\in\mathbb R.
+\]
+Она порождается векторами \(\mathbf r_u\) и \(\mathbf r_v\). Единичная нормаль определяется как
+\[
+\mathbf n=\frac{\mathbf r_u\times\mathbf r_v}{|\mathbf r_u\times\mathbf r_v|}.
+\]
+Знак нормали зависит от ориентации параметризации.
+
+> **Рис. 2.** Локальный кусок поверхности, две координатные кривые \(u=\text{const}\) и \(v=\text{const}\), точка \(P\), векторы \(\mathbf r_u\) и \(\mathbf r_v\), выходящие из \(P\), и нормаль \(\mathbf n\).
+>
+> **Подпись.** Касательная плоскость порождается векторами \(\mathbf r_u\) и \(\mathbf r_v\); координатные кривые дают координатную сетку на поверхности.
+
+Любая кривая на поверхности может быть записана как \(\gamma(t)=\mathbf r(u(t),v(t))\). Её касательный вектор равен
+\[
+\dot\gamma=u'\mathbf r_u+v'\mathbf r_v.
+\]
+Таким образом, касательные векторы к поверхности — это все линейные комбинации \(\mathbf r_u\) и \(\mathbf r_v\).
+
+### 2.2. Первая квадратичная форма
+
+Введём коэффициенты
+\[
+E=\mathbf r_u\cdot\mathbf r_u,\qquad
+F=\mathbf r_u\cdot\mathbf r_v,\qquad
+G=\mathbf r_v\cdot\mathbf r_v.
+\]
+Для бесконечно малого перемещения \((du,dv)\) квадрат длины элемента дуги равен
+\[
+ds^2=E\,du^2+2F\,du\,dv+G\,dv^2.
+\]
+Это выражение называется первой квадратичной формой поверхности. Она задаёт квадратичную форму на касательной плоскости. Матрица этой формы имеет вид
+\[
+\begin{pmatrix}
+E & F\\
+F & G
+\end{pmatrix}.
+\]
+Поскольку параметризация регулярна,
+\[
+EG-F^2=|\mathbf r_u\times\mathbf r_v|^2>0,
+\]
+поэтому форма положительно определена.
+
+Если кривая на поверхности задана как \(\gamma(t)=\mathbf r(u(t),v(t))\), то её длина вычисляется по формуле
+\[
+L=\int \sqrt{E(u')^2+2F u'v'+G(v')^2}\,dt.
+\]
+Угол между двумя направлениями \((du,dv)\) и \((d\tilde u,d\tilde v)\) в касательной плоскости определяется из скалярного произведения
+\[
+\mathbf a\cdot\mathbf b
+=
+E\,du\,d\tilde u
++F(du\,d\tilde v+dv\,d\tilde u)
++G\,dv\,d\tilde v.
+\]
+Таким образом, первая квадратичная форма измеряет длины и углы внутри поверхности. Для плоскости \(z=0\) с параметризацией \((u,v,0)\) получаем \(E=G=1\), \(F=0\), и первая квадратичная форма принимает вид \(ds^2=du^2+dv^2\).
+
+### 2.3. Площадь и пример: сфера
+
+Бесконечно малый параллелограмм, образованный векторами \(\mathbf r_u\,du\) и \(\mathbf r_v\,dv\), имеет площадь
+\[
+dA=|\mathbf r_u\times\mathbf r_v|\,du\,dv
+=\sqrt{EG-F^2}\,du\,dv.
+\]
+Площадь области на поверхности получается интегрированием этого выражения по соответствующей области в параметрической плоскости.
+
+Рассмотрим сферу радиуса \(R\). Её параметризация имеет вид
+\[
+\mathbf r(\theta,\phi)
+=
+R(\sin\theta\cos\phi,\sin\theta\sin\phi,\cos\theta),
+\]
+где \(0<\theta<\pi\), \(0\le\phi<2\pi\). Вычислим частные производные:
+\[
+\mathbf r_\theta
+=
+R(\cos\theta\cos\phi,\cos\theta\sin\phi,-\sin\theta),
+\]
+\[
+\mathbf r_\phi
+=
+R(-\sin\theta\sin\phi,\sin\theta\cos\phi,0).
+\]
+Тогда
+\[
+E=\mathbf r_\theta\cdot\mathbf r_\theta=R^2,
+\]
+\[
+F=\mathbf r_\theta\cdot\mathbf r_\phi=0,
+\]
+\[
+G=\mathbf r_\phi\cdot\mathbf r_\phi=R^2\sin^2\theta.
+\]
+Первая квадратичная форма сферы равна
+\[
+ds^2=R^2(d\theta^2+\sin^2\theta\,d\phi^2),
+\]
+а элемент площади равен
+\[
+dA=R^2\sin\theta\,d\theta\,d\phi.
+\]
+Коэффициент \(\sin^2\theta\) показывает, что параметрическая сетка на сфере не совпадает с декартовой сеткой плоскости: длины окружностей широт зависят от \(\theta\).
+
+Первая квадратичная форма описывает внутреннюю геометрию поверхности: то, что можно измерить, не выходя с поверхности. Она ещё не говорит о том, как поверхность изогнута в окружающем пространстве. Для этого в следующей главе понадобится вторая квадратичная форма.
+
+---
+
+Need check word count. Let's approximate. Use rough word count by lines? Let's count manually maybe.
+
+Intro:
+"Дифференциальная геометрия отвечает на вопрос: как измерить форму объекта, если он изогнут?" 14? We'll estimate total. Maybe 2600. Need ensure 2400 min. Let's count more systematically? Could use mental approximate. Let's segment.
+
+Intro paragraph 1: 43 words? "Дифференциальная(1) геометрия2 отвечает3 на4 вопрос5 как6 измерить7 форму8 объекта9 если10 он11 изогнут12 Мы13 будем14 рассматривать15 кривые16 и17 поверхности18 в19 евклидовом20 пространстве21 R3 22 Основная23 идея24 состоит25 в26 том27 что28 вблизи29 каждой30 точки31 объект32 хорошо33 приближается34 линейным35 объектом36 кривая37 касательной38 прямой39 поверхность40 касательной41 плоскостью42 Производные43 позволяют44 измерить45 насколько46 объект47 отклоняется48 от49 этого50 линейного51 приближения52." ~52.
+
+Plan list: 6 items maybe 90 words.
+Route paragraph: 45.
+Prereq paragraph: 70.
+Learn paragraph: 55.
+Notation paragraph: 55.
+Intro total ~370? Wait 52+90+45+70+55+55=367. Maybe less than expected. Need total maybe 2300? Let's count chapters.
+
+Chapter1:
+1.1: ~150? Let's count: "Начнём с наглядной модели..." maybe 130.
+1.2: ~120.
+1.3: ~300.
+1.4: ~150.
+Chapter1 total ~700.
+
+Chapter2:
+2.1: ~180.
+2.2: ~250.
+2.3: ~250.
+Total ~680.
+
+Total ~1750? Hmm maybe too short. Need 2400-3200. My estimate maybe low. Let's count more accurately. The draft may be around 2000? Need expand to 2400. Let's count words by rough line? Let's use approximate word count from text length. The final draft above maybe 2200? Need ensure. Let's count more carefully using manual token-like. Russian words separated by spaces. Let's count sections.
+
+I'll copy draft and count? Could approximate by character count. Russian average word length + space ~6-7 chars. If total chars ~16000, words ~2400. Need know. Draft length maybe 12000 chars? Let's estimate: Intro 2500 chars? Chapters 6000 each? Total 15000. Could be 2200. Need expand a bit to be safe. Need target 2400-3200. Add more explanatory content, not too much. Could expand intro plan, chapter derivations, examples, surface. Need add ~400-800 words. Let's enrich.
+
+Add in intro: "Мы будем различать внешнюю и внутреннюю геометрию..." Maybe. Add more about method: linear approximation, differential forms? But not too much.
+
+Add in Chapter 1: more explanation of curvature as second-order approximation, osculating circle. Add derivation of arbitrary parameter formula maybe. Add note about plane curves. Add maybe "осциллирующая плоскость". Add a bit about Frenet frame moving along curve.
+
+Add in Chapter 2: more about tangent plane as image of derivative, Jacobian matrix. Add explanation of regularity and why cross product nonzero. Add maybe "координатные кривые". Add more about first fundamental form as pullback of Euclidean metric. That is good for audience matrices. Add "метрика". Add maybe "изометрия"? Not necessary. Add example plane already. Add maybe "цилиндр"? No.
+
+Need maintain 2400-3200. Let's expand with ~500 words.
+
+Potential expansions:
+
+Intro after route: "Важно различать две точки зрения. Внешняя геометрия изучает, как объект расположен в R^3; внутренняя — что можно измерить, оставаясь на объекте. Первая квадратичная форма относится к внутренней геометрии, а кривизна кривой и нормальная кривизна поверхности — к внешней. Позже мы увидим, что гауссова кривизна, хотя и определяется внешне, является внутренним инвариантом." This adds ~70 words. Good.
+
+In notation: add "Производные по параметру будем обозначать точкой или штрихом в зависимости от параметра." Already. Maybe add "Координаты вектора будем писать в скобках." Not needed.
+
+Chapter 1 1.3: Add "Кривизна — это величина второго порядка. Действительно, если разложить \mathbf r(s) в ряд Тейлора, то \mathbf r(s)=\mathbf r(0)+s\mathbf T+\frac12 s^2\kappa\mathbf N+O(s^3). Окружность с радиусом 1/κ совпадает с кривой до второго порядка." Good, adds ~55. Need ensure correct: expansion with T(0), N(0). Good.
+
+Add after Frenet formulas: "Эти формулы описывают, как триада Френе переносится вдоль кривой. Если κ=0, то N не определена; если τ=0, то кривая плоская." Good.
+
+Add arbitrary parameter derivation: "Формула для κ получается из \mathbf T=\dot r/v и d/ds=(1/v)d/dt." Maybe already. Add "Знаменатель |dot r|^3 отражает масштабирование параметра." Not necessary.
+
+Add in 1.4: "Постоянство κ и τ для винтовой линии означает, что она является кривой с постоянной триадой Френе, вращающейся равномерно." Maybe.
+
+Chapter 2: Add "Регулярность означает, что производная отображения имеет ранг 2; матрица Якобиана с колонками r_u, r_v не вырождена." Good, uses matrices. Add "Если r_u и r_v линейно зависимы, поверхность в этой точке сморщивается." Good.
+
+Add in 2.2: "С геометрической точки зрения первая квадратичная форма — это перенос евклидовой метрики с касательной плоскости на параметрическую плоскость: она говорит, какой длины будет вектор (du,dv) в параметрической плоскости после отображения на поверхность." Good.
+
+Add "Длины и углы, вычисленные по первой квадратичной форме, не зависят от выбора параметризации, если новая параметризация сохраняет ориентацию или меняет знак? Actually invariant under diffeomorphism." Could say "не зависят от выбора параметров". Good.
+
+Add in 2.3: "Интегрирование dA по всей сфере даёт 4πR^2." Could add as check. Good.
+
+Need not overdo. Let's incorporate expansions. Need final word count maybe 2600.
+
+Let's revise final with expansions.
+
+Need ensure no "Напомним". Good.
+
+Need maybe "правоправлена" -> "правоориентирована" better. Use "правоориентирована".
+
+Need maybe "осциллирующая плоскость" defined? We mention. Good.
+
+Need maybe "главная нормаль" vs "главный нормаль"? In Russian: "главная нормаль" or "главный нормаль"? Usually "главная нормаль" (feminine) or "главный нормаль" (masculine)? Vector "нормаль" feminine? In math, "главная нормаль" maybe. Use "главная нормаль". Good.
+
+Need maybe "бинормаль" feminine. Good.
+
+Need maybe "триада Френе" okay.
+
+Need maybe "формулы Френе" okay.
+
+Need maybe "смешанное произведение" okay.
+
+Need maybe "первая квадратичная форма" standard.
+
+Need maybe "вторая квадратичная форма" in plan.
+
+Need maybe "теорема о виде" standard (Theorema Egregium). Good.
+
+Need maybe "геодезические" plural. Good.
+
+Need maybe "параллельный перенос" okay.
+
+Need maybe "инварианты и глобальная геометрия" okay.
+
+Need maybe "дифференциальная геометрия" title. Good.
+
+Let's produce final with expansions. Need check word count after expansions. Let's rewrite final fully with additions.
+
+Potential final:
+
+# Дифференциальная геометрия: первые главы
+
+## Введение
+...
+Add paragraph after route:
+"Важно различать внешнюю и внутреннюю геометрию. Внешняя геометрия изучает, как объект расположен в окружающем пространстве; внутренняя — какие длины, углы и площади можно измерить, оставаясь на самом объекте. Первая квадратичная форма относится к внутренней геометрии, а кривизна кривой и нормальная кривизна поверхности — к внешней. Позже мы увидим, что гауссова кривизна, хотя и определяется с помощью нормали, является внутренним инвариантом."
+
+Good.
+
+Chapter 1 1.3 add Taylor:
+"Кривизна — величина второго порядка. Если разложить \(\mathbf r(s)\) в точке \(s=0\), то
+\[
+\mathbf r(s)=\mathbf r(0)+s\mathbf T(0)+\frac12 s^2\kappa(0)\mathbf N(0)+O(s^3).
+\]
+Окружность радиуса \(1/\kappa(0)\) совпадает с кривой до слагаемого порядка \(s^2\)."
+Need ensure if κ(0)>0. Good.
+
+Add after Frenet formulas:
+"Если \(\tau=0\), то \(\mathbf B\) постоянен, и кривая лежит в плоскости, перпендикулярной \(\mathbf B\). Если \(\kappa=0\), то нормаль не определена, и кривая локально прямая." Good.
+
+Add in 1.4: "Постоянство κ и τ означает, что триада Френе вращается вдоль винтовой линии с постоянными скоростями." Good.
+
+Chapter 2 2.1 add:
+"Регулярность означает, что линейное отображение \(d\mathbf r\) имеет ранг 2: матрица Якобиана с колонками \(\mathbf r_u\) и \(\mathbf r_v\) не вырождена. Если \(\mathbf r_u\) и \(\mathbf r_v\) линейно зависимы, то координатная сетка в этой точке «сморщивается», и касательная плоскость не определена однозначно." Good.
+
+2.2 add:
+"С геометрической точки зрения первая квадратичная форма — это перенос евклидовой метрики с касательной плоскости на параметрическую плоскость. Вектор \((du,dv)\) в параметрической плоскости отображается в касательный вектор \(du\,\mathbf r_u+dv\,\mathbf r_v\), и первая квадратичная форма задаёт квадрат его длины." Good.
+
+Add invariance:
+"Длины и углы, вычисленные по этой форме, не зависят от выбора параметров: при замене параметров форма переходит в эквивалентную, а её значения на конкретных векторах сохраняются." Good.
+
+2.3 add sphere area integral:
+"Интегрируя \(dA\) по \(0<\theta<\pi\), \(0\le\phi<2\pi\), получаем площадь сферы \(4\pi R^2\)." Good.
+
+Need ensure total not too long. Additions ~250 words. Good.
+
+Let's count approximate now: Original maybe 2100 + 250 = 2350. Need maybe a bit more. Add another 100-200. Could expand intro prerequisites or plan. Add "Книга построена так, чтобы каждая глава давала инструмент для следующей." Maybe. Add in Chapter 1 1.2: "Выбор t0 лишь сдвигает начало отсчёта длины; знак s определяется направлением параметра." Good. Add in Chapter 2 2.1: "Параметризация не единственна; разные сетки на одной поверхности дают разные E,F,G, но одну и ту же геометрию." Good.
+
+Add in 2.2: "Для плоскости ...". Already.
+
+Add in 1.1: "Регулярность исключает точки, в которых частица останавливается; в таких точках направление движения может быть неоднозначным." Good.
+
+Add in 1.3: "Кривизна положительна; она не зависит от направления обхода." Good.
+
+Add in 2.3: "В полюсах \(\theta=0,\pi\) параметризация вырождается, поэтому область исключает эти точки." Good.
+
+These add ~80. Total maybe 2450. Good.
+
+Need be careful not to exceed 3200. Fine.
+
+Let's produce final with all additions. Need ensure no repeated thoughts too much. Good.
+
+Let's final. But before final, maybe count more accurately? Let's do rough word count using segments with additions.
+
+Intro:
+Paragraph1 52.
+Plan list: item1 15? item2 15, item3 14, item4 10, item5 15, item6 8 =77 plus "Предварительный план книги следующий." 5 =82.
+Route paragraph: "Маршрут выбран последовательно: сначала изучаем кривые, потому что любая поверхность содержит кривые; затем переходим к двумерным объектам; после этого вводим нормаль и измеряем изгиб; в конце связываем локальные величины с глобальными свойствами." 36? Add "Книга построена так, чтобы каждая глава давала инструмент для следующей." 12 ->48.
+External/internal paragraph: ~65.
+Prereq: "До начала книги читатель должен знать производные функций одной и нескольких переменных, уметь работать с векторами в R3, скалярным и векторным произведениями, а также понимать матрицы как линейные отображения. Под гладким отображением будем понимать отображение, имеющее непрерывные производные нужного порядка: для кривизны кривой достаточно класса C3, для первой квадратичной формы поверхности — класса C2." ~55.
+Learn: "К концу первых двух глав читатель научится параметризовать кривую, находить её касательную, длину дуги, кривизну и кручение; параметризовать поверхность, строить касательную плоскость и вычислять длины, углы и площади с помощью первой квадратичной формы." ~40.
+Notation: "Обозначения. Жирные буквы обозначают векторы: v,w. Скалярное произведение пишем как v·w, векторное — как v×w, длина вектора — как |v|. Через det(a,b,c) обозначим смешанное произведение, то есть определитель матрицы с этими векторами в качестве столбцов." ~40.
+Intro total ~52+82+48+65+55+40+40=382.
+
+Chapter1:
+1.1: "Начнём с наглядной модели: частица движется по гладкой кривой. Её положение в момент t задаётся вектором r(t), где t принадлежит интервалу I. Производную по t будем обозначать точкой: rdot = dr/dt. Кривая называется регулярной, если rdot != 0 во всех рассматриваемых точках. Регулярность исключает точки, в которых частица останавливается; в таких точках направление движения может быть неоднозначным. Вектор rdot направлен вдоль касательной к кривой, а его длина v=|rdot| называется скоростью движения. Единичный касательный вектор определяется формулой T=rdot/|rdot|. Он задаёт направление движения. Касательная прямая в точке r(t) имеет вид r(t)+λ rdot, λ∈R. Если параметр изменит направление, то T поменяет знак, поэтому касательная как прямая не зависит от выбора ориентации, а единичный вектор T — зависит." Count maybe 110.
+
+1.2: "Длина дуги от t0 до t равна s=∫... Поскольку кривая регулярна, скорость положительна, поэтому s(t) строго возрастает и можно считать t функцией от s. Параметризуя кривую длиной дуги, получаем r(s). При этом d/ds=1/|rdot| d/dt, а единичный касательный вектор равен T=dr/ds. Далее, когда параметром является длина дуги, будем писать штрих для производной по s: r'=dr/ds. Тогда T=r' и |T|=1. Длина дуги — естественный параметр, потому что изменение параметра на единицу соответствует изменению длины на единицу. Выбор t0 лишь сдвигает начало отсчёта длины; знак s определяется направлением параметра." Count ~100.
+
+1.3: "Из равенства |T|=1 следует, что T·T'=0. Если T'≠0, вектор T' перпендикулярен касательной. Его длина κ=|T'| называется кривизной. Кривизна измеряет скорость поворота касательной при движении вдоль кривой. Кривизна положительна; она не зависит от направления обхода. Если κ=0 на отрезке, то кривая на этом отрезке является отрезком прямой. Кривизна — величина второго порядка. Если разложить r(s) в точке s=0, то r(s)=... Окружность радиуса 1/κ(0) совпадает с кривой до слагаемого порядка s^2. При κ>0 определим главную нормаль N=T'/κ и бинормаль B=T×N. Тройка (T,N,B) называется триадой Френе. Она ортонормирована и правоориентирована. Вектор N направлен к стороне, куда кривая «изгибается», а B перпендикулярен осциллирующей плоскости, порождённой T и N. [figure] Вектор B тоже единичный, поэтому B'⊥B. Его проекция на N определяет кручение: τ=-B'·N. Кручение измеряет, насколько кривая уходит из осциллирующей плоскости. Из свойств триады Френе получаются формулы Френе: ... Первая формула — определение кривизны и нормали. Вторая следует из того, что N' лежит в плоскости (T,B) и имеет проекции -κ на T и τ на B. Третья выводится из B=T×N или из ортонормированности триады. Если τ=0, то B постоянен, и кривая лежит в плоскости, перпендикулярной B. Если κ=0, то нормаль не определена, и кривая локально прямая. Если кривая задана в произвольном параметре t, то кривизна вычисляется по формуле κ=... Здесь rddot — вторая производная по t. При κ>0 кручение равно τ=... Обе формулы не зависят от выбора параметра, потому что выражаются через геометрические величины." Count maybe 300. Figure text 40. Total 340.
+
+1.4: "Окружность радиуса R можно параметризовать длиной дуги: ... Тогда T=..., поэтому T'=-1/R T^⊥ и κ=1/R. Кручение равно нулю, поскольку кривая плоская. Винтовая линия ... имеет постоянные кривизну и кручение: ... Если b=0, получаем окружность. Если b≠0, кривая не плоская, и кручение отличает её от плоской кривой. Постоянство κ и τ означает, что триада Френе вращается вдоль винтовой линии с постоянными скоростями." Count ~110.
+
+Chapter1 total ~110+100+340+110=660.
+
+Chapter2:
+2.1: "Поверхность локально можно представить как двумерную сетку кривых. Пусть U⊂R^2 — открытая область, а r(u,v):U→R^3 — гладкое отображение. Если r_u×r_v≠0, где r_u=∂r/∂u, r_v=∂r/∂v, то параметризация называется регулярной. Регулярность означает, что линейное отображение dr имеет ранг 2: матрица Якобиана с колонками r_u и r_v не вырождена. Если r_u и r_v линейно зависимы, то координатная сетка в этой точке «сморщивается», и касательная плоскость не определена однозначно. Кривые u=const и v=const называются координатными кривыми. Векторы r_u и r_v касательны к соответствующим координатным кривым. Касательная плоскость к поверхности в точке r(u,v) состоит из всех векторов вида r(u,v)+a r_u+b r_v, a,b∈R. Она порождается векторами r_u и r_v. Единичная нормаль определяется как n=... Знак нормали зависит от ориентации параметризации. [figure] Любая кривая на поверхности может быть записана как γ(t)=r(u(t),v(t)). Её касательный вектор равен γdot=u' r_u+v' r_v. Таким образом, касательные векторы к поверхности — это все линейные комбинации r_u и r_v. Параметризация не единственна; разные сетки на одной поверхности дают разные E,F,G, но одну и ту же геометрию." Count maybe 210.
+
+2.2: "Введём коэффициенты E=..., F=..., G=.... Для бесконечно малого перемещения (du,dv) квадрат длины элемента дуги равен ds^2=... Это выражение называется первой квадратичной формой поверхности. Она задаёт квадратичную форму на касательной плоскости. Матрица этой формы имеет вид ... Поскольку параметризация регулярна, EG-F^2=|r_u×r_v|^2>0, поэтому форма положительно определена. С геометрической точки зрения первая квадратичная форма — это перенос евклидовой метрики с касательной плоскости на параметрическую плоскость. Вектор (du,dv) в параметрической плоскости отображается в касательный вектор du r_u+dv r_v, и первая квадратичная форма задаёт квадрат его длины. Если кривая на поверхности задана как γ(t)=r(u(t),v(t)), то её длина вычисляется по формуле L=∫... Угол между двумя направлениями (du,dv) и (dũ,dṽ) в касательной плоскости определяется из скалярного произведения a·b=... Таким образом, первая квадратичная форма измеряет длины и углы внутри поверхности. Длины и углы, вычисленные по этой форме, не зависят от выбора параметров: при замене параметров форма переходит в эквивалентную, а её значения на конкретных векторах сохраняются. Для плоскости z=0 с параметризацией (u,v,0) получаем E=G=1, F=0, и первая квадратичная форма принимает вид ds^2=du^2+dv^2." Count maybe 260.
+
+2.3: "Бесконечно малый параллелограмм, образованный векторами r_u du и r_v dv, имеет площадь dA=|r_u×r_v| du dv = sqrt(EG-F^2) du dv. Площадь области на поверхности получается интегрированием этого выражения по соответствующей области в параметрической плоскости. Рассмотрим сферу радиуса R. Её параметризация имеет вид ... где 0<θ<π, 0≤φ<2π. В полюсах θ=0,π параметризация вырождается, поэтому область исключает эти точки. Вычислим частные производные: ... Тогда E=R^2, F=0, G=R^2 sin^2θ. Первая квадратичная форма сферы равна ds^2=R^2(dθ^2+sin^2θ dφ^2), а элемент площади равен dA=R^2 sinθ dθ dφ. Интегрируя dA по 0<θ<π, 0≤φ<2π, получаем площадь сферы 4πR^2. Коэффициент sin^2θ показывает, что параметрическая сетка на сфере не совпадает с декартовой сеткой плоскости: длины окружностей широт зависят от θ. Первая квадратичная форма описывает внутреннюю геометрию поверхности: то, что можно измерить, не выходя с поверхности. Она ещё не говорит о том, как поверхность изогнута в окружающем пространстве. Для этого в следующей главе понадобится вторая квадратичная форма." Count maybe 260.
+
+Chapter2 total ~730.
+
+Total ~382+660+730=1772? That seems low. My word counts per section maybe undercount because formulas count as words? In Russian word count, LaTeX commands maybe count? Usually words are linguistic tokens, but target Russian words likely approximate. My counts are low. Let's actual count maybe higher. For example 1.3 paragraph has many formulas but also text. 340 maybe. Total 1770. Need 2400. Need add ~600 words. Hmm.
+
+Let's more accurately count using rough: The final text above visually maybe 2600 words? My manual counts may be too low because I counted sections as 100 but actual maybe 150. Let's estimate by characters. The final draft (without expansions) maybe 13,000 characters. Russian words average 5 letters + space =6, so 2166. With expansions maybe 15,000 chars -> 2500. Could be okay. Need be safe. Let's add a bit more substance, maybe 300-500 words. But not too much.
+
+Where to add? Could add a short section in Chapter 1: "1.5. Осциллирующая плоскость и плоские кривые"? But plan says first two chapters. Could add within 1.3. Or add "Замечание о параметризации" in Chapter 1. Add "Кривые как образы" maybe.
+
+Add in Chapter 1 after 1.2: "Если исходная параметризация не регулярна, но имеет отдельные критические точки, то длину можно вычислять по кускам; однако для триады Френе требуют регулярности и ненулевой кривизны." ~30.
+
+Add in Chapter 1 1.3: "Осциллирующая плоскость в точке кривой — это плоскость, натянутая на T и N. Если кривая плоская, то все осциллирующие плоскости совпадают." ~25.
+
+Add in Chapter 1 1.4: "Для окружности центр окружности кривизны совпадает с центром окружности; для винтовой линии центр кривизны описывает окружность в плоскости, перпендикулярной оси." Maybe not necessary.
+
+Add in Chapter 2: "Коэффициенты E,F,G иногда называют метрическими коэффициентами. Они зависят от выбора сетки, но квадратичная форма как объект на касательной плоскости не зависит." ~30.
+
+Add in Chapter 2 2.2: "Если F=0, координатные кривые ортогональны. В сферической параметризации F=0, поэтому меридианы и паралели пересекаются под прямым углом." ~25.
+
+Add in Chapter 2 2.3: "Эта метрика показывает, что окружность широты θ=const имеет длину 2πR sinθ." ~15.
+
+Add in intro: "Мы будем использовать локальные координаты: вместо того чтобы описывать всю поверхность сразу, мы смотрим на малую окрестность точки." ~20.
+
+Need maybe add 200 words. Let's incorporate a few.
+
+Also maybe add "Цель первых двух глав" in intro? Already.
+
+Need ensure not too verbose. Let's add concise paragraphs.
+
+Potential final additions:
+- Intro after notation: "Мы будем использовать локальные координаты: вместо того чтобы описывать всю поверхность сразу, мы смотрим на малую окрестность точки и измеряем величины в этой окрестности." 25.
+- Chapter1 1.2 end: "Если исходная параметризация имеет критические точки, длину можно вычислять по частям; для триады Френе на отрезке требуют регулярности и, для нормали, ненулевой кривизны." 28.
+- Chapter1 1.3 after B: "Осциллирующая плоскость в точке кривой — это плоскость, натянутая на T и N. Если кривая плоская, то все осциллирующие плоскости совпадают." 25.
+- Chapter2 2.1 end: "Коэффициенты E,F,G, которые мы введём ниже, называются метрическими коэффициентами. Они зависят от выбора сетки, но квадратичная форма как объект на касательной плоскости не зависит от параметров." 30.
+- Chapter2 2.2 after F=0? Add: "Если F=0, координатные кривые ортогональны. В сферической параметризации F=0, поэтому меридианы и паралели пересекаются под прямым углом." 22.
+- Chapter2 2.3 after metric: "Из этой метрики видно, что окружность широты θ=const имеет длину 2πR sinθ." 15.
+
+Total +145. Maybe enough. Need maybe +200. Add in intro plan explanation: "В главах 3–4 мы перейдём от внутренних расстояний к изгибу: нормальная кривизна измеряет, насколько кривая на поверхности отклоняется от касательной плоскости." ~25. Add in Chapter 1 1.4: "Эти примеры показывают, как геометрические инварианты различают плоские и пространственные кривые." 14. Add in Chapter 2 2.3: "Первая квадратичная форма сферы не приводится к плоской форме глобально, хотя локально всегда можно выбрать ортогональные координаты." Maybe too advanced. Add "локально" maybe. 20.
+
+Total +164. Good.
+
+Need maybe actual word count now >2400. Let's proceed.
+
+Need ensure final not too long >3200. Probably ~2600-2800.
+
+Let's write final with all additions integrated smoothly.
+
+Double-check mathematical statements:
+- "Кривизна положительна; она не зависит от направления обхода." If parameter reversed, T' changes? T(s) with s oriented; if reverse s->-s, T->-T, T'->-T'? κ same. Good.
+- "Если τ=0, то B постоянен, и кривая лежит в плоскости, перпендикулярной B." If τ=0 on interval and B constant, then r·B? derivative r'·B = T·B=0, so r·B constant, lies in plane. Good.
+- "Окружность радиуса 1/κ(0) совпадает с кривой до слагаемого порядка s^2." Need center? The osculating circle center is r(0)+(1/κ)N(0). Expansion of circle: r0 + s T + (1/2)s^2 κ N + ... yes. Good.
+- "Если F=0, координатные кривые ортогональны." Yes.
+- "В сферической параметризации F=0, поэтому меридианы и паралели пересекаются под прямым углом." Yes.
+- "Окружность широты θ=const имеет длину 2πR sinθ." From metric dθ=0, ds=R sinθ dφ, length 2πR sinθ. Good.
+- "Первая квадратичная форма не зависит от параметров" as object on tangent plane; coefficients change. Good.
+
+Need maybe "матрица Якобиана с колонками r_u и r_v" but mapping R^2 -> R^3, Jacobian is 3x2. Good.
+
+Need maybe "линейное отображение dr" introduced? We can say "производная отображения". Good.
+
+Need maybe "ранг 2" audience matrices. Good.
+
+Need maybe "эквивалентную" in 2.2: maybe not precise? Under change of parameters, matrix transforms by A^T A, so same quadratic form on tangent vectors. "переходит в эквивалентную" okay but maybe vague. Could say "значения на конкретных векторах сохраняются". Good.
+
+Need maybe "вектор a·b" in angle formula: We use \mathbf a, \mathbf b but not defined as actual vectors? We can say "Для двух касательных векторов, соответствующих направлениям...". Better: "Угол между двумя направлениями ... вычисляется из скалярного произведения соответствующих касательных векторов:
+\[
+(du\mathbf r_u+dv\mathbf r_v)\cdot(d\tilde u\mathbf r_u+d\tilde v\mathbf r_v)=...
+\]
+" This is clearer. Let's use that instead of a·b. Good.
+
+Need maybe in 2.2: "Для бесконечно малого перемещения (du,dv)" okay.
+
+Need maybe "d\tilde u" notation introduced? It's clear. Could say "и \((d\tilde u,d\tilde v)\)". Good.
+
+Need maybe "O(s^3)" notation? Audience derivatives, okay. Could avoid? It's fine.
+
+Need maybe "T^⊥" in circle example: \mathbf T^\perp not defined. Better write explicitly: \mathbf T' = (-1/R)(cos(s/R), sin(s/R),0) = -1/R \mathbf N? Actually for circle, T=(-sin, cos,0), T'=(-1/R cos, -1/R sin,0). N = T'/κ = (-cos, -sin,0). Could write "тогда \(\mathbf T'=-\frac1R(\cos(s/R),\sin(s/R),0)\) и \(\kappa=1/R\)." Avoid T^⊥. Good.
+
+Need maybe "центр окружности кривизны" not in example. Fine.
+
+Need maybe "винтовая линия" formula for T? Not needed.
+
+Need maybe "смешанное произведение" as determinant with vectors as columns. Good.
+
+Need maybe "правильно" no.
+
+Let's produce final. Ensure Markdown headings. Use blockquote for figures. Need exact description and caption. Good.
+
+One more check: The user requested "начало учебного пособия ... введение, включающее предварительный учебный план всей книги, и первые две полноценные главы." We have title, intro, two chapters. Good.
+
+Need "Ориентир общего объёма — 2400–3200 русских слов." We need be within. Let's maybe do a rough final word count using a mental tool? Could count by copying into analysis? Let's attempt approximate with word counter mentally? Hard. Maybe final length around 2700. Let's estimate characters: The final text with additions likely ~17000 characters. Russian average word length 6 including space? 17000/6=2833. Good. If average 7, 2428. Good. Within.
+
+Need maybe not too many formulas count as words? In word count, LaTeX commands like \mathbf might count as words? But target Russian words, probably natural language. Fine.
+
+Let's final. Ensure no meta. Use Russian. Need maybe "Рис. 1" and "Рис. 2". Good.
+
+Final text:
+
+[Will produce].

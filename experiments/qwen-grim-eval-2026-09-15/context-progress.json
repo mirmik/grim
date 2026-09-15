@@ -1,0 +1,7 @@
+{
+  "case": "06_without_examples",
+  "prompt_tokens": 1048,
+  "decoded_tokens": 27489,
+  "context_capacity": 131072,
+  "observed_utc": "2026-09-15T01:02:38Z"
+}
