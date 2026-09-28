@@ -1,6 +1,32 @@
 (() => {
   let ready = false, timer;
   const send = (type, payload = {}) => parent.postMessage({grim: true, type, path: location.pathname, ...payload}, '*');
+  // A sandboxed book cannot read the viewer's storage or DOM. The viewer sends
+  // its resolved theme through the same source-checked channel as restoration.
+  const themeStyle = document.createElement('style');
+  themeStyle.textContent = `
+    html[data-grim-theme="light"] { color-scheme: light; }
+    html[data-grim-theme="dark"] { color-scheme: dark; background: #17211d !important; color: #e0e9df !important; }
+    html[data-grim-theme="dark"] :where(body, body *):not(:where(img, picture, video, audio, canvas, svg, svg *, [data-grim-preserve-colors], [data-grim-preserve-colors] *)) {
+      color: #e0e9df !important;
+      background-color: transparent !important;
+      border-color: #49614d !important;
+    }
+    html[data-grim-theme="dark"] :where(pre, code, blockquote, .note, .formula, .lab, th, input, textarea, select, button):not([data-grim-preserve-colors], [data-grim-preserve-colors] *) { background-color: #233329 !important; }
+    html[data-grim-theme="dark"] :where(a, a *):not([data-grim-preserve-colors], [data-grim-preserve-colors] *, svg, svg *) { color: #a8d299 !important; }
+    html[data-grim-theme="dark"] :where(figcaption, .eyebrow, .lead, .small):not([data-grim-preserve-colors], [data-grim-preserve-colors] *) { color: #a8b8aa !important; }
+    /* Transparent diagrams often contain dark labels. Keep a light backing,
+       without inverting the colors of illustrations or interactive canvases. */
+    html[data-grim-theme="dark"] :where(svg, canvas):not([data-grim-preserve-colors], [data-grim-preserve-colors] *) { background-color: #fffefa; }
+  `;
+  document.documentElement.append(themeStyle);
+  function applyTheme(theme) {
+    if (theme !== 'light' && theme !== 'dark') return;
+    document.documentElement.dataset.grimTheme = theme;
+  }
+  // Apply before body parsing, including on page changes; later updates arrive
+  // by message so controls, selection and scroll position stay intact.
+  applyTheme(new URLSearchParams(location.search).get('grim-theme'));
   const blockSelector = 'h1,h2,h3,p,li,figcaption,blockquote,pre,math,.katex';
   const blocks = () => {
     const visible = [...document.querySelectorAll(blockSelector)].filter(el => {
@@ -53,7 +79,9 @@
   }
   function schedule() {clearTimeout(timer); timer = setTimeout(report, 100);}
   addEventListener('message', event => {
-    if (event.source !== parent || !event.data?.grim || event.data.type !== 'restore') return;
+    if (event.source !== parent || !event.data?.grim) return;
+    if (event.data.type === 'theme') { applyTheme(event.data.theme); return; }
+    if (event.data.type !== 'restore') return;
     const p = event.data.position;
     if (p) {
       const anchor = p.anchor && document.getElementById(p.anchor);

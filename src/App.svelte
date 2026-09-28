@@ -1,7 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import Library from './Library.svelte';
   import AgentPanel from './AgentPanel.svelte';
+  import ThemePicker from './ThemePicker.svelte';
+  import { resolvedTheme } from './theme';
   import { offline, fetchBook } from './platform';
   type Page = {id:string; title:string; path?:string; children?:Page[]};
   type Position = {visible_text:string; selection:string; anchor:string; scroll_y:number; anchor_offset:number};
@@ -9,6 +12,11 @@
   let book = $state<Book|null>(null), bookId = $state<string|null>(null);
   let current = $state<Page|null>(null), revision = $state(0), connected = $state(false), error = $state('');
   let frame = $state<HTMLIFrameElement>();
+  let headerHeight = $state(65);
+  function sendTheme() {
+    frame?.contentWindow?.postMessage({grim:true,type:'theme',theme:$resolvedTheme}, '*');
+  }
+  $effect(() => { sendTheme(); });
   let token = $state('');
   let lastRevision = -1, pendingHash = '', generation = 0, sequence = 0;
   let events:EventSource|null = null;
@@ -106,6 +114,7 @@
       const data=event.data;
       if(event.source!==frame?.contentWindow || !data?.grim || !current?.path || data.path!==prefix+encodedPath(current.path))return;
       if(data.type==='ready') {
+        sendTheme();
         frame?.contentWindow?.postMessage({grim:true,type:'restore',position:pendingHash?{...empty(),anchor:pendingHash,anchor_offset:24}:$state.snapshot(position)},'*');pendingHash='';
       }else if(data.type==='context') {
         if(![data.visible_text,data.selection,data.anchor].every(x=>typeof x==='string') || ![data.scroll_y,data.anchor_offset].every(Number.isFinite))return;
@@ -151,7 +160,7 @@
 {#if !bookId}
   <Library onopen={(id)=>{void openBook(id);}}/>
 {:else}
-<div class="app-shell" class:offline>
+<div class="app-shell" class:offline style:--reader-header-height={`${headerHeight}px`}>
   <aside class:mobile-open={sidebar}>
     <a class="brand" href="/" aria-label="Grim, главная"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a>
     <button class="back-library" onclick={()=>showLibrary()}>← Библиотека</button>
@@ -163,13 +172,13 @@
     <div class="sidebar-bottom"><div class="connection"><span class:online={connected}></span>{offline ? 'Книга на устройстве' : connected ? 'Книга обновляется с диска' : 'Восстанавливаем соединение…'}</div><p>{offline ? 'Читайте без сети. Место в книге сохраняется автоматически.' : 'Читайте. Исследуйте. Задавайте вопросы своему агенту.'}</p><span class="version">GRIM / PROTOTYPE 0.2</span></div>
   </aside>
   <main>
-    <header><button class="menu-button" aria-label="Оглавление" onclick={()=>sidebar=!sidebar}>☰</button><div class="breadcrumbs"><button class="breadcrumb-library" onclick={()=>showLibrary()}>Библиотека</button> <span>/</span> <strong>{current?.title || 'Grim'}</strong></div><button class="context-toggle" class:selected={showContext} onclick={()=>{showContext=!showContext;showAgent=false;}}><span>⌘</span> <span class="context-label">{offline ? 'Фрагмент' : 'Контекст чтения'}</span> {#if position.selection}<i></i>{/if}</button>{#if !offline && book}<button class="context-toggle" class:selected={showAgent} onclick={()=>{showAgent=!showAgent;showContext=false;}}>Чат с агентом</button>{/if}</header>
+    <header bind:clientHeight={headerHeight}><button class="menu-button" aria-label="Оглавление" onclick={()=>sidebar=!sidebar}>☰</button><div class="breadcrumbs"><button class="breadcrumb-library" onclick={()=>showLibrary()}>Библиотека</button> <span>/</span> <strong>{current?.title || 'Grim'}</strong></div><div class="reader-actions"><ThemePicker/><button class="context-toggle" class:selected={showContext} onclick={()=>{showContext=!showContext;showAgent=false;}}><span>⌘</span> <span class="context-label">{offline ? 'Фрагмент' : 'Контекст чтения'}</span> {#if position.selection}<i></i>{/if}</button>{#if !offline && book}<button class="context-toggle" class:selected={showAgent} onclick={()=>{showAgent=!showAgent;showContext=false;}}>Чат с агентом</button>{/if}</div></header>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
     <div class="reading-area">
       <section class="page-area" aria-label="Страница книги">
         <div class="reading-meta"><span>{current ? 'ГЛАВА '+(pageIndex+1).toString().padStart(2,'0') : 'НОВАЯ КНИГА'}</span><span>{updated ? `Обновлено в ${updated}` : 'Маленькие открытия, большой мир'}</span></div>
         {#if current?.path}
-          {#key `${bookId}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" allow="fullscreen *" src={`${prefix}${encodedPath(current.path)}?v=${revision}`}></iframe>{/key}
+          {#key `${bookId}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" allow="fullscreen *" src={`${prefix}${encodedPath(current.path)}?v=${revision}&grim-theme=${get(resolvedTheme)}`}></iframe>{/key}
         {:else if book}
           <div class="empty-book"><span class="eyebrow">ПЕРВАЯ СТРАНИЦА ЕЩЁ ВПЕРЕДИ</span><h1>{book.title}</h1><p>Книга создана. Начните тему в чате или со своим внешним агентом: он добавит HTML-страницы и оглавление, а они появятся здесь автоматически.</p><h2>Папка для ваших страниц</h2><code>{book.root}</code><p class="small">Оглавление: book.json · Добавьте страницу в массив pages.</p></div>
         {/if}
