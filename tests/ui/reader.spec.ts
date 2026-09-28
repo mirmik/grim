@@ -33,7 +33,25 @@ test('selection → API → disk edit → live reload with reading position', as
   expect(errors).toEqual([]);
 });
 
-test('mouse selection remains available when focus moves to the notes panel', async ({page}) => {
+for (const clear of ['click', 'removeAllRanges'] as const) {
+  test(`note action disappears when selection is cleared by ${clear}`, async ({page}) => {
+    await openDemo(page);
+    const definition=page.frameLocator('iframe').locator('#definition');
+    await definition.click();
+    await definition.evaluate(el=>{
+      const range=document.createRange();range.selectNodeContents(el);
+      const selection=getSelection()!;selection.removeAllRanges();selection.addRange(range);
+    });
+    const action=page.getByRole('button',{name:'＋ Заметка к выделению'});
+    await expect(action).toBeVisible();
+    if(clear==='click')await definition.click();
+    else await definition.evaluate(()=>getSelection()!.removeAllRanges());
+    await expect.poll(()=>definition.evaluate(()=>getSelection()?.isCollapsed)).toBe(true);
+    await expect(action).toHaveCount(0);
+  });
+}
+
+test('mouse selection remains available when focus moves to the notes panel', async ({page, request}) => {
   await openDemo(page);
   const definition=page.frameLocator('iframe').locator('#definition');
   await definition.scrollIntoViewIfNeeded();
@@ -50,6 +68,13 @@ test('mouse selection remains available when focus moves to the notes panel', as
   await expect(page.getByRole('button',{name:'＋ Заметка к выделению'})).toBeVisible();
   await page.getByRole('button',{name:'＋ Заметка к выделению'}).click();
   await expect(page.getByLabel('Новая заметка')).toBeVisible();
+  await definition.evaluate(()=>getSelection()!.removeAllRanges());
+  await expect.poll(async()=> (await (await request.get('/api/context')).json()).context?.selection).toBe('');
+  await expect(page.getByLabel('Новая заметка')).toBeVisible();
+  await page.getByLabel('Новая заметка').fill('Сохранённый фрагмент');
+  await expect(page.getByRole('button',{name:'Сохранить заметку'})).toBeEnabled();
+  await page.getByRole('button',{name:'Закрыть заметки'}).click();
+  await expect(page.getByRole('button',{name:'＋ Заметка к выделению'})).toHaveCount(0);
 });
 
 test('notes survive reload and follow a quoted block through a text edit', async ({page, request}) => {
