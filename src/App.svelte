@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Library from './Library.svelte';
   import AgentPanel from './AgentPanel.svelte';
-  import { offline, fetchBook } from './platform';
+  import { appPath, offline, fetchBook } from './platform';
   type Page = {id:string; title:string; path?:string; children?:Page[]};
   type Position = {visible_text:string; selection:string; anchor:string; scroll_y:number; anchor_offset:number};
   type Book = {id:string;title:string;subtitle?:string;pages:Page[];root:string};
@@ -94,7 +94,7 @@
   }
   function showLibrary(push=true) {
     savePosition();idle();generation++;events?.close();events=null;bookId=null;book=null;current=null;error='';
-    if(push)history.pushState({},'','/');
+    if(push)history.pushState({},'',appPath);
   }
   onMount(()=>{
     readerId=crypto.randomUUID();
@@ -153,7 +153,7 @@
 {:else}
 <div class="app-shell" class:offline>
   <aside class:mobile-open={sidebar}>
-    <a class="brand" href="/" aria-label="Grim, главная"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a>
+    <a class="brand" href={appPath} aria-label="Grim, главная"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a>
     <button class="back-library" onclick={()=>showLibrary()}>← Библиотека</button>
     <div class="library-label">ВАША ЖИВАЯ КНИГА</div>
     <div class="book-title">{book?.title || 'Открываем книгу…'}</div>

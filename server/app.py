@@ -47,6 +47,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     writer_token = secrets.token_urlsafe(32)
     states = {}
     library = None
+    allowed_hosts = {'127.0.0.1', 'localhost', 'testserver'}
+    allowed_hosts.update(host.strip().lower() for host in os.environ.get('GRIM_ALLOWED_HOSTS', '').split(',') if host.strip())
 
     def scan(root):
         result = {}
@@ -122,7 +124,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         # Host check defeats browser DNS rebinding. No cross-origin API access,
         # including the opaque (Origin: null) book sandbox. CLI requests work.
         host = request.url.hostname
-        if host not in ('127.0.0.1', 'localhost', 'testserver'):
+        if host is None or host.lower() not in allowed_hosts:
             return JSONResponse({'detail': 'Local host required'}, status_code=403)
         if request.url.path.startswith('/api/'):
             origin = request.headers.get('origin')

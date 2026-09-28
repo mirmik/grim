@@ -117,6 +117,12 @@ def test_api_boundary(client,hdr):
     # Even a stolen token is not sufficient for a foreign browser origin.
     assert client.post('/api/library/create',json={'title':'Denied'},headers={**headers(client),**hdr}).status_code==403
 
+def test_configured_lan_host(monkeypatch,book,tmp_path):
+    monkeypatch.setenv('GRIM_ALLOWED_HOSTS','192.168.0.61, 192.168.0.81')
+    with TestClient(create_app(book,tmp_path/'library'),base_url='http://192.168.0.61:8000') as client:
+        assert client.get('/api/library').status_code==200
+        assert client.get('/api/library',headers={'Host':'192.168.0.99'}).status_code==403
+
 def test_watcher_is_per_book(client,book,tmp_path):
     hdr=headers(client)
     second=make_book(tmp_path/'second','Second','Other')
