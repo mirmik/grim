@@ -33,9 +33,12 @@ def info(client,book_id=None):
 
 def test_book_html_and_download(client):
     book_id=entry(client)['id']
-    assert info(client).json()['pages'][0]['id']=='one'
-    page=client.get(f'/book/{book_id}/one.html')
-    assert '/bridge.js' in page.text
+    book_info=info(client).json()
+    assert book_info['pages'][0]['id']=='one'
+    assert book_info['bridge_version'].isdigit()
+    page=client.get(f'/book/{book_id}/__grim_v_{book_info["bridge_version"]}_1__one.html')
+    assert '<script src="/bridge-' not in page.text
+    assert "parent.postMessage({grim: true" in page.text
     assert 'sandbox allow-scripts' in page.headers['content-security-policy']
     assert 'allow-same-origin' not in page.headers['content-security-policy']
     assert "connect-src 'none'" in page.headers['content-security-policy']

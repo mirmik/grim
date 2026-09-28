@@ -1,0 +1,19 @@
+@media (max-width:720px), (max-height:500px) and (pointer:coarse) {
+  .reader-actions .context-toggle:last-child:not(.agent-toggle) { display:flex; }
+  .reader-actions .context-toggle.agent-toggle { display:flex; }
+}
+
+.reading-area { position:relative; }
+.selection-note-action {
+  position:fixed;
+  z-index:4;
+  transform:translate(-50%,-100%);
+  border:1px solid #cad7b8;
+  border-radius:18px;
+  padding:9px 15px;
+  color:#365b42;
+  background:#fffef4;
+  box-shadow:0 5px 18px #263c3428;
+  font-size:11px;
+  white-space:nowrap;
+}

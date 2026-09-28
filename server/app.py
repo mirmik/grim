@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import time
 
@@ -49,6 +50,13 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     library = None
     allowed_hosts = {'127.0.0.1', 'localhost', 'testserver'}
     allowed_hosts.update(host.strip().lower() for host in os.environ.get('GRIM_ALLOWED_HOSTS', '').split(',') if host.strip())
+
+    def bridge_version():
+        return str((BASE / 'server' / 'bridge.js').stat().st_mtime_ns)
+
+    def inline_bridge():
+        source = (BASE / 'server' / 'bridge.js').read_text(encoding='utf-8')
+        return '<script>' + re.sub(r'</script', r'<\\/script', source, flags=re.IGNORECASE) + '</script>'
 
     def scan(root):
         result = {}
@@ -171,7 +179,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     async def get_book(book_id: str):
         root = library.root(book_id)
         return {**manifest(root), 'id': book_id, 'root': str(root),
-                'writer_token': writer_token, 'revision': state_for(book_id)['revision']}
+                'writer_token': writer_token, 'revision': state_for(book_id)['revision'],
+                'bridge_version': bridge_version()}
 
     @app.get('/api/context')
     async def get_context(reader_id: str = None, book_id: str = None):
@@ -233,19 +242,37 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     async def bridge():
         return FileResponse(BASE / 'server' / 'bridge.js', media_type='text/javascript')
 
+    @app.get('/bridge-{version}.js')
+    async def versioned_bridge(version: str):
+        bridge_file = BASE / 'server' / 'bridge.js'
+        if version != bridge_version():
+            raise HTTPException(status_code=404, detail='Unknown bridge version')
+        return FileResponse(
+            bridge_file,
+            media_type='text/javascript',
+            headers={'Cache-Control': 'public, max-age=31536000, immutable'},
+        )
+
     @app.get('/vendor/{path:path}')
     async def vendor(path: str):
         return FileResponse(safe_file(BASE / 'node_modules' / 'katex' / 'dist', path))
 
     @app.get('/book/{book_id}/{path:path}')
     async def book_file(book_id: str, path: str, download: bool = False):
+        # The live iframe uses a synthetic filename so reverse proxies that
+        # ignore query parameters cannot keep serving an old injected bridge.
+        versioned_name = re.match(r'^(.*?/)?__grim_v_[a-zA-Z0-9]+_\d+__([^/]+)$', path)
+        if versioned_name:
+            path = (versioned_name.group(1) or '') + versioned_name.group(2)
         file = safe_file(library.root(book_id), path)
         if download:
             return FileResponse(file, filename=file.name, media_type='application/octet-stream')
         if file.suffix.lower() in ('.html', '.htm'):
             source = file.read_text(encoding='utf-8')
             # Insert first so page scripts cannot accidentally prevent bridge setup.
-            bridge = '<script src="/bridge.js"></script>'
+            # Keep it inline: an authenticated reverse proxy may reject a
+            # subresource request from this deliberately opaque sandbox frame.
+            bridge = inline_bridge()
             if '<head>' in source:
                 source = source.replace('<head>', '<head>' + bridge, 1)
             else:

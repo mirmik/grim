@@ -2,10 +2,12 @@
   import { onMount } from 'svelte';
   import Library from './Library.svelte';
   import AgentPanel from './AgentPanel.svelte';
+  import NotesPanel from './NotesPanel.svelte';
+  import { loadNotes, noteAnchor, saveNotes, type NoteAnchor, type ReaderNote } from './notes';
   import { appPath, offline, fetchBook } from './platform';
   type Page = {id:string; title:string; path?:string; children?:Page[]};
   type Position = {visible_text:string; selection:string; anchor:string; scroll_y:number; anchor_offset:number};
-  type Book = {id:string;title:string;subtitle?:string;pages:Page[];root:string};
+  type Book = {id:string;title:string;subtitle?:string;pages:Page[];root:string;bridge_version?:string};
   let book = $state<Book|null>(null), bookId = $state<string|null>(null);
   let current = $state<Page|null>(null), revision = $state(0), connected = $state(false), error = $state('');
   let frame = $state<HTMLIFrameElement>();
@@ -15,13 +17,52 @@
   let readerId = $state('');
   const empty = ():Position => ({visible_text:'',selection:'',anchor:'',scroll_y:0,anchor_offset:0});
   let position = $state<Position>(empty());
-  let showAgent = $state(false), showContext = $state(false), sidebar = $state(false), updated = $state('');
+  let showAgent = $state(false), showContext = $state(false), showNotes = $state(false), sidebar = $state(false), updated = $state('');
+  let notes = $state<ReaderNote[]>([]), noteSelection = $state(''), selectionAnchor = $state<NoteAnchor|null>(null), noteAction = $state<{x:number;y:number}|null>(null), noteStatus = $state<Record<string,string>>({});
+  let pendingNoteId = '';
   let contextStatus = $state('Ожидание страницы');
   const flatten = (nodes:Page[]):Page[] => nodes.flatMap(n => [...(n.path ? [n] : []), ...flatten(n.children || [])]);
   let allPages = $derived(book ? flatten(book.pages) : []);
   let pageIndex = $derived(allPages.findIndex(p=>p.id===current?.id));
   let prefix = $derived(`/book/${bookId}/`);
   const encodedPath = (path:string) => path.split('/').map(encodeURIComponent).join('/');
+  function framePath(path:string) {
+    const encoded=encodedPath(path);
+    if(offline || !book?.bridge_version)return prefix+encoded;
+    const parts=encoded.split('/'),name=parts.pop()!;
+    parts.push(`__grim_v_${encodeURIComponent(book.bridge_version)}_${revision}__${name}`);
+    return prefix+parts.join('/');
+  }
+  function currentNotes() {return notes.filter(note=>note.page_id===current?.id);}
+  function syncNotes(focus='') {
+    // The sandbox receives only anchors needed for rendering, never the user's note text.
+    const rendered=currentNotes().map(note=>({id:note.id,anchor:$state.snapshot(note.anchor)}));
+    frame?.contentWindow?.postMessage({grim:true,type:'notes',notes:rendered},'*');
+    const note=focus&&notes.find(item=>item.id===focus);
+    if(note)requestAnimationFrame(()=>frame?.contentWindow?.postMessage({grim:true,type:'focus-note',note:{id:note.id,anchor:$state.snapshot(note.anchor)}},'*'));
+  }
+  function persistNotes(next:ReaderNote[]) {
+    if(!book)return;
+    notes=next;saveNotes(book.id,$state.snapshot(next));syncNotes();
+  }
+  function createNote(text:string) {
+    if(!current || !selectionAnchor || !noteSelection.trim())return;
+    const now=new Date().toISOString();
+    const note:ReaderNote={id:crypto.randomUUID(),page_id:current.id,page_title:current.title,text,anchor:$state.snapshot(selectionAnchor),created_at:now,updated_at:now};
+    persistNotes([note,...notes]);noteStatus={...noteStatus,[note.id]:'exact'};
+    noteSelection='';selectionAnchor=null;noteAction=null;
+    frame?.contentWindow?.postMessage({grim:true,type:'clear-selection'},'*');
+  }
+  function updateNote(id:string,text:string) {
+    persistNotes(notes.map(note=>note.id===id?{...note,text,updated_at:new Date().toISOString()}:note));
+  }
+  function deleteNote(id:string) {persistNotes(notes.filter(note=>note.id!==id));}
+  function openNote(note:ReaderNote) {
+    const page=allPages.find(item=>item.id===note.page_id);
+    if(!page){noteStatus={...noteStatus,[note.id]:'missing'};return;}
+    showNotes=true;showAgent=false;showContext=false;
+    if(current?.id!==page.id){pendingNoteId=note.id;select(page);}else syncNotes(note.id);
+  }
   function savePosition() {
     if (!book || !current) return;
     try {localStorage.setItem(`grim-reading:${book.id}`,JSON.stringify({page_id:current.id,position:{...position,selection:'',visible_text:''}}));}catch{}
@@ -50,7 +91,7 @@
     void fetch('/api/viewer/idle',{method:'POST',headers:{'Content-Type':'application/json','X-Grim-Viewer':token},body:JSON.stringify({reader_id:readerId,sequence:++sequence})}).catch(()=>{});
   }
   function select(page:Page,hash='') {
-    current=page;position=empty();pendingHash=hash;sidebar=false;contextStatus='Ожидание страницы';
+    current=page;position=empty();noteSelection='';selectionAnchor=null;noteAction=null;pendingHash=hash;sidebar=false;contextStatus='Ожидание страницы';
     savePosition();void publish();
   }
   async function loadBook(id:string,epoch:number) {
@@ -71,7 +112,7 @@
   async function openBook(id:string,push=true) {
     savePosition();idle();events?.close();events=null;
     const epoch=++generation;
-    bookId=id;book=null;current=null;position=empty();pendingHash='';error='';updated='';connected=false;sidebar=false;
+    bookId=id;book=null;current=null;position=empty();noteSelection='';selectionAnchor=null;noteAction=null;notes=loadNotes(id);noteStatus={};pendingHash='';pendingNoteId='';error='';updated='';connected=false;sidebar=false;showAgent=false;showContext=false;showNotes=false;
     if(push)history.pushState({},'',`?book=${encodeURIComponent(id)}`);
     try {
       const data=await loadBook(id,epoch);if(!data)return;
@@ -93,7 +134,7 @@
     }catch(e){if(epoch===generation)error=String(e);}
   }
   function showLibrary(push=true) {
-    savePosition();idle();generation++;events?.close();events=null;bookId=null;book=null;current=null;error='';
+    savePosition();idle();generation++;events?.close();events=null;bookId=null;book=null;current=null;notes=[];noteSelection='';selectionAnchor=null;noteAction=null;showAgent=false;showContext=false;showNotes=false;error='';
     if(push)history.pushState({},'',appPath);
   }
   onMount(()=>{
@@ -104,13 +145,29 @@
     };
     const listener=(event:MessageEvent)=>{
       const data=event.data;
-      if(event.source!==frame?.contentWindow || !data?.grim || !current?.path || data.path!==prefix+encodedPath(current.path))return;
+      if(event.source!==frame?.contentWindow || !data?.grim || !current?.path || data.path!==framePath(current.path))return;
       if(data.type==='ready') {
         frame?.contentWindow?.postMessage({grim:true,type:'restore',position:pendingHash?{...empty(),anchor:pendingHash,anchor_offset:24}:$state.snapshot(position)},'*');pendingHash='';
+        syncNotes(pendingNoteId);pendingNoteId='';
       }else if(data.type==='context') {
         if(![data.visible_text,data.selection,data.anchor].every(x=>typeof x==='string') || ![data.scroll_y,data.anchor_offset].every(Number.isFinite))return;
         position={visible_text:data.visible_text.slice(0,24000),selection:data.selection.slice(0,12000),anchor:data.anchor.slice(0,300),scroll_y:Math.max(0,data.scroll_y),anchor_offset:data.anchor_offset};
+        const exact=position.selection.replace(/\s+/g,' ').trim();
+        const nextAnchor=noteAnchor(data.selection_anchor) || (exact ? {exact,prefix:'',suffix:'',element_id:'',block_text:exact,start:0,end:exact.length} : null);
+        // Keep the latest real selection for note creation: focusing a parent
+        // control may collapse the iframe selection before the user can save it.
+        if(position.selection.trim() && nextAnchor){
+          noteSelection=position.selection;selectionAnchor=nextAnchor;
+          const rect=data.selection_rect,frameRect=frame?.getBoundingClientRect();
+          if(frameRect && rect && [rect.left,rect.top,rect.bottom,rect.width].every(Number.isFinite)){
+            const x=Math.max(85,Math.min(innerWidth-85,frameRect.left+rect.left+rect.width/2));
+            let y=frameRect.top+rect.top-12;if(y<82)y=frameRect.top+rect.bottom+12;
+            noteAction={x,y:Math.max(70,Math.min(innerHeight-70,y))};
+          }else noteAction={x:innerWidth/2,y:innerHeight-80};
+        }
         savePosition();void publish();
+      }else if(data.type==='notes-status' && data.resolved && Array.isArray(data.missing)) {
+        noteStatus={...noteStatus,...data.resolved,...Object.fromEntries(data.missing.filter((id:unknown)=>typeof id==='string').map((id:string)=>[id,'missing']))};
       }else if((data.type==='download'||data.type==='navigate') && typeof data.href==='string') {
         const url=new URL(data.href,location.origin);
         if(url.origin!==location.origin || !url.pathname.startsWith(prefix))return;
@@ -126,6 +183,7 @@
     const back=(event:Event)=>{
       if(showAgent){showAgent=false;event.preventDefault();}
       else if(showContext){showContext=false;event.preventDefault();}
+      else if(showNotes){showNotes=false;event.preventDefault();}
       else if(sidebar){sidebar=false;event.preventDefault();}
       else if(bookId){showLibrary();event.preventDefault();}
     };
@@ -163,19 +221,21 @@
     <div class="sidebar-bottom"><div class="connection"><span class:online={connected}></span>{offline ? 'Книга на устройстве' : connected ? 'Книга обновляется с диска' : 'Восстанавливаем соединение…'}</div><p>{offline ? 'Читайте без сети. Место в книге сохраняется автоматически.' : 'Читайте. Исследуйте. Задавайте вопросы своему агенту.'}</p><span class="version">GRIM / PROTOTYPE 0.2</span></div>
   </aside>
   <main>
-    <header><button class="menu-button" aria-label="Оглавление" onclick={()=>sidebar=!sidebar}>☰</button><div class="breadcrumbs"><button class="breadcrumb-library" onclick={()=>showLibrary()}>Библиотека</button> <span>/</span> <strong>{current?.title || 'Grim'}</strong></div><button class="context-toggle" class:selected={showContext} onclick={()=>{showContext=!showContext;showAgent=false;}}><span>⌘</span> <span class="context-label">{offline ? 'Фрагмент' : 'Контекст чтения'}</span> {#if position.selection}<i></i>{/if}</button>{#if !offline && book}<button class="context-toggle" class:selected={showAgent} onclick={()=>{showAgent=!showAgent;showContext=false;}}>Чат с агентом</button>{/if}</header>
+    <header><button class="menu-button" aria-label="Оглавление" onclick={()=>sidebar=!sidebar}>☰</button><div class="breadcrumbs"><button class="breadcrumb-library" onclick={()=>showLibrary()}>Библиотека</button> <span>/</span> <strong>{current?.title || 'Grim'}</strong></div><div class="reader-actions"><button class="context-toggle" class:selected={showNotes} onclick={()=>{showNotes=!showNotes;showAgent=false;showContext=false;}}>Заметки {#if notes.length}<b>{notes.length}</b>{/if}</button><button class="context-toggle" aria-label={offline ? 'Фрагмент' : 'Контекст чтения'} class:selected={showContext} onclick={()=>{showContext=!showContext;showAgent=false;showNotes=false;}}><span>⌘</span> <span class="context-label">{offline ? 'Фрагмент' : 'Контекст чтения'}</span> {#if position.selection}<i></i>{/if}</button>{#if !offline && book}<button class="context-toggle agent-toggle" class:selected={showAgent} onclick={()=>{showAgent=!showAgent;showContext=false;showNotes=false;}}>Чат с агентом</button>{/if}</div></header>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
     <div class="reading-area">
       <section class="page-area" aria-label="Страница книги">
         <div class="reading-meta"><span>{current ? 'ГЛАВА '+(pageIndex+1).toString().padStart(2,'0') : 'НОВАЯ КНИГА'}</span><span>{updated ? `Обновлено в ${updated}` : 'Маленькие открытия, большой мир'}</span></div>
         {#if current?.path}
-          {#key `${bookId}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" allow="fullscreen *" src={`${prefix}${encodedPath(current.path)}?v=${revision}`}></iframe>{/key}
+          {#key `${bookId}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" allow="fullscreen *" src={framePath(current.path)}></iframe>{/key}
         {:else if book}
           <div class="empty-book"><span class="eyebrow">ПЕРВАЯ СТРАНИЦА ЕЩЁ ВПЕРЕДИ</span><h1>{book.title}</h1><p>Книга создана. Начните тему в чате или со своим внешним агентом: он добавит HTML-страницы и оглавление, а они появятся здесь автоматически.</p><h2>Папка для ваших страниц</h2><code>{book.root}</code><p class="small">Оглавление: book.json · Добавьте страницу в массив pages.</p></div>
         {/if}
         <footer><span>{pageIndex+1} / {allPages.length}</span><div><button disabled={pageIndex<=0} onclick={()=>select(allPages[pageIndex-1])}>← Назад</button><button disabled={pageIndex>=allPages.length-1} onclick={()=>select(allPages[pageIndex+1])}>Далее →</button></div></footer>
       </section>
+      {#if noteSelection && selectionAnchor && !showNotes}<button class="selection-note-action" style:left={`${noteAction?.x??innerWidth/2}px`} style:top={`${noteAction?.y??innerHeight-80}px`} onclick={()=>{showNotes=true;showAgent=false;showContext=false;}}>＋ Заметка к выделению</button>{/if}
       {#if showAgent && book && !offline}{#key bookId}<AgentPanel {bookId} {readerId} {token} context={()=>({page_id:current?.id||null,selection:position.selection,visible_text:position.visible_text,anchor:position.anchor,viewer_revision:Math.max(0,lastRevision)})} onclose={()=>showAgent=false}/>{/key}{/if}
+      {#if showNotes}<NotesPanel {notes} currentPageId={current?.id||null} selection={selectionAnchor?noteSelection:''} status={noteStatus} oncreate={createNote} onupdate={updateNote} ondelete={deleteNote} onopen={openNote} onclose={()=>showNotes=false}/>{/if}
       {#if showContext}<section class="context-panel" aria-label="Контекст чтения"><div class="panel-heading"><h2>Место в книге</h2><button aria-label="Закрыть контекст" onclick={()=>showContext=false}>×</button></div><p class="context-note">{offline ? 'Здесь видны выделенный текст и текущий фрагмент книги. Подключение к агенту появится в следующей версии.' : 'Выделите мысль на странице. Ваш внешний агент сможет прочитать её и продолжить объяснение.'}</p><div class="context-badge">{contextStatus}</div><h3>ВЫДЕЛЕННЫЙ ТЕКСТ</h3>{#if position.selection}<blockquote>{position.selection}</blockquote>{:else}<p class="empty-selection">Пока ничего не выделено</p>{/if}<h3>В ПОЛЕ ЗРЕНИЯ</h3><p class="visible-text">{position.visible_text || 'Загрузка фрагмента…'}</p>{#if !offline}<details><summary>Подключение внешнего агента</summary><p>Read-only API этой вкладки:</p><code>GET /api/context?reader_id={readerId}&amp;book_id={bookId}</code><p>Файлы книги:</p><code>{book?.root}</code></details>{/if}</section>{/if}
     </div>
   </main>

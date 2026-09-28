@@ -87,7 +87,7 @@
     <form class="agent-settings" onsubmit={saveSettings}>
       <label for="agent-endpoint">Адрес сервера модели</label><input id="agent-endpoint" type="url" bind:value={settings.endpoint} required placeholder="http://127.0.0.1:8080/v1">
       <label for="agent-model">Имя модели</label><input id="agent-model" bind:value={settings.model} placeholder="Имя из списка моделей" required>
-      <label for="agent-token">API-токен {settings.has_token?'(сохранён)':''}</label><input id="agent-token" type="password" bind:value={apiToken} autocomplete="new-password" placeholder="Оставьте пустым, чтобы сохранить прежний">
+      <label for="agent-token">API-токен {settings.has_token?'(сохранён)':''}</label><input id="agent-token" class="masked-token" type="text" bind:value={apiToken} autocomplete="off" autocapitalize="none" spellcheck="false" data-1p-ignore data-lpignore="true" placeholder="Оставьте пустым, чтобы сохранить прежний">
       {#if settings.has_token}<label class="agent-check"><input type="checkbox" bind:checked={clearToken}> Удалить сохранённый токен</label>{/if}
       <details><summary>Настройки ответа</summary>
         <label for="agent-prompt">Указания агенту</label><textarea id="agent-prompt" bind:value={settings.system_prompt} rows="4"></textarea>
@@ -127,6 +127,7 @@
   .agent-compose{padding-top:16px}.agent-compose label{display:block;margin-bottom:6px}.agent-panel textarea,.agent-panel input:not([type=checkbox]){box-sizing:border-box;width:100%;font:13px/1.5 system-ui,sans-serif;background:#fffefa;color:#304c32;border:1px solid #cedbbb;border-radius:5px;padding:9px}.agent-panel textarea{resize:vertical;min-height:60px}
   .agent-panel form button,.agent-stop{border:1px solid #cbd8bc;border-radius:5px;background:#eef3e5;color:#355b3b;padding:9px 12px;font:12px system-ui,sans-serif}.agent-compose button{margin-top:8px;background:#325941!important;color:#fffefa!important;width:100%}
   .agent-settings label{display:block;font-size:12px;margin:12px 0 6px}.agent-settings details{margin-top:16px;padding-top:12px}.agent-check{display:flex!important;align-items:center;gap:8px}.agent-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.agent-stop{padding:5px 10px}
+  .masked-token{-webkit-text-security:disc}
   @media(max-width:1100px){.agent-panel{position:absolute;right:0;top:76px;bottom:0;z-index:7;width:min(390px,100vw);box-sizing:border-box;box-shadow:-5px 0 25px #24362115}}
   @media(max-width:720px),(max-height:500px) and (pointer:coarse){.agent-panel{top:65px;padding:16px}}
 </style>

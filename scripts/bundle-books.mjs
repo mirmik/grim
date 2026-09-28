@@ -8,7 +8,11 @@ const output = path.join(project, 'dist-android');
 const demoId = createHash('sha256').update('grim:demo').digest('hex').slice(0, 32);
 const books = [{id: demoId, root: path.join(project, 'demo')}, ...JSON.parse(process.env.GRIM_ANDROID_BOOKS || '[]')];
 const bookPolicy = "default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'";
-const injection = `<meta http-equiv="Content-Security-Policy" content="${bookPolicy}"><script src="/bridge.js"></script>`;
+const bridgeSource = await readFile(path.join(project, 'server/bridge.js'), 'utf8');
+const bridgeVersion = createHash('sha256').update(bridgeSource).digest('hex').slice(0, 12);
+const versionedBridge = `bridge-${bridgeVersion}.js`;
+const inlineBridge = bridgeSource.replace(/<\/script/gi, '<\\/script');
+const injection = `<meta http-equiv="Content-Security-Policy" content="${bookPolicy}"><script>${inlineBridge}</script>`;
 
 // Reject symlinks instead of accidentally packaging files outside the book.
 async function copyBook(source, target) {
@@ -57,6 +61,7 @@ async function validateManifest(manifest, root) {
 
 await mkdir(path.join(output, 'offline/books'), {recursive: true});
 await cp(path.join(project, 'server/bridge.js'), path.join(output, 'bridge.js'));
+await writeFile(path.join(output, versionedBridge), bridgeSource);
 await cp(path.join(project, 'node_modules/katex/dist'), path.join(output, 'vendor'), {recursive: true});
 const entries = [], seen = new Set();
 for (const entry of books) {
