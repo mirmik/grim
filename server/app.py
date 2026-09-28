@@ -17,6 +17,7 @@ BASE = Path(__file__).resolve().parent.parent
 
 
 from server.library import Library, library_directory, manifest, page_map, safe_file
+from server.notes import NOTES_FILE, NotesDocument, read_notes, write_notes
 
 
 class ReaderUpdate(BaseModel):
@@ -62,9 +63,12 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         result = {}
         for p in root.rglob('*'):
             try:
+                relative = p.relative_to(root).as_posix()
+                if relative in (NOTES_FILE, NOTES_FILE + '.tmp'):
+                    continue
                 if p.is_file() and p.resolve().is_relative_to(root):
                     st = p.stat()
-                    result[str(p.relative_to(root))] = (st.st_mtime_ns, st.st_size)
+                    result[relative] = (st.st_mtime_ns, st.st_size)
             except OSError:
                 pass
         return result
@@ -182,6 +186,16 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
                 'writer_token': writer_token, 'revision': state_for(book_id)['revision'],
                 'bridge_version': bridge_version()}
 
+    @app.get('/api/books/{book_id}/notes')
+    async def get_notes(book_id: str):
+        return read_notes(library.root(book_id))
+
+    @app.put('/api/books/{book_id}/notes')
+    async def put_notes(book_id: str, payload: NotesDocument, request: Request):
+        require_viewer(request)
+        write_notes(library.root(book_id), payload)
+        return payload
+
     @app.get('/api/context')
     async def get_context(reader_id: str = None, book_id: str = None):
         if book_id:
@@ -264,6 +278,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         versioned_name = re.match(r'^(.*?/)?__grim_v_[a-zA-Z0-9]+_\d+__([^/]+)$', path)
         if versioned_name:
             path = (versioned_name.group(1) or '') + versioned_name.group(2)
+        if path == NOTES_FILE:
+            raise HTTPException(404, 'Файл не найден в папке книги')
         file = safe_file(library.root(book_id), path)
         if download:
             return FileResponse(file, filename=file.name, media_type='application/octet-stream')

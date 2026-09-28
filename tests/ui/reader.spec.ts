@@ -63,6 +63,10 @@ test('notes survive reload and follow a quoted block through a text edit', async
   await page.getByLabel('Новая заметка').fill('Вернуться к этому определению');
   await page.getByRole('button',{name:'Сохранить заметку'}).click();
   await expect(page.locator('.note-card')).toContainText('Вернуться к этому определению');
+  const storedBook=(await (await request.get('/api/library')).json()).books[0];
+  const notesFile=path.join(storedBook.root,'.grim-notes.json');
+  await expect.poll(async()=>JSON.parse(await readFile(notesFile,'utf8')).notes[0]?.text).toBe('Вернуться к этому определению');
+  await expect.poll(()=>page.evaluate(id=>localStorage.getItem(`grim-notes:${id}`),storedBook.id)).toBeNull();
   expect(await definition.evaluate(()=>JSON.stringify((window as any).grimParentMessages))).not.toContain('Вернуться к этому определению');
   await expect.poll(()=>definition.evaluate(()=>document.documentElement.dataset.grimNotesResolved)).toBe('1');
 
@@ -70,7 +74,7 @@ test('notes survive reload and follow a quoted block through a text edit', async
   await page.getByRole('button',{name:/Заметки/}).click();
   await expect(page.locator('.note-card')).toContainText('Вернуться к этому определению');
 
-  const root=(await (await request.get('/api/library')).json()).books[0].root;
+  const root=storedBook.root;
   const file=path.join(root,'chapters/oscillations.html'),original=await readFile(file,'utf8');
   try {
     const changed=original.replace('Колебание — это изменение','Колебание — это небольшое повторяющееся изменение');
@@ -88,9 +92,33 @@ test('notes survive reload and follow a quoted block through a text edit', async
     await page.getByLabel('Текст заметки').fill('Обновлённая заметка');
     await page.getByRole('button',{name:'Сохранить',exact:true}).click();
     await expect(page.locator('.note-card')).toContainText('Обновлённая заметка');
+    await expect.poll(async()=>JSON.parse(await readFile(notesFile,'utf8')).notes[0]?.text).toBe('Обновлённая заметка');
     await page.getByRole('button',{name:'Удалить'}).click();
     await expect(page.locator('.note-card')).toHaveCount(0);
+    await expect.poll(async()=>JSON.parse(await readFile(notesFile,'utf8')).notes.length).toBe(0);
   } finally {await writeFile(file,original);}
+});
+
+test('legacy browser notes migrate once into the book folder', async ({page, request}) => {
+  await page.goto('/');
+  const book=(await (await request.get('/api/library')).json()).books[0];
+  const exact='Колебание — это изменение';
+  const note={id:'legacy-note',page_id:'oscillations',page_title:'Мир в ритме колебаний',text:'Старая заметка',
+    anchor:{exact,prefix:'',suffix:'',element_id:'definition',block_text:exact,start:0,end:exact.length},
+    created_at:'2026-09-28T10:00:00.000Z',updated_at:'2026-09-28T10:00:00.000Z'};
+  await page.evaluate(({id,note})=>localStorage.setItem(`grim-notes:${id}`,JSON.stringify([note])),{id:book.id,note});
+  await page.getByRole('button',{name:'Открыть книгу'}).first().click();
+  await page.getByRole('button',{name:/Заметки/}).click();
+  const card=page.locator('.note-card').filter({hasText:'Старая заметка'});
+  await expect(card).toHaveCount(1);
+  const file=path.join(book.root,'.grim-notes.json');
+  await expect.poll(async()=>JSON.parse(await readFile(file,'utf8')).notes.filter((item:any)=>item.id==='legacy-note').length).toBe(1);
+  await expect.poll(()=>page.evaluate(id=>localStorage.getItem(`grim-notes:${id}`),book.id)).toBeNull();
+  await page.reload();
+  await page.getByRole('button',{name:/Заметки/}).click();
+  await expect(page.locator('.note-card').filter({hasText:'Старая заметка'})).toHaveCount(1);
+  await card.getByRole('button',{name:'Удалить'}).click();
+  await expect.poll(async()=>JSON.parse(await readFile(file,'utf8')).notes.length).toBe(0);
 });
 
 test('local assets, KaTeX, relative links, slider and fragment navigation', async({page})=>{

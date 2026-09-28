@@ -6,7 +6,7 @@
   import ThemePicker from './ThemePicker.svelte';
   import { resolvedTheme } from './theme';
   import NotesPanel from './NotesPanel.svelte';
-  import { loadNotes, noteAnchor, saveNotes, type NoteAnchor, type ReaderNote } from './notes';
+  import { loadLocalNotes, loadNotes, noteAnchor, saveLocalNotes, saveNotes, type NoteAnchor, type ReaderNote } from './notes';
   import { appPath, offline, fetchBook } from './platform';
   type Page = {id:string; title:string; path?:string; children?:Page[]};
   type Position = {visible_text:string; selection:string; anchor:string; scroll_y:number; anchor_offset:number};
@@ -20,6 +20,7 @@
   }
   $effect(() => { sendTheme(); });
   let token = $state('');
+  let notesWrite:Promise<void> = Promise.resolve();
   let lastRevision = -1, pendingHash = '', generation = 0, sequence = 0;
   let events:EventSource|null = null;
   let readerId = $state('');
@@ -51,7 +52,10 @@
   }
   function persistNotes(next:ReaderNote[]) {
     if(!book)return;
-    notes=next;saveNotes(book.id,$state.snapshot(next));syncNotes();
+    const id=book.id,writeToken=token;
+    notes=next;const saved=$state.snapshot(next);syncNotes();
+    if(offline){saveLocalNotes(id,saved);return;}
+    notesWrite=notesWrite.catch(()=>{}).then(()=>saveNotes(id,writeToken,saved)).catch(cause=>{error=String(cause);});
   }
   function createNote(text:string) {
     if(!current || !selectionAnchor || !noteSelection.trim())return;
@@ -108,19 +112,21 @@
     const data=await response.json();
     if(epoch!==generation)return null;
     token=data.writer_token;
+    const loadedNotes=offline ? loadLocalNotes(id) : await loadNotes(id,token);
+    if(epoch!==generation)return null;
     const pages=flatten(data.pages),saved=savedPosition(id);
     const next=pages.find(p=>p.id===(current?.id||saved.page_id))||pages[0]||null;
     if(!current || current.id!==next?.id) {
       position=next && next.id===saved.page_id && saved.position ? saved.position:empty();
     }
-    book=data;current=next;error='';
+    book=data;current=next;notes=loadedNotes;error='';
     if(!next)void publish();
     return data;
   }
   async function openBook(id:string,push=true) {
     savePosition();idle();events?.close();events=null;
     const epoch=++generation;
-    bookId=id;book=null;current=null;position=empty();noteSelection='';selectionAnchor=null;noteAction=null;notes=loadNotes(id);noteStatus={};pendingHash='';pendingNoteId='';error='';updated='';connected=false;sidebar=false;showAgent=false;showContext=false;showNotes=false;
+    bookId=id;book=null;current=null;position=empty();noteSelection='';selectionAnchor=null;noteAction=null;notes=[];noteStatus={};pendingHash='';pendingNoteId='';error='';updated='';connected=false;sidebar=false;showAgent=false;showContext=false;showNotes=false;
     if(push)history.pushState({},'',`?book=${encodeURIComponent(id)}`);
     try {
       const data=await loadBook(id,epoch);if(!data)return;

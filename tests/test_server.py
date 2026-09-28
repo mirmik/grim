@@ -45,6 +45,7 @@ def test_book_html_and_download(client):
     download=client.get(f'/book/{book_id}/one.html?download=1')
     assert 'attachment' in download.headers['content-disposition']
     assert download.headers['content-type']=='application/octet-stream'
+    assert client.get(f'/book/{book_id}/.grim-notes.json').status_code==404
 
 def test_escape_and_symlink(client,book):
     book_id=entry(client)['id']
@@ -82,6 +83,58 @@ def test_registration_validation_and_no_writes_without_token(client,tmp_path):
         assert client.post('/api/library/add',json={'root':root},headers=headers(client)).status_code==422
     assert client.post('/api/library/create',json={'title':'   '},headers=headers(client)).status_code==422
     assert len(client.get('/api/library').json()['books'])==count
+
+
+def test_notes_are_stored_atomically_inside_book(client, book):
+    book_id=entry(client)['id'];route=f'/api/books/{book_id}/notes'
+    revision=info(client).json()['revision']
+    anchor={'exact':'First','prefix':'','suffix':'','element_id':'p','block_text':'First','start':0,'end':5}
+    note={'id':'note-1','page_id':'one','page_title':'One','text':'Remember this','anchor':anchor,
+          'created_at':'2026-09-28T10:00:00Z','updated_at':'2026-09-28T10:00:00Z'}
+    assert client.get(route).json()=={'version':1,'notes':[]}
+    assert client.put(route,json={'version':1,'notes':[note]}).status_code==403
+    saved=client.put(route,json={'version':1,'notes':[note]},headers=headers(client))
+    assert saved.status_code==200 and saved.json()['notes']==[note]
+    file=book/'.grim-notes.json'
+    assert json.loads(file.read_text())=={'version':1,'notes':[note]}
+    assert not (book/'.grim-notes.json.tmp').exists()
+    assert client.get(route).json()['notes']==[note]
+    note['text']='Updated'
+    assert client.put(route,json={'version':1,'notes':[note]},headers=headers(client)).status_code==200
+    assert json.loads(file.read_text())['notes'][0]['text']=='Updated'
+    assert client.put(route,json={'version':1,'notes':[]},headers=headers(client)).status_code==200
+    assert json.loads(file.read_text())=={'version':1,'notes':[]}
+    time.sleep(.6)
+    assert info(client).json()['revision']==revision
+
+
+def test_invalid_notes_are_not_silently_replaced(client, book):
+    book_id=entry(client)['id'];file=book/'.grim-notes.json';file.write_text('{broken')
+    before=file.read_bytes()
+    response=client.get(f'/api/books/{book_id}/notes')
+    assert response.status_code==422 and '.grim-notes.json' in response.json()['detail']
+    assert file.read_bytes()==before
+
+
+def test_notes_survive_server_restart(book, tmp_path):
+    directory=tmp_path/'notes-library'
+    with TestClient(create_app(book,directory)) as first:
+        book_id=entry(first)['id']
+        note={'id':'persistent','page_id':'one','text':'Still here',
+              'anchor':{'exact':'First','start':0,'end':5}}
+        assert first.put(f'/api/books/{book_id}/notes',json={'version':1,'notes':[note]},headers=headers(first)).status_code==200
+    with TestClient(create_app(book,directory)) as restarted:
+        assert entry(restarted)['id']==book_id
+        stored=restarted.get(f'/api/books/{book_id}/notes').json()['notes']
+        assert stored[0]['id']=='persistent' and stored[0]['text']=='Still here'
+
+
+def test_notes_validation_rejects_duplicate_ids_and_invalid_anchors(client):
+    book_id=entry(client)['id'];route=f'/api/books/{book_id}/notes';hdr=headers(client)
+    note={'id':'same','page_id':'one','anchor':{'exact':'First','start':0,'end':5}}
+    assert client.put(route,json={'version':1,'notes':[note,note]},headers=hdr).status_code==422
+    note['anchor']['end']=0
+    assert client.put(route,json={'version':1,'notes':[note]},headers=hdr).status_code==422
 
 def test_two_books_readers_and_late_context(client,tmp_path):
     one=entry(client);hdr=headers(client)
