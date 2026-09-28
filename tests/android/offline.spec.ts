@@ -18,8 +18,16 @@ test('bundled book reads without API, preserves position, and runs local interac
   await expect(page.locator('.context-panel blockquote')).toContainText('Колебание');
   await expect(page.locator('.context-badge')).toHaveText('Чтение на устройстве');
   await page.getByRole('button', {name: 'Закрыть контекст'}).click();
+  await page.getByRole('button', {name: 'Заметки', exact: true}).click();
+  await page.getByLabel('Новая заметка').fill('Офлайн-заметка');
+  await page.getByRole('button', {name: 'Сохранить заметку'}).click();
+  await expect(page.locator('.note-card')).toContainText('Офлайн-заметка');
+  await page.getByRole('button', {name: 'Закрыть заметки'}).click();
   await page.reload();
   await expect(frame.locator('#definition')).toBeInViewport();
+  await page.getByRole('button', {name: /Заметки/}).click();
+  await expect(page.locator('.note-card')).toContainText('Офлайн-заметка');
+  await page.getByRole('button', {name: 'Закрыть заметки'}).click();
   await frame.getByRole('link', {name: 'измените волну в лаборатории →'}).click();
   await frame.locator('#amplitude').fill('1.8');
   await expect(frame.locator('#a-value')).toHaveText('1.8');

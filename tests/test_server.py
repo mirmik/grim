@@ -33,9 +33,12 @@ def info(client,book_id=None):
 
 def test_book_html_and_download(client):
     book_id=entry(client)['id']
-    assert info(client).json()['pages'][0]['id']=='one'
-    page=client.get(f'/book/{book_id}/one.html')
-    assert '/bridge.js' in page.text
+    book_info=info(client).json()
+    assert book_info['pages'][0]['id']=='one'
+    assert book_info['bridge_version'].isdigit()
+    page=client.get(f'/book/{book_id}/__grim_v_{book_info["bridge_version"]}_1__one.html')
+    assert '<script src="/bridge-' not in page.text
+    assert "parent.postMessage({grim: true" in page.text
     assert 'sandbox allow-scripts' in page.headers['content-security-policy']
     assert 'allow-same-origin' not in page.headers['content-security-policy']
     assert "connect-src 'none'" in page.headers['content-security-policy']
@@ -116,6 +119,12 @@ def test_api_boundary(client,hdr):
     assert client.get('/api/library',headers=hdr).status_code==403
     # Even a stolen token is not sufficient for a foreign browser origin.
     assert client.post('/api/library/create',json={'title':'Denied'},headers={**headers(client),**hdr}).status_code==403
+
+def test_configured_lan_host(monkeypatch,book,tmp_path):
+    monkeypatch.setenv('GRIM_ALLOWED_HOSTS','192.168.0.61, 192.168.0.81')
+    with TestClient(create_app(book,tmp_path/'library'),base_url='http://192.168.0.61:8000') as client:
+        assert client.get('/api/library').status_code==200
+        assert client.get('/api/library',headers={'Host':'192.168.0.99'}).status_code==403
 
 def test_watcher_is_per_book(client,book,tmp_path):
     hdr=headers(client)

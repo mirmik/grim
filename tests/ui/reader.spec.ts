@@ -33,6 +33,66 @@ test('selection → API → disk edit → live reload with reading position', as
   expect(errors).toEqual([]);
 });
 
+test('mouse selection remains available when focus moves to the notes panel', async ({page}) => {
+  await openDemo(page);
+  const definition=page.frameLocator('iframe').locator('#definition');
+  await definition.scrollIntoViewIfNeeded();
+  await page.getByRole('button',{name:'Заметки',exact:true}).click();
+  await expect(page.getByText('Чтобы добавить заметку')).toBeVisible();
+  const box=await definition.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.move(box!.x+12,box!.y+18);
+  await page.mouse.down();
+  await page.mouse.move(box!.x+Math.min(box!.width-12,260),box!.y+18,{steps:8});
+  await page.mouse.up();
+  await expect(page.getByLabel('Новая заметка')).toBeVisible();
+  await page.getByRole('button',{name:'Закрыть заметки'}).click();
+  await expect(page.getByRole('button',{name:'＋ Заметка к выделению'})).toBeVisible();
+  await page.getByRole('button',{name:'＋ Заметка к выделению'}).click();
+  await expect(page.getByLabel('Новая заметка')).toBeVisible();
+});
+
+test('notes survive reload and follow a quoted block through a text edit', async ({page, request}) => {
+  await openDemo(page);
+  const frame=page.frameLocator('iframe'),definition=frame.locator('#definition');
+  await expect(definition).toBeAttached();
+  await definition.evaluate(el=>{const range=document.createRange();range.selectNodeContents(el);const selection=getSelection()!;selection.removeAllRanges();selection.addRange(range);});
+  await definition.evaluate(()=>{(window as any).grimParentMessages=[];addEventListener('message',event=>(window as any).grimParentMessages.push(event.data));});
+  await page.getByRole('button',{name:'Заметки',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Заметки'})).toContainText('Колебание — это изменение');
+  await page.getByLabel('Новая заметка').fill('Вернуться к этому определению');
+  await page.getByRole('button',{name:'Сохранить заметку'}).click();
+  await expect(page.locator('.note-card')).toContainText('Вернуться к этому определению');
+  expect(await definition.evaluate(()=>JSON.stringify((window as any).grimParentMessages))).not.toContain('Вернуться к этому определению');
+  await expect.poll(()=>definition.evaluate(()=>document.documentElement.dataset.grimNotesResolved)).toBe('1');
+
+  await page.reload();
+  await page.getByRole('button',{name:/Заметки/}).click();
+  await expect(page.locator('.note-card')).toContainText('Вернуться к этому определению');
+
+  const root=(await (await request.get('/api/library')).json()).books[0].root;
+  const file=path.join(root,'chapters/oscillations.html'),original=await readFile(file,'utf8');
+  try {
+    const changed=original.replace('Колебание — это изменение','Колебание — это небольшое повторяющееся изменение');
+    await writeFile(file,changed);
+    await expect(definition).toContainText('небольшое повторяющееся');
+    await expect.poll(()=>definition.evaluate(()=>document.documentElement.dataset.grimNotesResolved)).toBe('1');
+    await expect(page.locator('.note-card .note-warning')).toHaveCount(0);
+    await page.locator('.note-target').click();
+    await expect(definition).toBeInViewport();
+    const replaced=changed.replace(/<p id="definition">.*?<\/p>/,'<p id="replacement">Совершенно новое определение без прежней цитаты.</p>');
+    await writeFile(file,replaced);
+    await expect(frame.locator('#replacement')).toBeVisible();
+    await expect(page.locator('.note-card .note-warning')).toBeVisible();
+    await page.getByRole('button',{name:'Изменить'}).click();
+    await page.getByLabel('Текст заметки').fill('Обновлённая заметка');
+    await page.getByRole('button',{name:'Сохранить',exact:true}).click();
+    await expect(page.locator('.note-card')).toContainText('Обновлённая заметка');
+    await page.getByRole('button',{name:'Удалить'}).click();
+    await expect(page.locator('.note-card')).toHaveCount(0);
+  } finally {await writeFile(file,original);}
+});
+
 test('local assets, KaTeX, relative links, slider and fragment navigation', async({page})=>{
   await openDemo(page);
   const frame=page.frameLocator('iframe');

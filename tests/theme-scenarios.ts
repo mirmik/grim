@@ -80,6 +80,42 @@ export function themeScenarios() {
     await page.screenshot({path:test.info().outputPath('reader-dark.png')});
   });
 
+  test('notes keep their anchors and follow the theme on desktop and mobile', async ({page}) => {
+    await page.goto('/');
+    const picker = page.getByRole('combobox', {name:'Тема оформления'});
+    await picker.selectOption('light');
+    await page.getByRole('button', {name:'Открыть книгу'}).first().click();
+    const frame = page.frameLocator('iframe');
+    await frame.locator('#definition').evaluate(el => {
+      el.scrollIntoView();
+      const range = document.createRange();range.selectNodeContents(el);
+      getSelection()!.removeAllRanges();getSelection()!.addRange(range);
+    });
+    const action = page.getByRole('button', {name:'＋ Заметка к выделению'});
+    await expect(action).toBeVisible();
+    await picker.selectOption('dark');
+    await expect(action).toHaveCSS('background-color', 'rgb(23, 33, 29)');
+    await action.click();
+    await expect(page.locator('.notes-panel')).toHaveCSS('background-color', 'rgb(30, 43, 36)');
+    await expect(page.getByLabel('Новая заметка')).toHaveCSS('background-color', 'rgb(23, 33, 29)');
+    await page.getByLabel('Новая заметка').fill('Проверить определение');
+    await page.getByRole('button', {name:'Сохранить заметку'}).click();
+    await expect(page.locator('.note-card')).toHaveCSS('background-color', 'rgb(23, 33, 29)');
+    await expect.poll(() => frame.locator('html').getAttribute('data-grim-notes-resolved')).toBe('1');
+    const src = await page.locator('iframe').getAttribute('src');
+    await picker.selectOption('light');
+    await expect(page.locator('.note-card')).toHaveCSS('background-color', 'rgb(255, 254, 249)');
+    await expect(page.locator('.note-card')).toContainText('Проверить определение');
+    await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'light');
+    expect(await page.locator('iframe').getAttribute('src')).toBe(src);
+    await expect(frame.locator('html')).toHaveAttribute('data-grim-notes-resolved', '1');
+    await page.setViewportSize({width:360,height:800});
+    const header = await page.locator('header').boundingBox();
+    const panel = await page.locator('.notes-panel').boundingBox();
+    expect(Math.abs(panel!.y - (header!.y + header!.height))).toBeLessThan(2);
+    expect(await page.locator('body').evaluate(el => el.scrollWidth <= innerWidth)).toBe(true);
+  });
+
   test('unavailable storage does not prevent theme switching', async ({page}) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, 'localStorage', {get() {throw new DOMException('Storage blocked', 'SecurityError');}});

@@ -1,0 +1,25 @@
+[Unit]
+Description=Grim live book library
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/project/grim
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=GRIM_HOST=0.0.0.0
+Environment=GRIM_PORT=8000
+Environment=GRIM_ALLOWED_HOSTS=192.168.0.61,192.168.0.81
+ExecStart=%h/project/grim/run.sh --proxy-headers --forwarded-allow-ips=192.168.0.81
+Restart=always
+RestartSec=2s
+TimeoutStartSec=30s
+TimeoutStopSec=10s
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=default.target

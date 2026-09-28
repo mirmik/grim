@@ -1,7 +1,7 @@
 <script lang="ts">
   import ThemePicker from './ThemePicker.svelte';
   import { onMount } from 'svelte';
-  import { offline, fetchLibrary } from './platform';
+  import { appPath, offline, fetchLibrary } from './platform';
   let {onopen}: {onopen:(id:string)=>void} = $props();
   type Entry = {id:string;title:string;subtitle:string;root:string;page_count:number;error:string|null};
   let books = $state<Entry[]>([]), loading = $state(true), error = $state(''), busy = $state(false);
@@ -32,7 +32,7 @@
 </script>
 
 <div class="library-shell">
-  <header class="library-header"><a class="brand" href="/" aria-label="Grim, библиотека"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a><span>ВАША БИБЛИОТЕКА</span><ThemePicker/></header>
+  <header class="library-header"><a class="brand" href={appPath} aria-label="Grim, библиотека"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a><span>ВАША БИБЛИОТЕКА</span><ThemePicker/></header>
   <main class="library-main">
     <div class="library-intro"><div><p class="eyebrow">ПРОСТРАНСТВО ДЛЯ ЛЮБОПЫТСТВА</p><h1>Каждая книга —<br>новое начало.</h1><p>Возвращайтесь к знакомым идеям или начните исследовать что-то новое.</p></div>{#if !offline}<div class="library-actions"><button class="primary" onclick={()=>{mode='create';error='';}}>+ Новая книга</button><button onclick={()=>{mode='add';error='';}}>Добавить папку</button></div>{/if}</div>
     {#if mode}
