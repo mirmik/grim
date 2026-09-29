@@ -218,13 +218,14 @@
     const a = event.target.closest?.('a[href]');
     if (!a) return;
     const url = new URL(a.href, location.href);
-    if (a.hasAttribute('download') && url.origin === location.origin && url.pathname.startsWith('/book/')) {
+    if (a.hasAttribute('download') && url.origin === location.origin && (url.pathname.startsWith('/book/') || url.pathname.startsWith('/book-source/'))) {
       event.preventDefault(); send('download', {href: url.pathname});
-    } else if (url.origin === location.origin && url.pathname.startsWith('/book/') && /\.html?$/i.test(url.pathname)) {
+    } else if (url.origin === location.origin && (url.pathname.startsWith('/book/') || url.pathname.startsWith('/book-source/')) && /\.html?$/i.test(url.pathname)) {
       event.preventDefault();
-      if (url.pathname === location.pathname && url.hash) {
-        document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView(); schedule();
-      } else send('navigate', {href:url.pathname + url.hash});
+      // Capture the click-time position, not the last throttled scroll report.
+      // The parent owns both same-page and cross-page return history.
+      report();
+      send('navigate', {href:url.pathname + url.hash});
     } else if (url.protocol !== 'http:' && url.protocol !== 'https:' || !a.hasAttribute('download')) {
       event.preventDefault();
     }

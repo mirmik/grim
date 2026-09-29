@@ -50,19 +50,21 @@ class NotesDocument(BaseModel):
         return self
 
 
-def read_notes(root: Path) -> NotesDocument:
-    file = root / NOTES_FILE
+def read_notes(root: Path, version='working') -> NotesDocument:
+    filename = NOTES_FILE if version == 'working' else '.grim-source-notes.json'
+    file = root / filename
     if not file.exists():
         return NotesDocument()
     try:
-        data = json.loads(safe_file(root, NOTES_FILE).read_text(encoding='utf-8'))
+        data = json.loads(safe_file(root, filename).read_text(encoding='utf-8'))
         return NotesDocument.model_validate(data)
     except (json.JSONDecodeError, ValidationError, OSError, HTTPException) as exc:
         raise HTTPException(422, f'Не удалось прочитать {NOTES_FILE}: {exc}') from exc
 
 
-def write_notes(root: Path, document: NotesDocument):
+def write_notes(root: Path, document: NotesDocument, version='working'):
+    filename = NOTES_FILE if version == 'working' else '.grim-source-notes.json'
     try:
-        atomic_json(root / NOTES_FILE, document.model_dump(mode='json'))
+        atomic_json(root / filename, document.model_dump(mode='json'))
     except OSError as exc:
         raise HTTPException(422, f'Не удалось записать {NOTES_FILE}: {exc}') from exc

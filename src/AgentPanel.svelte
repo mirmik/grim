@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  type Context = {page_id:string|null;selection:string;visible_text:string;anchor:string;viewer_revision:number};
+  type Context = {version:'working'|'source';page_id:string|null;selection:string;visible_text:string;anchor:string;viewer_revision:number};
   type Job = {id:string;message:string;response:string;status:string;error:string;context:Context;events:{name:string;detail:string}[]};
   type Settings = {endpoint:string;model:string;system_prompt:string;max_tokens:number;max_iterations:number;timeout_seconds:number;has_token:boolean;runtime_available:boolean};
   let {bookId, readerId, token, context, onclose}: {bookId:string;readerId:string;token:string;context:()=>Context;onclose:()=>void} = $props();

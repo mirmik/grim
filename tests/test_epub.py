@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from urllib.parse import quote
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -18,7 +19,10 @@ def test_import_preserves_content_resources_and_cross_part_links(tmp_path, epub2
     pages = list(page_map(book).values())
     assert book['title'] == 'Проверка EPUB' and book['subtitle'] == 'Автор'
     assert book['pages'][0]['title'] == ('Глава из NCX' if epub2 else 'Глава из оглавления')
-    chapters = [p for p in pages if 'chapter-grim-' in p['path']]
+    imported = json.loads((root / 'epub-import.json').read_text())
+    chapter_paths = {p['path'] for p in imported['pages'] if p['source'].endswith('/chapter.xhtml')}
+    chapters = [p for p in pages if p['path'] in chapter_paths]
+    note_path = next(p['path'] for p in imported['pages'] if p['source'].endswith('/notes.xhtml'))
     assert len(chapters) >= 3
     contents = [(root / p['path']).read_text() for p in chapters]
     merged = ''.join(contents)
@@ -30,9 +34,9 @@ def test_import_preserves_content_resources_and_cross_part_links(tmp_path, epub2
     assert '<table id="table">' in contents[0]
     assert 'href="styles/book.css"' in contents[0]
     assert 'src="images/picture.svg"' in contents[0]
-    assert 'href="' + Path(chapters[-1]['path']).name + '#end"' in contents[0]
-    assert 'href="chapter-grim-001.html#intro"' in contents[-1]
-    assert 'href="notes-grim-001.html#note"' in contents[0]
+    assert 'href="' + quote(Path(chapters[-1]['path']).name) + '#end"' in contents[0]
+    assert f'href="{quote(Path(chapters[0]["path"]).name)}#intro"' in contents[-1]
+    assert f'href="{quote(Path(note_path).name)}#note"' in contents[0]
     assert (root / 'content/OEBPS/styles/book.css').read_text().endswith('url("../images/picture.svg"); }')
     assert (root / 'content/OEBPS/images/picture.svg').is_file()
     assert not list((tmp_path / 'books').glob('.epub-*'))
@@ -111,9 +115,10 @@ def test_short_spine_documents_join_with_rebased_links_resources_and_ids(tmp_pat
     assert pages[1]['title'] == 'Chapter'
     markup = (root / pages[1]['path']).read_text()
     assert 'Small subsection' in markup and 'Subsection' in markup and markup.count('Text ') == 500
-    assert 'href="intro-grim-001.html#grim-2-part"' in markup
-    assert 'href="intro-grim-001.html#grim-source-2"' in markup
-    assert 'href="intro-grim-001.html#part"' in markup
+    intro_name = quote(Path(pages[1]['path']).name)
+    assert f'href="{intro_name}#grim-2-part"' in markup
+    assert f'href="{intro_name}#grim-source-2"' in markup
+    assert f'href="{intro_name}#part"' in markup
     assert markup.count('id="part"') == 1
     assert 'src="images/picture.svg"' in markup
     assert 'srcset="images/picture.svg 1x, images/picture.svg 2x"' in markup

@@ -75,8 +75,8 @@ function mergeNotes(fileNotes: ReaderNote[], legacyNotes: ReaderNote[]): ReaderN
   return [...new Set(order)].map(id => byId.get(id)!);
 }
 
-async function putNotes(bookId: string, token: string, notes: ReaderNote[]) {
-  const response = await fetch(`/api/books/${encodeURIComponent(bookId)}/notes`, {
+async function putNotes(bookId: string, token: string, notes: ReaderNote[], version='working') {
+  const response = await fetch(`/api/books/${encodeURIComponent(bookId)}/notes?version=${version}`, {
     method: 'PUT', headers: {'Content-Type': 'application/json', 'X-Grim-Viewer': token},
     body: JSON.stringify({version: 1, notes})
   });
@@ -88,21 +88,24 @@ function clearLocalIfUnchanged(bookId: string, raw: string | null) {
   try { if (localStorage.getItem(key(bookId)) === raw) localStorage.removeItem(key(bookId)); } catch {}
 }
 
-export async function loadNotes(bookId: string, token: string): Promise<ReaderNote[]> {
-  const response = await fetch(`/api/books/${encodeURIComponent(bookId)}/notes`);
+export async function loadNotes(bookId: string, token: string, version='working'): Promise<ReaderNote[]> {
+  const response = await fetch(`/api/books/${encodeURIComponent(bookId)}/notes?version=${version}`);
   if (!response.ok) throw new Error((await response.json()).detail || 'Не удалось загрузить заметки');
   const data = await response.json();
-  const stored = parseNotes(data?.notes), legacy = localNotes(bookId);
+  const stored = parseNotes(data?.notes);
+  const localId = version === 'source' ? bookId + ':source' : bookId;
+  const legacy = localNotes(localId);
   if (!legacy.notes.length) return stored;
   const merged = mergeNotes(stored, legacy.notes);
-  await putNotes(bookId, token, merged);
-  clearLocalIfUnchanged(bookId, legacy.raw);
+  await putNotes(bookId, token, merged, version);
+  clearLocalIfUnchanged(localId, legacy.raw);
   return merged;
 }
 
-export async function saveNotes(bookId: string, token: string, notes: ReaderNote[]) {
+export async function saveNotes(bookId: string, token: string, notes: ReaderNote[], version='working') {
+  const localId = version === 'source' ? bookId + ':source' : bookId;
   const raw = JSON.stringify(notes);
-  try { localStorage.setItem(key(bookId), raw); } catch {}
-  await putNotes(bookId, token, notes);
-  clearLocalIfUnchanged(bookId, raw);
+  try { localStorage.setItem(key(localId), raw); } catch {}
+  await putNotes(bookId, token, notes, version);
+  clearLocalIfUnchanged(localId, raw);
 }

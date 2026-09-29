@@ -3,11 +3,14 @@ import asyncio
 from contextlib import asynccontextmanager, suppress
 from datetime import datetime, timezone
 import json
+import logging
 import os
 from pathlib import Path
 import re
 import secrets
 import time
+import threading
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
@@ -17,6 +20,7 @@ BASE = Path(__file__).resolve().parent.parent
 
 
 from server.library import Library, library_directory, manifest, page_map, safe_file
+from server.versions import Version, create_source, source_exists, source_file, version_root, source_index, notes_location, rename_working
 from server.notes import NOTES_FILE, NotesDocument, read_notes, write_notes
 from server.epub import EpubError, MAX_UPLOAD, import_epub
 
@@ -27,6 +31,7 @@ class ReaderUpdate(BaseModel):
 
 
 class ReadingContext(ReaderUpdate):
+    version: Version = 'working'
     book_id: str = Field(pattern=r'^[a-f0-9]{32}$')
     page_id: str | None = Field(default=None, max_length=200)
     visible_text: str = Field(default='', max_length=24000)
@@ -44,6 +49,21 @@ class AddBook(BaseModel):
     root: str = Field(min_length=1, max_length=4096)
 
 
+def browser_origin(value):
+    """Canonical HTTP origin, never a path, wildcard, credentials or opaque origin."""
+    if not value or any(char.isspace() for char in value) or '*' in value:
+        return None
+    try:
+        url = urlsplit(value)
+        if (url.scheme not in ('http', 'https') or not url.hostname
+                or url.username is not None or url.password is not None
+                or url.path not in ('', '/') or url.query or url.fragment):
+            return None
+        return (url.scheme, url.hostname, url.port if url.port is not None else (443 if url.scheme == 'https' else 80))
+    except ValueError:
+        return None
+
+
 def create_app(book_root: Path = None, library_dir: Path = None, *, agent_completion=None):
     contexts = {}
     reader_sequences = {}
@@ -52,6 +72,16 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     library = None
     allowed_hosts = {'127.0.0.1', 'localhost', 'testserver'}
     allowed_hosts.update(host.strip().lower() for host in os.environ.get('GRIM_ALLOWED_HOSTS', '').split(',') if host.strip())
+    # Explicit deployment configuration for proxies that replace Host.
+    # Forwarded headers alone never authorize a browser origin.
+    allowed_origins = set()
+    for value in os.environ.get('GRIM_ALLOWED_ORIGINS', '').split(','):
+        if not value.strip():
+            continue
+        origin = browser_origin(value.strip())
+        if origin is None:
+            raise ValueError('GRIM_ALLOWED_ORIGINS requires HTTP(S) origins without paths or wildcards')
+        allowed_origins.add(origin)
 
     def bridge_version():
         return str((BASE / 'server' / 'bridge.js').stat().st_mtime_ns)
@@ -65,7 +95,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         for p in root.rglob('*'):
             try:
                 relative = p.relative_to(root).as_posix()
-                if relative in (NOTES_FILE, NOTES_FILE + '.tmp'):
+                if p.name in (NOTES_FILE, NOTES_FILE + '.tmp', '.grim-source-notes.json', '.grim-source-notes.json.tmp') or relative.startswith('.grim-source-'):
                     continue
                 if p.is_file() and p.resolve().is_relative_to(root):
                     st = p.stat()
@@ -141,13 +171,21 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             return JSONResponse({'detail': 'Local host required'}, status_code=403)
         if request.url.path.startswith('/api/'):
             origin = request.headers.get('origin')
-            if (origin and origin != f'{request.url.scheme}://{request.headers.get("host")}') or request.headers.get('sec-fetch-site') in ('cross-site', 'same-site'):
+            incoming_origin = browser_origin(origin) if origin is not None else None
+            local_origin = browser_origin(f'{request.url.scheme}://{request.headers.get("host")}')
+            forbidden_origin = origin is not None and (incoming_origin is None or (
+                incoming_origin != local_origin and incoming_origin not in allowed_origins))
+            if forbidden_origin or request.headers.get('sec-fetch-site') in ('cross-site', 'same-site'):
+                logging.getLogger(__name__).warning(
+                    'API origin rejected: origin=%r scheme=%r host=%r fetch_site=%r forwarded_host=%r',
+                    (origin or '')[:200], request.url.scheme, request.headers.get('host', '')[:200],
+                    request.headers.get('sec-fetch-site', '')[:40], request.headers.get('x-forwarded-host', '')[:200])
                 return JSONResponse({'detail': 'Same-origin viewer or local agent required'}, status_code=403)
         response = await call_next(request)
         response.headers['Cache-Control'] = 'no-store'
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['Referrer-Policy'] = 'no-referrer'
-        if request.url.path.startswith(('/book/', '/vendor/')):
+        if request.url.path.startswith(('/book/', '/book-source/', '/vendor/')):
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Content-Security-Policy'] = "sandbox allow-scripts allow-downloads; default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'"
         elif request.url.path == '/':
@@ -199,20 +237,57 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             raise HTTPException(422, f'Не удалось импортировать EPUB: {exc}') from exc
 
     @app.get('/api/books/{book_id}')
-    async def get_book(book_id: str):
-        root = library.root(book_id)
+    async def get_book(book_id: str, version: Version | None = None):
+        working = library.root(book_id)
+        version = version or ('source' if source_exists(working) else 'working')
+        root = version_root(working, version)
         return {**manifest(root), 'id': book_id, 'root': str(root),
                 'writer_token': writer_token, 'revision': state_for(book_id)['revision'],
-                'bridge_version': bridge_version()}
+                'bridge_version': bridge_version(), 'version': version,
+                'has_source': source_exists(working), 'working_root': str(version_root(working, 'working')),
+                'working_name': source_index(working).get('working_name', 'Рабочая копия') if source_exists(working) else None,
+                'working_directory': source_index(working).get('working_directory') if source_exists(working) else None,
+                'content_prefix': f'/book/{book_id}/' + ('__grim_source__/' if version == 'source' else '')}
+
+    @app.post('/api/books/{book_id}/working-copy')
+    async def working_copy(book_id: str, request: Request):
+        require_viewer(request)
+        root = library.root(book_id)
+        lock = app.state.agent.file_locks.setdefault(book_id, threading.RLock())
+        def snapshot():
+            with lock:
+                create_source(root)
+        try:
+            await asyncio.to_thread(snapshot)
+        except OSError as exc:
+            raise HTTPException(422, f'Не удалось создать рабочую копию: {exc}') from exc
+        return await get_book(book_id)
+
+    @app.patch('/api/books/{book_id}/working-copy')
+    async def rename_copy(book_id: str, payload: NewBook, request: Request):
+        require_viewer(request)
+        root = library.root(book_id)
+        lock = app.state.agent.file_locks.setdefault(book_id, threading.RLock())
+        def rename():
+            with lock: rename_working(root, payload.title)
+        try:
+            await asyncio.to_thread(rename)
+        except OSError as exc:
+            raise HTTPException(422, f'Не удалось переименовать копию: {exc}') from exc
+        return await get_book(book_id, 'working')
 
     @app.get('/api/books/{book_id}/notes')
-    async def get_notes(book_id: str):
-        return read_notes(library.root(book_id))
+    async def get_notes(book_id: str, version: Version = 'working'):
+        root = library.root(book_id)
+        location, notes_version = notes_location(root, version)
+        return read_notes(location, notes_version)
 
     @app.put('/api/books/{book_id}/notes')
-    async def put_notes(book_id: str, payload: NotesDocument, request: Request):
+    async def put_notes(book_id: str, payload: NotesDocument, request: Request, version: Version = 'working'):
         require_viewer(request)
-        write_notes(library.root(book_id), payload)
+        root = library.root(book_id)
+        location, notes_version = notes_location(root, version)
+        write_notes(location, payload, notes_version)
         return payload
 
     @app.get('/api/context')
@@ -230,7 +305,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     @app.post('/api/viewer/context', include_in_schema=False)
     async def update_context(payload: ReadingContext, request: Request):
         require_viewer(request)
-        root = library.root(payload.book_id)
+        working = library.root(payload.book_id)
+        root = version_root(working, payload.version)
         data = manifest(root)
         pages = page_map(data)
         page = pages.get(payload.page_id)
@@ -244,7 +320,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             del contexts[min(contexts, key=lambda k: contexts[k]['last_seen'])]
         contexts[payload.reader_id] = {
             **payload.model_dump(exclude={'page_id', 'book_id'}),
-            'book': {'id': payload.book_id, 'title': data['title'], 'root': str(root)},
+            'book': {'id': payload.book_id, 'title': data['title'], 'root': str(root), 'working_root': str(version_root(working, 'working'))},
             'page': page, 'updated_at': datetime.now(timezone.utc).isoformat(),
             'last_seen': time.time(), 'revision': state_for(payload.book_id)['revision']}
         return {'ok': True}
@@ -290,16 +366,28 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
     async def vendor(path: str):
         return FileResponse(safe_file(BASE / 'node_modules' / 'katex' / 'dist', path))
 
+    @app.get('/book/{book_id}/__grim_source__/{path:path}')
+    @app.get('/book-source/{book_id}/{path:path}')
+    async def source_book_file(book_id: str, path: str, download: bool = False):
+        return await book_file(book_id, path, download, source=True)
+
     @app.get('/book/{book_id}/{path:path}')
-    async def book_file(book_id: str, path: str, download: bool = False):
+    async def working_book_file(book_id: str, path: str, download: bool = False):
+        return await book_file(book_id, path, download)
+
+    async def book_file(book_id: str, path: str, download=False, source=False):
         # The live iframe uses a synthetic filename so reverse proxies that
         # ignore query parameters cannot keep serving an old injected bridge.
         versioned_name = re.match(r'^(.*?/)?__grim_v_[a-zA-Z0-9]+_\d+__([^/]+)$', path)
         if versioned_name:
             path = (versioned_name.group(1) or '') + versioned_name.group(2)
-        if path == NOTES_FILE:
+        if any(part.startswith('.') for part in Path(path).parts):
             raise HTTPException(404, 'Файл не найден в папке книги')
-        file = safe_file(library.root(book_id), path)
+        root = library.root(book_id)
+        if not source: root = version_root(root, 'working')
+        file = source_file(root, path) if source else safe_file(root, path)
+        if not source and any(p.startswith('.') for p in file.relative_to(root).parts):
+            raise HTTPException(404, 'Файл не найден в папке книги')
         if download:
             return FileResponse(file, filename=file.name, media_type='application/octet-stream')
         if file.suffix.lower() in ('.html', '.htm'):

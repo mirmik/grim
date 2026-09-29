@@ -267,3 +267,40 @@ def test_relative_registry_root_cannot_escape(tmp_path):
     (tmp_path/'library.json').write_text(json.dumps(registry))
     with pytest.raises(ValueError, match='inside the library'):
         Library(tmp_path, [])
+
+
+def test_configured_browser_origins_behind_proxy(monkeypatch, book, tmp_path):
+    monkeypatch.setenv('GRIM_ALLOWED_ORIGINS', 'https://reader.example.org, https://reader.example.org:8443')
+    with TestClient(create_app(book, tmp_path/'library')) as client:
+        book_id = entry(client)['id']
+        proxy = {'Origin': 'https://reader.example.org', 'Sec-Fetch-Site': 'same-origin',
+                 'X-Forwarded-Host': 'reader.example.org', 'X-Forwarded-Proto': 'https'}
+        assert client.get('/api/library', headers=proxy).status_code == 200
+        assert client.post(f'/api/books/{book_id}/working-copy', headers=proxy).status_code == 403
+        assert client.post(f'/api/books/{book_id}/working-copy', headers={**headers(client), **proxy}).status_code == 200
+        context = dict(reader_id='proxy-reader', sequence=1, book_id=book_id, page_id='one')
+        assert client.post('/api/viewer/context', json=context, headers={**headers(client), **proxy}).status_code == 200
+        for origin in ('https://reader.example.org:443', 'https://reader.example.org:8443'):
+            assert client.get('/api/context', headers={**proxy, 'Origin': origin}).status_code == 200
+        for origin in ('null', '', 'https://evil.example', 'http://reader.example.org',
+                       'https://reader.example.org:9443', 'https://reader.example.org:0', 'https://reader.example.org.evil.example',
+                       'https://reader.example.org/path', 'https://reader.example.org@evil.example'):
+            assert client.get('/api/library', headers={**proxy, 'Origin': origin}).status_code == 403
+        for changes in ({'Sec-Fetch-Site':'cross-site'}, {'Sec-Fetch-Site':'same-site'}, {'Host':'evil.example'}):
+            assert client.post('/api/viewer/context', json=context, headers={**headers(client), **proxy, **changes}).status_code == 403
+
+
+def test_forwarded_host_does_not_authorize_origin(client):
+    assert client.get('/api/library', headers={
+        'Origin': 'https://reader.example.org', 'X-Forwarded-Host': 'reader.example.org',
+        'X-Forwarded-Proto':'https', 'Sec-Fetch-Site':'same-origin',
+    }).status_code == 403
+    assert client.get('/api/library', headers={'Origin':'http://testserver', 'Sec-Fetch-Site':'same-origin'}).status_code == 200
+
+
+@pytest.mark.parametrize('origin', ['*', 'null', 'https://*.example.org', 'https://reader.example.org/grim/',
+                                     'https://user:password@reader.example.org', 'https://reader.example.org:bad'])
+def test_invalid_origin_configuration_fails_closed(monkeypatch, book, tmp_path, origin):
+    monkeypatch.setenv('GRIM_ALLOWED_ORIGINS', origin)
+    with pytest.raises(ValueError, match='GRIM_ALLOWED_ORIGINS'):
+        create_app(book, tmp_path/'library')

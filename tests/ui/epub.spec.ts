@@ -33,7 +33,9 @@ test('EPUB upload, split chapters, figures, formulas, footnotes and live editing
     await expect(frame.locator('#intro')).toBeVisible();
     const library = await (await request.get('/api/library')).json();
     const book = library.books.find((b:{title:string})=>b.title==='Проверка EPUB');
-    const html = path.join(book.root, 'content/OEBPS/intro-grim-001.html');
+    const imported=JSON.parse(await readFile(path.join(book.root,'epub-import.json'),'utf8'));
+    const first=imported.pages.find((p:{source:string})=>p.source==='OEBPS/intro.xhtml');
+    const html = path.join(book.root, first.path);
     await writeFile(html, (await readFile(html,'utf8')).replace('Первый абзац.', 'Переведённый абзац.'));
     await expect(frame.locator('#intro')).toContainText('Переведённый абзац.');
     await page.getByRole('button',{name:'Библиотека',exact:true}).click();

@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field, field_validator
 from .agent_store import AgentStore
 from .book_tools import BookTools
 from .library import manifest, page_map
+from .versions import Version, version_root
 
 POLICY = '''You are a book co-reader and author inside Grim. Answer in the reader's language.
 You share the current book's real HTML files with external editors and agents.
@@ -27,8 +28,10 @@ such as /vendor/katex.min.js are local. Add newly created pages to book.json aft
 Always use the file hash returned by book_read; on a conflict, read again and reconsider the edit.
 Do not replace a whole file with a truncated excerpt. There is no shell, arbitrary filesystem access
 or image/video generator in this toolset. Do not claim to have created unavailable assets.
-Current files are the working version. An immutable original/source-switching system is not
-implemented yet; do not claim one exists. Do not claim success after a tool returned an error.
+Current files are the working version. An optional immutable source snapshot can be read with
+book_read/book_search version="source". Use the snapshot version when discussing the displayed text.
+All writes target working files, even when the reader views the source. Read version="working"
+before editing; never attempt to change the source snapshot. Do not claim success after a tool returned an error.
 '''
 
 
@@ -57,6 +60,7 @@ class Settings(BaseModel):
 
 
 class Snapshot(BaseModel):
+    version: Version = 'working'
     page_id: str | None = Field(default=None, max_length=200)
     selection: str = Field(default='', max_length=12000)
     visible_text: str = Field(default='', max_length=24000)
@@ -165,7 +169,7 @@ class AgentService:
         settings = self.config()
         if not settings['model'].strip() and self.completion is None:
             raise HTTPException(422, 'Укажите модель в настройках агента')
-        pages = page_map(manifest(self.library.root(book_id)))
+        pages = page_map(manifest(version_root(self.library.root(book_id), turn.context.version)))
         if turn.context.page_id is not None and turn.context.page_id not in pages:
             raise HTTPException(409, 'Страница изменилась. Обновите книгу перед отправкой.')
         try:
@@ -191,7 +195,8 @@ class AgentService:
             session.messages = [Message.from_storage(row) for row in saved if row.get('role') != 'system']
             session.messages.insert(0, Message('system', POLICY + '\n' + settings['system_prompt']))
             context = copy.deepcopy(job['payload']['context'])
-            context.update(book_id=book_id, reader_id=job['payload']['reader_id'], version='working')
+            context.setdefault('version', 'working')
+            context.update(book_id=book_id, reader_id=job['payload']['reader_id'])
             def live_context():
                 return self.context_provider(job['payload']['reader_id'], book_id)
             book_tools = BookTools(self.library.root(book_id), book_id, job_id, self.store, context,

@@ -10,7 +10,6 @@ import shutil
 import stat
 import tempfile
 from urllib.parse import quote, unquote, urlsplit, urlunsplit
-import uuid
 import xml.etree.ElementTree as ET
 import zipfile
 
@@ -468,8 +467,14 @@ def import_epub(data, books_directory):
             build_book(data, stage)
         except (zipfile.BadZipFile, KeyError, RuntimeError, NotImplementedError) as exc:
             raise EpubError('Повреждённый или неподдерживаемый архив EPUB') from exc
-        destination = books_directory / uuid.uuid4().hex
-        stage.rename(destination)
+        from .naming import apply_names, name_plan, readable_name, available_path
+        apply_names(stage, name_plan(stage))
+        destination = available_path(books_directory, readable_name(manifest(stage)['title']), directory=True)
+        try:
+            stage.rename(destination)
+        except Exception:
+            destination.rmdir()
+            raise
         return destination
     finally:
         if stage.exists():

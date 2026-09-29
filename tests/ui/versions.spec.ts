@@ -1,0 +1,91 @@
+import { test, expect } from '@playwright/test';
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
+
+for(const width of [1440,390]) {
+  test(`working copy is optional and versions restore independently at ${width}px`,async({page,request})=>{
+    await page.setViewportSize({width,height:900});
+    // Deployment proxy publishes only existing namespaces, not /book-source/.
+    await page.route('**/*', route=>{
+      const pathname=new URL(route.request().url()).pathname;
+      if(pathname==='/' || ['/api/','/book/','/assets/','/vendor/'].some(prefix=>pathname.startsWith(prefix)))return route.continue();
+      return route.fulfill({status:404,body:'404 page not found'});
+    });
+    const token=(await(await request.get('/api/library')).json()).writer_token;
+    const book=await(await request.post('/api/library/create',{headers:{'X-Grim-Viewer':token},data:{title:'Version test'}})).json();
+    const head='<html><head><link rel="stylesheet" href="style.css"></head><body>';
+    await writeFile(path.join(book.root,'style.css'),'body{color:rgb(123, 0, 0)} .gap{height:1400px}');
+    await writeFile(path.join(book.root,'one.html'),head+'<h1>Original one</h1><div class="gap"></div><p id="origin">Reading place <a href="two.html#note">Footnote</a></p><div class="gap"></div></body></html>');
+    await writeFile(path.join(book.root,'two.html'),head+'<h1>Original two</h1><p id="note">Footnote text</p></body></html>');
+    await writeFile(path.join(book.root,'book.json'),JSON.stringify({title:book.title,pages:[{id:'one',title:'One',path:'one.html'},{id:'two',title:'Two',path:'two.html'}]}));
+    await page.goto(`/?book=${book.id}`);
+    const frame=page.frameLocator('iframe');
+    const menu=async()=>{if(width<600)await page.getByRole('button',{name:'Оглавление',exact:true}).click();};
+    await expect(frame.getByRole('heading',{name:'Original one'})).toBeVisible();
+    await menu();
+    await page.getByRole('button',{name:'Создать рабочую копию',exact:true}).click();
+    await expect(page.getByRole('button',{name:'Оригинал',exact:true,includeHidden:true})).toHaveAttribute('aria-pressed','true');
+    await expect(page.getByRole('button',{name:'Рабочая копия',exact:true,includeHidden:true})).toHaveAttribute('aria-pressed','false');
+    await expect(page.locator('iframe')).toHaveAttribute('src',/\/book\/[^/]+\/__grim_source__\//);
+    const copy=await(await request.get(`/api/books/${book.id}?version=working`)).json();
+    await writeFile(path.join(copy.root,'one.html'),head+'<h1>Edited working one</h1><div class="gap"></div></body></html>');
+    await writeFile(path.join(copy.root,'style.css'),'body{color:rgb(0, 0, 123)} .gap{height:1400px}');
+    // Creation keeps the main document open; edits affect only the extra copy.
+    await expect(frame.getByRole('heading',{name:'Original one'})).toBeVisible();
+    await expect(frame.locator('body')).toHaveCSS('color','rgb(123, 0, 0)');
+    await frame.locator('#origin').evaluate(el=>scrollTo(0,el.getBoundingClientRect().top+scrollY-100));
+    await expect.poll(async()=>JSON.parse(await page.evaluate(id=>localStorage.getItem(`grim-reading:${id}:source`),book.id)||'{}').position?.scroll_y).toBeGreaterThan(1000);
+    const sourceY=await frame.locator('body').evaluate(()=>scrollY);
+    await frame.getByRole('link',{name:'Footnote',exact:true}).click();
+    await expect(frame.locator('#note')).toBeVisible();
+    await page.getByRole('button',{name:'Вернуться',exact:true}).click();
+    await expect(frame.locator('#origin')).toBeInViewport();
+    await expect.poll(()=>frame.locator('body').evaluate(()=>scrollY)).toBeCloseTo(sourceY,0);
+    await frame.locator('#origin').evaluate(el=>{
+      const range=document.createRange();range.selectNodeContents(el);
+      const selection=getSelection()!;selection.removeAllRanges();selection.addRange(range);
+    });
+    await page.getByRole('button',{name:'Заметки',exact:true}).click();
+    await page.getByLabel('Новая заметка').fill('Note on the original');
+    await page.getByRole('button',{name:'Сохранить заметку'}).click();
+    await expect(page.locator('.note-card')).toContainText('Note on the original');
+    await expect.poll(async()=>(await(await request.get(`/api/books/${book.id}/notes?version=source`)).json()).notes[0]?.text).toBe('Note on the original');
+    expect((await(await request.get(`/api/books/${book.id}/notes`)).json()).notes).toEqual([]);
+    await page.getByRole('button',{name:'Закрыть заметки'}).click();
+    await menu();
+    await page.getByRole('button',{name:'Рабочая копия',exact:true}).click();
+    await expect(frame.getByRole('heading',{name:'Edited working one'})).toBeVisible();
+    await expect(page).toHaveURL(/version=working/);
+    await page.reload();
+    await expect(frame.getByRole('heading',{name:'Edited working one'})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Заметки',exact:true})).toBeVisible();
+    await expect(frame.locator('body')).toHaveCSS('color','rgb(0, 0, 123)');
+    await expect.poll(()=>frame.locator('body').evaluate(()=>scrollY)).toBe(0);
+    await menu();
+    await page.getByRole('button',{name:'Оригинал',exact:true}).click();
+    await expect.poll(()=>frame.locator('body').evaluate(()=>scrollY)).toBeCloseTo(sourceY,0);
+    await page.reload();
+    await expect(frame.locator('#origin')).toBeInViewport();
+    await page.getByRole('button',{name:/Заметки/}).click();
+    await expect(page.locator('.note-card')).toContainText('Note on the original');
+    await expect.poll(async()=> (await(await request.get(`/api/context?book_id=${book.id}`)).json()).context?.version).toBe('source');
+    await page.getByRole('button',{name:'Закрыть заметки'}).click();
+    await menu();
+    await page.getByRole('button',{name:'Рабочая копия',exact:true}).click();
+    await expect(frame.getByRole('heading',{name:'Edited working one'})).toBeVisible();
+    await page.goto(`/?book=${book.id}`);
+    await expect(frame.locator('#origin')).toBeInViewport();
+    await expect(page.getByRole('button',{name:'Оригинал',exact:true,includeHidden:true})).toHaveAttribute('aria-pressed','true');
+    await menu();
+    await page.getByRole('button',{name:'Переименовать рабочую копию'}).click();
+    await page.getByLabel('Название рабочей копии').fill('Мой перевод');
+    await page.getByRole('button',{name:'Сохранить название'}).click();
+    await expect(page.getByRole('button',{name:'Мой перевод',exact:true})).toBeVisible();
+    const renamed=await(await request.get(`/api/books/${book.id}?version=working`)).json();
+    expect(renamed.root).toBe(path.join(book.root,'мой-перевод'));
+    await page.getByRole('button',{name:'Мой перевод',exact:true}).click();
+    await expect(frame.getByRole('heading',{name:'Edited working one'})).toBeVisible();
+    await page.reload();
+    await expect(frame.getByRole('heading',{name:'Edited working one'})).toBeVisible();
+  });
+}

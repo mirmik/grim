@@ -5,6 +5,8 @@ from pathlib import Path
 import re
 import uuid
 
+from .naming import readable_name, available_path
+
 from fastapi import HTTPException
 
 
@@ -147,7 +149,9 @@ class Library:
     def describe(self, book_id: str, strict=False):
         entry = self.entries[book_id]
         try:
-            data = manifest(self.root(book_id))
+            from .versions import source_exists, version_root
+            root = self.root(book_id)
+            data = manifest(version_root(root, 'source') if source_exists(root) else root)
             return {**entry, 'title': data['title'], 'subtitle': data.get('subtitle', ''), 'page_count': len(page_map(data)), 'error': None}
         except HTTPException as exc:
             if strict:
@@ -163,7 +167,16 @@ class Library:
                 return self.describe(entry['id'])
         data = manifest(root)
         if root.is_relative_to(self.directory / 'books'):
-            book_id = uuid.uuid5(uuid.NAMESPACE_URL, 'grim:' + root.relative_to(self.directory).as_posix()).hex
+            identity = root / '.grim-book.json'
+            book_id = (json.loads(identity.read_text())['id'] if identity.exists() else
+                       uuid.uuid5(uuid.NAMESPACE_URL, 'grim:' + root.relative_to(self.directory).as_posix()).hex)
+            if not isinstance(book_id, str) or not re.fullmatch(r'[a-f0-9]{32}', book_id):
+                raise HTTPException(422, 'Некорректный ID книги')
+            previous = self.entries.get(book_id)
+            if previous and Path(previous['root']).exists():
+                raise HTTPException(422, 'Другая папка с этим ID книги уже подключена')
+            if not identity.exists():
+                atomic_json(identity, {'id': book_id})
         else:
             book_id = uuid.uuid4().hex
         self.entries[book_id] = {'id': book_id, 'root': str(root), 'title': data['title']}
@@ -178,13 +191,13 @@ class Library:
         title = title.strip()
         if not title:
             raise HTTPException(422, 'Введите название книги')
-        root = self.directory / 'books' / uuid.uuid4().hex
-        root.mkdir(parents=True, exist_ok=False)
+        root = available_path(self.directory / 'books', readable_name(title), directory=True)
         # Truly empty: the external agent can create the first page and update TOC.
         atomic_json(root / 'book.json', {'title': title, 'subtitle': '', 'pages': []})
         try:
             return self.register(root)
         except Exception:
             (root / 'book.json').unlink()
+            (root / '.grim-book.json').unlink(missing_ok=True)
             root.rmdir()
             raise

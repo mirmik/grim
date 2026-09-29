@@ -9,6 +9,6 @@ export function fetchLibrary(): Promise<Response> {
   return fetch(offline ? '/offline/library.json' : '/api/library');
 }
 
-export function fetchBook(id: string): Promise<Response> {
-  return fetch(offline ? `/offline/books/${encodeURIComponent(id)}.json` : `/api/books/${encodeURIComponent(id)}`);
+export function fetchBook(id: string, version='main'): Promise<Response> {
+  return fetch(offline ? `/offline/books/${encodeURIComponent(id)}.json` : `/api/books/${encodeURIComponent(id)}${version==='main'?'':`?version=${version}`}`);
 }
