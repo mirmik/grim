@@ -18,6 +18,7 @@ BASE = Path(__file__).resolve().parent.parent
 
 from server.library import Library, library_directory, manifest, page_map, safe_file
 from server.notes import NOTES_FILE, NotesDocument, read_notes, write_notes
+from server.epub import EpubError, MAX_UPLOAD, import_epub
 
 
 class ReaderUpdate(BaseModel):
@@ -178,6 +179,24 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             return result
         except OSError as exc:
             raise HTTPException(422, f'Не удалось подключить папку: {exc}') from exc
+
+    @app.post('/api/library/import-epub')
+    async def upload_epub(request: Request):
+        require_viewer(request)
+        # Raw file upload avoids multipart buffering and checks the actual bytes,
+        # even when Content-Length is absent or incorrect.
+        contents = bytearray()
+        async for chunk in request.stream():
+            if len(contents) + len(chunk) > MAX_UPLOAD:
+                raise HTTPException(413, 'Максимальный размер EPUB — 64 МБ')
+            contents.extend(chunk)
+        try:
+            root = await asyncio.to_thread(import_epub, bytes(contents), library.directory / 'books')
+            result = library.register(root)
+            state_for(result['id'])
+            return result
+        except (EpubError, OSError, ValueError) as exc:
+            raise HTTPException(422, f'Не удалось импортировать EPUB: {exc}') from exc
 
     @app.get('/api/books/{book_id}')
     async def get_book(book_id: str):

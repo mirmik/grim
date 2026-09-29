@@ -78,6 +78,8 @@
     return {left:rect.left,top:rect.top,bottom:rect.bottom,width:rect.width};
   }
   const normalize = value => value.replace(/\s+/g, ' ').trim();
+  let pageCharacters = 0, pageTextDirty = true;
+  const pageTextObserver = new MutationObserver(() => {pageTextDirty = true; schedule();});
   const excluded = node => node.parentElement?.closest('script,style,annotation,annotation-xml,[aria-hidden="true"]');
   function plainText(node, range) {
     if (range && !range.intersectsNode(node)) return '';
@@ -172,9 +174,13 @@
   }
   function report() {
     if (!ready) return;
+    if (pageTextDirty) {
+      pageCharacters = Array.from(normalize(readingText(document.body))).length;
+      pageTextDirty = false;
+    }
     const visible = blocks();
     const anchor = visible.find(el => el.id);
-    send('context', {visible_text: visible.map(el => readingText(el).trim()).join('\n').slice(0,24000), selection: selectionText().slice(0,12000), selection_anchor: selectionAnchor(), selection_rect: selectionRect(), anchor: anchor?.id || '', anchor_offset: anchor?.getBoundingClientRect().top || 0, scroll_y: Math.max(0,scrollY)});
+    send('context', {page_characters: pageCharacters, visible_text: visible.map(el => readingText(el).trim()).join('\n').slice(0,24000), selection: selectionText().slice(0,12000), selection_anchor: selectionAnchor(), selection_rect: selectionRect(), anchor: anchor?.id || '', anchor_offset: anchor?.getBoundingClientRect().top || 0, scroll_y: Math.max(0,scrollY)});
   }
   function schedule() {clearTimeout(timer); timer = setTimeout(report, 100);}
   function selectionFinished() {
@@ -196,7 +202,10 @@
     else if(event.data.type==='focus-note') focusNote(event.data.note);
     else if(event.data.type==='clear-selection') {getSelection()?.removeAllRanges();report();}
   });
-  addEventListener('load', () => send('ready'));
+  addEventListener('load', () => {
+    pageTextObserver.observe(document.body, {childList:true, characterData:true, subtree:true});
+    send('ready');
+  });
   addEventListener('scroll', schedule, {passive:true});
   addEventListener('resize', schedule);
   document.addEventListener('selectionchange', schedule);

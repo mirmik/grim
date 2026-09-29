@@ -26,6 +26,7 @@
   let readerId = $state('');
   const empty = ():Position => ({visible_text:'',selection:'',anchor:'',scroll_y:0,anchor_offset:0});
   let position = $state<Position>(empty());
+  let pageCharacters = $state<number|null>(null), countedFrame = $state('');
   let showAgent = $state(false), showContext = $state(false), showNotes = $state(false), sidebar = $state(false), updated = $state('');
   let notes = $state<ReaderNote[]>([]), noteSelection = $state(''), selectionAnchor = $state<NoteAnchor|null>(null), noteAction = $state<{x:number;y:number}|null>(null), noteStatus = $state<Record<string,string>>({});
   let pendingNoteId = '';
@@ -167,6 +168,9 @@
       }else if(data.type==='context') {
         if(![data.visible_text,data.selection,data.anchor].every(x=>typeof x==='string') || ![data.scroll_y,data.anchor_offset].every(Number.isFinite))return;
         position={visible_text:data.visible_text.slice(0,24000),selection:data.selection.slice(0,12000),anchor:data.anchor.slice(0,300),scroll_y:Math.max(0,data.scroll_y),anchor_offset:data.anchor_offset};
+        if(Number.isSafeInteger(data.page_characters) && data.page_characters>=0) {
+          pageCharacters=data.page_characters;countedFrame=data.path;
+        }
         const exact=position.selection.replace(/\s+/g,' ').trim();
         const nextAnchor=noteAnchor(data.selection_anchor) || (exact ? {exact,prefix:'',suffix:'',element_id:'',block_text:exact,start:0,end:exact.length} : null);
         // Keep the latest real selection for note creation: focusing a parent
@@ -246,7 +250,7 @@
         {:else if book}
           <div class="empty-book"><span class="eyebrow">ПЕРВАЯ СТРАНИЦА ЕЩЁ ВПЕРЕДИ</span><h1>{book.title}</h1><p>Книга создана. Начните тему в чате или со своим внешним агентом: он добавит HTML-страницы и оглавление, а они появятся здесь автоматически.</p><h2>Папка для ваших страниц</h2><code>{book.root}</code><p class="small">Оглавление: book.json · Добавьте страницу в массив pages.</p></div>
         {/if}
-        <footer><span>{pageIndex+1} / {allPages.length}</span><div><button disabled={pageIndex<=0} onclick={()=>select(allPages[pageIndex-1])}>← Назад</button><button disabled={pageIndex>=allPages.length-1} onclick={()=>select(allPages[pageIndex+1])}>Далее →</button></div></footer>
+        <footer><span class="page-stats"><span>{pageIndex+1} / {allPages.length}</span>{#if current?.path}<span class="page-characters" title="Количество знаков текста всей страницы с пробелами. Повторные пробелы и переносы строк считаются одним пробелом; HTML, стили и скрипты не учитываются.">{countedFrame===framePath(current.path) && pageCharacters!==null ? pageCharacters.toLocaleString('ru-RU') : '…'} знаков</span>{/if}</span><div><button disabled={pageIndex<=0} onclick={()=>select(allPages[pageIndex-1])}>← Назад</button><button disabled={pageIndex>=allPages.length-1} onclick={()=>select(allPages[pageIndex+1])}>Далее →</button></div></footer>
       </section>
       {#if noteSelection && selectionAnchor && !showNotes}<button class="selection-note-action" style:left={`${noteAction?.x??innerWidth/2}px`} style:top={`${noteAction?.y??innerHeight-80}px`} onclick={()=>{showNotes=true;showAgent=false;showContext=false;}}>＋ Заметка к выделению</button>{/if}
       {#if showAgent && book && !offline}{#key bookId}<AgentPanel {bookId} {readerId} {token} context={()=>({page_id:current?.id||null,selection:position.selection,visible_text:position.visible_text,anchor:position.anchor,viewer_revision:Math.max(0,lastRevision)})} onclose={()=>showAgent=false}/>{/key}{/if}
@@ -257,3 +261,9 @@
 </div>
 
 {/if}
+
+<style>
+  .page-stats { display:flex; flex-wrap:wrap; gap:4px 14px; align-items:center; }
+  .page-characters { white-space:nowrap; font-variant-numeric:tabular-nums; }
+  @media(max-width:600px) { .page-stats { flex-direction:column; align-items:flex-start; } }
+</style>
