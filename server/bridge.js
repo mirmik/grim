@@ -16,8 +16,9 @@
     html[data-grim-theme="dark"] :where(a, a *):not([data-grim-preserve-colors], [data-grim-preserve-colors] *, svg, svg *) { color: #a8d299 !important; }
     html[data-grim-theme="dark"] :where(figcaption, .eyebrow, .lead, .small):not([data-grim-preserve-colors], [data-grim-preserve-colors] *) { color: #a8b8aa !important; }
     /* Transparent diagrams often contain dark labels. Keep a light backing,
-       without inverting the colors of illustrations or interactive canvases. */
-    html[data-grim-theme="dark"] :where(svg, canvas):not([data-grim-preserve-colors], [data-grim-preserve-colors] *) { background-color: #fffefa; }
+       without inverting illustrations. KaTeX SVGs are inline glyphs (roots,
+       arrows, braces): a backing would obscure the adjacent formula text. */
+    html[data-grim-theme="dark"] :where(svg, canvas):not(.katex *, [data-grim-preserve-colors], [data-grim-preserve-colors] *) { background-color: #fffefa; }
   `;
   document.documentElement.append(themeStyle);
   function applyTheme(theme) {

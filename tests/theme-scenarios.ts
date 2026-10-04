@@ -1,6 +1,37 @@
 import { test, expect } from '@playwright/test';
+import katex from 'katex';
 
 export function themeScenarios() {
+  test('math SVG stays transparent while diagrams keep their dark-theme backing', async ({page}) => {
+    await page.goto('/');
+    const picker = page.getByRole('combobox', {name:'Тема оформления'});
+    await picker.selectOption('light');
+    await page.getByRole('button', {name:'Открыть книгу'}).first().click();
+    const frame = page.frameLocator('iframe');
+    await expect(frame.locator('.katex')).toBeAttached();
+    await frame.locator('body').evaluate((body, formulas) => {
+      const fixture = document.createElement('section');
+      fixture.id = 'math-theme-fixture';
+      fixture.innerHTML = formulas + '<svg id="theme-diagram" width="40" height="40"><circle cx="20" cy="20" r="10" fill="black"/></svg>'
+        + '<svg id="preserved-diagram" data-grim-preserve-colors width="40" height="40" style="background-color:rgb(12, 34, 56)"></svg>';
+      body.prepend(fixture);
+    }, [String.raw`e_{ij}=\frac{q_i^{\mathsf T}k_j}{\sqrt{128}}`, String.raw`\overbrace{x+y}`, String.raw`x\xrightarrow{W_Q}q`]
+      .map(tex => katex.renderToString(tex, {displayMode:true})).join(''));
+    const mathSvg = frame.locator('#math-theme-fixture .katex svg');
+    expect(await mathSvg.count()).toBeGreaterThanOrEqual(3);
+    for (const theme of ['light', 'dark', 'light']) {
+      await picker.selectOption(theme);
+      await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', theme);
+      await page.screenshot({path:test.info().outputPath(`math-${theme}.png`)});
+      for (const svg of await mathSvg.all()) {
+        await expect(svg).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+        if (theme === 'dark') await expect(svg.locator('path').first()).toHaveCSS('fill', 'rgb(224, 233, 223)');
+      }
+      await expect(frame.locator('#theme-diagram')).toHaveCSS('background-color', theme === 'dark' ? 'rgb(255, 254, 250)' : 'rgba(0, 0, 0, 0)');
+      await expect(frame.locator('#preserved-diagram')).toHaveCSS('background-color', 'rgb(12, 34, 56)');
+    }
+  });
+
   test('theme follows system, persists explicit choice and synchronizes tabs', async ({page, context}) => {
     await page.emulateMedia({colorScheme:'dark'});
     await page.goto('/');
