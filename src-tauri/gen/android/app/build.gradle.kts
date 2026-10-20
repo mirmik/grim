@@ -13,16 +13,40 @@ val tauriProperties = Properties().apply {
     }
 }
 
+// Keep release credentials outside the checkout. Debug builds keep their
+// existing identity; release builds use Grim's dedicated persistent key.
+val releaseSigningFile = file(
+    System.getenv("GRIM_ANDROID_SIGNING_PROPERTIES")
+        ?: "${System.getProperty("user.home")}/.local/share/grim/signing/release.properties"
+)
+val releaseSigningProperties = Properties().apply {
+    if (releaseSigningFile.isFile) {
+        releaseSigningFile.inputStream().use { load(it) }
+    }
+}
+
 android {
     compileSdk = 36
     namespace = "dev.mirmik.grim"
     defaultConfig {
-        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        // Users may connect to their existing HTTP Grim server on a trusted
+        // network. Book iframes still cannot issue network requests (CSP).
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
         applicationId = "dev.mirmik.grim"
         minSdk = 24
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+    }
+    signingConfigs {
+        if (releaseSigningFile.isFile) {
+            create("release") {
+                storeFile = file(releaseSigningProperties.getProperty("storeFile"))
+                storePassword = releaseSigningProperties.getProperty("storePassword")
+                keyAlias = releaseSigningProperties.getProperty("keyAlias")
+                keyPassword = releaseSigningProperties.getProperty("keyPassword")
+            }
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -37,6 +61,9 @@ android {
             }
         }
         getByName("release") {
+            if (releaseSigningFile.isFile) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }

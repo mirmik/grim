@@ -1,0 +1,9 @@
+[env]
+# Supported Wry template hook: persist the server's HttpOnly login session after
+# main-frame navigation, without storing the access token in application code.
+WRY_RUSTWEBVIEWCLIENT_CLASS_EXTENSION = """
+override fun onPageCommitVisible(view: android.webkit.WebView, url: String) {
+    super.onPageCommitVisible(view, url)
+    android.webkit.CookieManager.getInstance().flush()
+}
+"""

@@ -23,6 +23,7 @@ from server.library import Library, library_directory, manifest, page_map, safe_
 from server.versions import Version, create_source, source_exists, source_file, version_root, source_index, notes_location, rename_working
 from server.notes import NOTES_FILE, NotesDocument, read_notes, write_notes
 from server.epub import EpubError, MAX_UPLOAD, import_epub
+from server.mobile_access import MobileAccess, MobileAccessMiddleware, CAPABILITY, mobile_listener
 
 
 class ReaderUpdate(BaseModel):
@@ -49,6 +50,10 @@ class AddBook(BaseModel):
     root: str = Field(min_length=1, max_length=4096)
 
 
+class AccessTokenName(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+
+
 def browser_origin(value):
     """Canonical HTTP origin, never a path, wildcard, credentials or opaque origin."""
     if not value or any(char.isspace() for char in value) or '*' in value:
@@ -65,6 +70,7 @@ def browser_origin(value):
 
 
 def create_app(book_root: Path = None, library_dir: Path = None, *, agent_completion=None):
+    mobile = MobileAccess.from_env()
     contexts = {}
     reader_sequences = {}
     writer_token = secrets.token_urlsafe(32)
@@ -139,7 +145,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             state_for(book_id)
         task = asyncio.create_task(watch())
         try:
-            yield
+            async with mobile_listener(app, mobile):
+                yield
         finally:
             await app.state.agent.shutdown()
             task.cancel()
@@ -147,6 +154,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
                 await task
 
     app = FastAPI(title='Grim library and reading context', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    if mobile:
+        app.add_middleware(MobileAccessMiddleware, access=mobile)
 
     def require_viewer(request):
         if not secrets.compare_digest(request.headers.get('x-grim-viewer', ''), writer_token):
@@ -184,7 +193,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         response = await call_next(request)
         response.headers['Cache-Control'] = 'no-store'
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['Referrer-Policy'] = 'no-referrer'
+        response.headers.setdefault('Referrer-Policy', 'no-referrer')
         if request.url.path.startswith(('/book/', '/book-source/', '/vendor/')):
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Content-Security-Policy'] = "sandbox allow-scripts allow-downloads; default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'"
@@ -193,10 +202,42 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         return response
 
     @app.get('/api/library')
-    async def get_library():
+    async def get_library(request: Request):
         library.discover()
         return {'books': [library.describe(k) for k in library.entries], 'writer_token': writer_token,
-                'new_books_root': str(library.directory / 'books')}
+                'new_books_root': str(library.directory / 'books'),
+                'can_manage_access': bool(mobile and mobile.tokens and not mobile.protected(request.scope))}
+
+    def require_access_admin(request):
+        if not mobile or not mobile.tokens:
+            raise HTTPException(404, 'Вход по токенам не настроен')
+        # The original trusted web channel is the administrative boundary.
+        # A reader credential on 8444 must never mint another device's token.
+        if mobile.protected(request.scope):
+            raise HTTPException(403, 'Управление доступом доступно через основную веб-библиотеку')
+        require_viewer(request)
+        return mobile.tokens
+
+    @app.get('/api/access-tokens')
+    async def list_access_tokens(request: Request):
+        return {'tokens': require_access_admin(request).list()}
+
+    @app.post('/api/access-tokens', status_code=201)
+    async def create_access_token(payload: AccessTokenName, request: Request):
+        tokens = require_access_admin(request)
+        try:
+            return tokens.create(payload.name)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    @app.delete('/api/access-tokens/{token_id}')
+    async def revoke_access_token(token_id: str, request: Request):
+        tokens = require_access_admin(request)
+        try:
+            tokens.revoke(token_id)
+        except KeyError:
+            raise HTTPException(404, 'Токен не найден') from None
+        return {'revoked': True}
 
     @app.post('/api/library/create')
     async def create_book(payload: NewBook, request: Request):
@@ -237,7 +278,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             raise HTTPException(422, f'Не удалось импортировать EPUB: {exc}') from exc
 
     @app.get('/api/books/{book_id}')
-    async def get_book(book_id: str, version: Version | None = None):
+    async def get_book(book_id: str, request: Request, version: Version | None = None):
         working = library.root(book_id)
         version = version or ('source' if source_exists(working) else 'working')
         root = version_root(working, version)
@@ -247,7 +288,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
                 'has_source': source_exists(working), 'working_root': str(version_root(working, 'working')),
                 'working_name': source_index(working).get('working_name', 'Рабочая копия') if source_exists(working) else None,
                 'working_directory': source_index(working).get('working_directory') if source_exists(working) else None,
-                'content_prefix': f'/book/{book_id}/' + ('__grim_source__/' if version == 'source' else '')}
+                'content_prefix': f'/book/{book_id}/' + ('__grim_source__/' if version == 'source' else '')
+                    + (f'__grim_access_{mobile.book_access(book_id, request.scope["grim.access_token_id"])}__/' if mobile and mobile.protected(request.scope) else '')}
 
     @app.post('/api/books/{book_id}/working-copy')
     async def working_copy(book_id: str, request: Request):
@@ -261,7 +303,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             await asyncio.to_thread(snapshot)
         except OSError as exc:
             raise HTTPException(422, f'Не удалось создать рабочую копию: {exc}') from exc
-        return await get_book(book_id)
+        return await get_book(book_id, request)
 
     @app.patch('/api/books/{book_id}/working-copy')
     async def rename_copy(book_id: str, payload: NewBook, request: Request):
@@ -274,7 +316,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             await asyncio.to_thread(rename)
         except OSError as exc:
             raise HTTPException(422, f'Не удалось переименовать копию: {exc}') from exc
-        return await get_book(book_id, 'working')
+        return await get_book(book_id, request, 'working')
 
     @app.get('/api/books/{book_id}/notes')
     async def get_notes(book_id: str, version: Version = 'working'):
@@ -376,6 +418,9 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         return await book_file(book_id, path, download)
 
     async def book_file(book_id: str, path: str, download=False, source=False):
+        marker, separator, rest = path.partition('/')
+        if separator and CAPABILITY.fullmatch(marker):
+            path = rest
         # The live iframe uses a synthetic filename so reverse proxies that
         # ignore query parameters cannot keep serving an old injected bridge.
         versioned_name = re.match(r'^(.*?/)?__grim_v_[a-zA-Z0-9]+_\d+__([^/]+)$', path)

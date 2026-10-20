@@ -1,5 +1,7 @@
 <script lang="ts">
   import ThemePicker from './ThemePicker.svelte';
+  import ServerConnection from './ServerConnection.svelte';
+  import AccessTokens from './AccessTokens.svelte';
   import { onMount } from 'svelte';
   import { appPath, offline, fetchLibrary } from './platform';
   let {onopen}: {onopen:(id:string)=>void} = $props();
@@ -7,12 +9,14 @@
   let books = $state<Entry[]>([]), loading = $state(true), error = $state(''), busy = $state(false);
   let mode = $state<'create'|'add'|'import-epub'|null>(null), title = $state(''), root = $state(''), newRoot = $state('');
   let epub = $state<File|null>(null);
+  let canManageAccess = $state(false), showAccess = $state(false);
   let token = '';
   async function refresh() {
     try {
       const response = await fetchLibrary();
       if (!response.ok) throw new Error('Не удалось загрузить библиотеку');
       const data = await response.json();books=data.books;token=data.writer_token;newRoot=data.new_books_root;error='';
+      canManageAccess=Boolean(data.can_manage_access);
     } catch(e) {error=String(e);} finally {loading=false;}
   }
   async function submit(event:SubmitEvent) {
@@ -36,7 +40,13 @@
 <div class="library-shell">
   <header class="library-header"><a class="brand" href={appPath} aria-label="Grim, библиотека"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a><span>ВАША БИБЛИОТЕКА</span><ThemePicker/></header>
   <main class="library-main">
+    {#if offline}<ServerConnection/>{:else}
     <div class="library-intro"><div><p class="eyebrow">ПРОСТРАНСТВО ДЛЯ ЛЮБОПЫТСТВА</p><h1>Каждая книга —<br>новое начало.</h1><p>Возвращайтесь к знакомым идеям или начните исследовать что-то новое.</p></div>{#if !offline}<div class="library-actions"><button class="primary" disabled={busy} onclick={()=>{mode='create';error='';}}>+ Новая книга</button><button disabled={busy} onclick={()=>{mode='import-epub';error='';}}>Импорт EPUB</button><button disabled={busy} onclick={()=>{mode='add';error='';}}>Добавить папку</button></div>{/if}</div>
+    {/if}
+    {#if !offline && canManageAccess}
+      <div class="access-actions"><button aria-expanded={showAccess} onclick={()=>{showAccess=!showAccess;mode=null;}}>Токены доступа</button></div>
+      {#if showAccess}<AccessTokens onclose={()=>showAccess=false}/>{/if}
+    {/if}
     {#if mode}
       <form class="book-form" onsubmit={submit}>
         <div class="panel-heading"><h2>{mode==='create'?'Новая пустая книга':mode==='import-epub'?'Импортировать EPUB':'Подключить существующую книгу'}</h2><button type="button" aria-label="Закрыть форму" disabled={busy} onclick={()=>mode=null}>×</button></div>
@@ -51,10 +61,11 @@
     {#if loading}<p>Открываем библиотеку…</p>{:else}<div class="book-grid">{#each books as book,i}
       <article class="book-card" class:unavailable={Boolean(book.error)}><div class="book-card-top"><span class="book-monogram">{book.title.slice(0,1).toUpperCase()}</span><span>{String(i+1).padStart(2,'0')} / GRIM</span></div><h2>{book.title}</h2><p class="card-subtitle">{book.subtitle || (book.page_count?'Книга из локальной папки':'Чистое место для первой мысли')}</p><p class="card-count">{book.page_count} стр.</p>{#if book.error}<p class="card-error">{book.error}</p>{/if}{#if !offline}<details><summary>Папка книги</summary><code>{book.root}</code></details>{:else}<p class="offline-book-label">Доступна без сети</p>{/if}<button class="open-book" onclick={()=>onopen(book.id)}>Открыть книгу <span>↗</span></button></article>
     {/each}</div>{/if}
-    <p class="library-footnote">{offline ? 'Книги уже на устройстве. Читайте без интернета — ваше место сохранится. Новые книги и обновления пока добавляются вместе с приложением.' : 'Ваши книги — обычные папки. Внешний агент пишет страницы, Grim помогает их читать.'}</p>
+    <p class="library-footnote">{offline ? 'Книги ниже уже на устройстве и доступны без сети. Полная библиотека и работа с агентом доступны при подключении к вашему серверу.' : 'Ваши книги — обычные папки. Внешний агент пишет страницы, Grim помогает их читать.'}</p>
   </main>
 </div>
 
 <style>
   .library-actions { flex-wrap: wrap; flex-shrink: 1; }
+  .access-actions { display:flex;justify-content:flex-end;margin:0 0 20px; }
 </style>

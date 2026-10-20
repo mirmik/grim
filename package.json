@@ -1,7 +1,7 @@
 {
   "name": "grim-viewer",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.3",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -12,6 +12,7 @@
     "preview:android": "vite preview --outDir dist-android --host 127.0.0.1 --port 1420",
     "tauri": "tauri",
     "android:build": "tauri android build --apk --debug --target aarch64",
+    "android:release": "tauri android build --apk --target aarch64 --ci",
     "test:android-ui": "playwright test --config playwright.android.config.ts"
   },
   "dependencies": {

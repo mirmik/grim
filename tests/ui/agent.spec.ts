@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { openReaderTools } from '../reader-controls';
 
 test('chat edits the shared book through Nemor, keeps context and restores conversation', async ({page, request}) => {
   const runtime = await (await request.get('/api/agent/settings')).json();
@@ -45,10 +46,12 @@ test('chat edits the shared book through Nemor, keeps context and restores conve
     await expect(page.getByRole('button', {name:'Закрыть чат'})).toBeInViewport();
     await page.screenshot({path:'test-results/grim-agent-mobile.png'});
     await page.getByRole('button', {name:'Закрыть чат'}).click();
+    await openReaderTools(page);
     await page.getByRole('button', {name:'Контекст чтения', exact:false}).click();
     await expect(page.locator('.context-panel')).toBeVisible();
     const created = await (await request.post('/api/library/create', {headers:{'X-Grim-Viewer':book.writer_token},data:{title:'Отдельный разговор'}})).json();
     await page.goto(`/?book=${created.id}`);
+    await openReaderTools(page);
     await page.getByRole('button', {name:'Чат с агентом'}).click();
     await expect(page.locator('.agent-note').filter({hasText:'Обсудите прочитанное'})).toBeVisible();
     await expect(page.locator('.agent-turn')).toHaveCount(0);

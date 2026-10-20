@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openReaderTools } from '../reader-controls';
 
 test('bundled book reads without API, preserves position, and runs local interactive assets', async ({page}) => {
   const apiRequests: string[] = [], errors: string[] = [];
@@ -14,10 +15,12 @@ test('bundled book reads without API, preserves position, and runs local interac
     el.scrollIntoView();const r = document.createRange();r.selectNodeContents(el);
     getSelection()!.removeAllRanges();getSelection()!.addRange(r);
   });
+  await openReaderTools(page);
   await page.getByRole('button', {name: 'Фрагмент'}).click();
   await expect(page.locator('.context-panel blockquote')).toContainText('Колебание');
   await expect(page.locator('.context-badge')).toHaveText('Чтение на устройстве');
   await page.getByRole('button', {name: 'Закрыть контекст'}).click();
+  await openReaderTools(page);
   await page.getByRole('button', {name: 'Заметки', exact: true}).click();
   await page.getByLabel('Новая заметка').fill('Офлайн-заметка');
   await page.getByRole('button', {name: 'Сохранить заметку'}).click();
@@ -25,6 +28,7 @@ test('bundled book reads without API, preserves position, and runs local interac
   await page.getByRole('button', {name: 'Закрыть заметки'}).click();
   await page.reload();
   await expect(frame.locator('#definition')).toBeInViewport();
+  await openReaderTools(page);
   await page.getByRole('button', {name: /Заметки/}).click();
   await expect(page.locator('.note-card')).toContainText('Офлайн-заметка');
   await page.getByRole('button', {name: 'Закрыть заметки'}).click();
@@ -59,6 +63,10 @@ test('book sandbox and Android back action keep the reader isolated and navigabl
     return {dom, api, origin: window.origin};
   });
   expect(result).toEqual({dom: false, api: false, origin: 'null'});
+  await openReaderTools(page);
+  expect(await page.evaluate(() => window.dispatchEvent(new Event('grim-back', {cancelable: true})))).toBe(false);
+  await expect(page.getByLabel('Размер текста')).not.toBeVisible();
+  await expect(page.locator('iframe')).toBeVisible();
   await page.getByRole('button', {name: 'Оглавление', exact: true}).click();
   expect(await page.evaluate(() => window.dispatchEvent(new Event('grim-back', {cancelable: true})))).toBe(false);
   await expect(page.locator('aside')).not.toBeVisible();

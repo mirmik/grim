@@ -28,6 +28,35 @@
   // Apply before body parsing, including on page changes; later updates arrive
   // by message so controls, selection and scroll position stay intact.
   applyTheme(new URLSearchParams(location.search).get('grim-theme'));
+  // Apply reader typography inside the sandbox, rather than scaling the iframe
+  // (which would also shrink controls, diagrams and video). Desktop keeps the
+  // author's typography until the reader explicitly chooses a size.
+  const readingStyle = document.createElement('style');
+  document.documentElement.append(readingStyle);
+  function applyReadingStyle(size) {
+    if (size !== 'auto' && ![14,15,16,17,18,20,22,24].includes(size)) return;
+    const anchor = ready ? blocks().find(el => el.id) : null;
+    const offset = anchor?.getBoundingClientRect().top;
+    const prose = `body { font-size:inherit !important; line-height:1.6 !important; }
+      :where(p, li, blockquote):not(:where(.eyebrow, .small, .label, figure *, .formula *, .equation *, .lab *)) { font-size:1rem !important; line-height:1.6 !important; }`;
+    readingStyle.textContent = `
+      ${size === 'auto' ? '' : `html { font-size:${size}px !important; } ${prose}`}
+      @media(max-width:720px),(max-height:500px) and (pointer:coarse) {
+        html { font-size:${size === 'auto' ? 16 : size}px !important; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+        ${prose}
+        body { padding:12px 16px 24px !important; }
+        h1 { font-size:1.75rem !important; line-height:1.2 !important; margin:12px 0 20px !important; }
+        h2 { font-size:1.4rem !important; line-height:1.3 !important; margin:28px 0 12px !important; }
+        h3 { font-size:1.15rem !important; line-height:1.4 !important; margin:22px 0 10px !important; }
+        p { margin-top:.8em !important; margin-bottom:.8em !important; }
+        :where(.note, .formula, .equation, .lab) { padding:12px !important; margin:18px 0 !important; }
+        :where(img, video) { max-width:100%; height:auto; }
+        :where(pre, .formula, .equation, .table-wrap) { overflow-x:auto; }
+      }`;
+    if (anchor) scrollTo(0, scrollY + anchor.getBoundingClientRect().top - offset);
+    schedule();
+  }
+  applyReadingStyle('auto');
   const blockSelector = 'h1,h2,h3,p,li,figcaption,blockquote,pre,math,.katex';
   const blocks = () => {
     const visible = [...document.querySelectorAll(blockSelector)].filter(el => {
@@ -192,6 +221,7 @@
   addEventListener('message', event => {
     if (event.source !== parent || !event.data?.grim) return;
     if (event.data.type === 'theme') { applyTheme(event.data.theme); return; }
+    if (event.data.type === 'reading-style') { applyReadingStyle(event.data.size); return; }
     if(event.data.type==='restore') {
       const p = event.data.position;
       if (p) {

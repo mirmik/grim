@@ -38,6 +38,17 @@ test('EPUB upload, split chapters, figures, formulas, footnotes and live editing
     const html = path.join(book.root, first.path);
     await writeFile(html, (await readFile(html,'utf8')).replace('Первый абзац.', 'Переведённый абзац.'));
     await expect(frame.locator('#intro')).toContainText('Переведённый абзац.');
+    await page.setViewportSize({width:390,height:844});
+    await page.getByRole('button', {name:'Настройки и действия'}).click();
+    await page.getByLabel('Размер текста').selectOption('14');
+    await expect(frame.locator('#intro')).toHaveCSS('font-size','14px');
+    await page.getByRole('button', {name:'Настройки и действия'}).click();
+    await frame.locator('#intro').evaluate(el=>el.scrollIntoView());
+    await expect(frame.locator('#intro')).toBeInViewport();
+    await expect(frame.locator('mfrac')).toBeAttached();
+    expect(await frame.locator('img').evaluate(el=>el.getBoundingClientRect().width<=innerWidth)).toBe(true);
+    await page.screenshot({path:test.info().outputPath('epub-mobile.png')});
+    await page.setViewportSize({width:1440,height:1000});
     await page.getByRole('button',{name:'Библиотека',exact:true}).click();
     await expect(page.locator('.book-card').filter({hasText:'Проверка EPUB'})).toBeVisible();
   } finally {

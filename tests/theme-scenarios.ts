@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
 import katex from 'katex';
+import { selectTheme, openReaderTools } from './reader-controls';
 
 export function themeScenarios() {
   test('math SVG stays transparent while diagrams keep their dark-theme backing', async ({page}) => {
     await page.goto('/');
     const picker = page.getByRole('combobox', {name:'Тема оформления'});
-    await picker.selectOption('light');
+    await selectTheme(page, 'light');
     await page.getByRole('button', {name:'Открыть книгу'}).first().click();
     const frame = page.frameLocator('iframe');
     await expect(frame.locator('.katex')).toBeAttached();
@@ -20,7 +21,7 @@ export function themeScenarios() {
     const mathSvg = frame.locator('#math-theme-fixture .katex svg');
     expect(await mathSvg.count()).toBeGreaterThanOrEqual(3);
     for (const theme of ['light', 'dark', 'light']) {
-      await picker.selectOption(theme);
+      await selectTheme(page, theme);
       await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', theme);
       await page.screenshot({path:test.info().outputPath(`math-${theme}.png`)});
       for (const svg of await mathSvg.all()) {
@@ -40,7 +41,7 @@ export function themeScenarios() {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect(page.locator('.book-card').first()).toHaveCSS('background-color', 'rgb(23, 33, 29)');
     await page.screenshot({path:test.info().outputPath('library-dark.png')});
-    await picker.selectOption('light');
+    await selectTheme(page, 'light');
     await page.reload();
     await expect(picker).toHaveValue('light');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
@@ -50,7 +51,7 @@ export function themeScenarios() {
     await expect(picker).toHaveValue('dark');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await other.close();
-    await picker.selectOption('system');
+    await selectTheme(page, 'system');
     await page.emulateMedia({colorScheme:'light'});
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await page.emulateMedia({colorScheme:'dark'});
@@ -60,7 +61,7 @@ export function themeScenarios() {
   test('book theme preserves position, selection, media, interactive state and sandbox', async ({page}) => {
     await page.goto('/');
     const picker = page.getByRole('combobox', {name:'Тема оформления'});
-    await picker.selectOption('light');
+    await selectTheme(page, 'light');
     await page.getByRole('button', {name:'Открыть книгу'}).first().click();
     const frame = page.frameLocator('iframe');
     await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'light');
@@ -73,7 +74,7 @@ export function themeScenarios() {
     });
     const before = await frame.locator('body').evaluate(() => ({scroll:scrollY, selection:getSelection()!.toString()}));
     const src = await page.locator('iframe').getAttribute('src');
-    await picker.selectOption('dark');
+    await selectTheme(page, 'dark');
     await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'dark');
     await expect(frame.locator('html')).toHaveCSS('background-color', 'rgb(23, 33, 29)');
     await expect(frame.locator('#definition')).toHaveCSS('color', 'rgb(224, 233, 223)');
@@ -89,20 +90,22 @@ export function themeScenarios() {
     await frame.getByRole('link', {name:'измените волну в лаборатории →'}).click();
     await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'dark');
     await frame.locator('#amplitude').fill('1.8');
-    await picker.selectOption('light');
+    await selectTheme(page, 'light');
     await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'light');
     await expect(frame.locator('#a-value')).toHaveText('1.8');
     await expect(frame.locator('html')).toHaveCSS('background-color', 'rgb(255, 254, 250)');
-    await picker.selectOption('dark');
+    await selectTheme(page, 'dark');
     await page.reload();
     await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'dark');
     await page.setViewportSize({width:360,height:800});
+    await openReaderTools(page);
     for (const control of [picker, page.getByRole('button', {name:'Оглавление', exact:true})]) {
       const box = await control.boundingBox();
       expect(box!.x).toBeGreaterThanOrEqual(0);
       expect(box!.x + box!.width).toBeLessThanOrEqual(360);
     }
     expect(await page.locator('body').evaluate(el => el.scrollWidth <= innerWidth)).toBe(true);
+    await page.getByRole('button', {name:'Настройки и действия'}).click();
     await page.getByRole('button', {name:'Оглавление', exact:true}).click();
     const header = await page.locator('header').boundingBox();
     const sidebar = await page.locator('aside').boundingBox();
@@ -114,7 +117,7 @@ export function themeScenarios() {
   test('notes keep their anchors and follow the theme on desktop and mobile', async ({page}) => {
     await page.goto('/');
     const picker = page.getByRole('combobox', {name:'Тема оформления'});
-    await picker.selectOption('light');
+    await selectTheme(page, 'light');
     await page.getByRole('button', {name:'Открыть книгу'}).first().click();
     const frame = page.frameLocator('iframe');
     await frame.locator('#definition').evaluate(el => {
@@ -124,7 +127,7 @@ export function themeScenarios() {
     });
     const action = page.getByRole('button', {name:'＋ Заметка к выделению'});
     await expect(action).toBeVisible();
-    await picker.selectOption('dark');
+    await selectTheme(page, 'dark');
     await expect(action).toHaveCSS('background-color', 'rgb(23, 33, 29)');
     await action.click();
     await expect(page.locator('.notes-panel')).toHaveCSS('background-color', 'rgb(30, 43, 36)');
@@ -134,7 +137,7 @@ export function themeScenarios() {
     await expect(page.locator('.note-card')).toHaveCSS('background-color', 'rgb(23, 33, 29)');
     await expect.poll(() => frame.locator('html').getAttribute('data-grim-notes-resolved')).toBe('1');
     const src = await page.locator('iframe').getAttribute('src');
-    await picker.selectOption('light');
+    await selectTheme(page, 'light');
     await expect(page.locator('.note-card')).toHaveCSS('background-color', 'rgb(255, 254, 249)');
     await expect(page.locator('.note-card')).toContainText('Проверить определение');
     await expect(frame.locator('html')).toHaveAttribute('data-grim-theme', 'light');

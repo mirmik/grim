@@ -27,6 +27,7 @@ try {
     el.scrollIntoView();const range = document.createRange();range.selectNodeContents(el);
     getSelection().removeAllRanges();getSelection().addRange(range);
   });
+  await page.getByRole('button', {name: 'Настройки и действия'}).click();
   await page.getByRole('button', {name: 'Фрагмент'}).click();
   await expect(page.locator('.context-panel blockquote')).toContainText('Колебание');
   await device.shell('input keyevent KEYCODE_BACK');
@@ -59,3 +60,4 @@ try {
 } finally {
   await device.close();
 }
+process.exit(0);

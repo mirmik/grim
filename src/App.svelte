@@ -5,6 +5,7 @@
   import AgentPanel from './AgentPanel.svelte';
   import ThemePicker from './ThemePicker.svelte';
   import { resolvedTheme } from './theme';
+  import { readingSize, readingSizes, setReadingSize, type ReadingSize } from './reading';
   import NotesPanel from './NotesPanel.svelte';
   import { loadLocalNotes, loadNotes, noteAnchor, saveLocalNotes, saveNotes, type NoteAnchor, type ReaderNote } from './notes';
   import { appPath, offline, fetchBook } from './platform';
@@ -19,6 +20,22 @@
   let current = $state<Page|null>(null), revision = $state(0), connected = $state(false), error = $state('');
   let frame = $state<HTMLIFrameElement>();
   let headerHeight = $state(65);
+  let showTools = $state(false);
+  let toc = $state<HTMLElement>();
+  let toolsButton = $state<HTMLButtonElement>();
+  function closeOverlays() { sidebar=false;showTools=false; }
+  function toggleToc() {
+    sidebar=!sidebar;showTools=false;showAgent=false;showContext=false;showNotes=false;
+    if(sidebar) requestAnimationFrame(()=>toc?.querySelector<HTMLElement>('.page-link.active')?.focus());
+  }
+  function togglePanel(panel: 'notes'|'context'|'agent') {
+    const wasOpen = panel==='notes'?showNotes:panel==='context'?showContext:showAgent;
+    closeOverlays();showNotes=panel==='notes'&&!wasOpen;showContext=panel==='context'&&!wasOpen;showAgent=panel==='agent'&&!wasOpen;
+  }
+  function sendReadingSize() {
+    frame?.contentWindow?.postMessage({grim:true,type:'reading-style',size:$readingSize}, '*');
+  }
+  $effect(() => { sendReadingSize(); });
   function sendTheme() {
     frame?.contentWindow?.postMessage({grim:true,type:'theme',theme:$resolvedTheme}, '*');
   }
@@ -112,7 +129,7 @@
   }
   function select(page:Page,hash='',restored:Position|null=null) {
     const samePage=current?.path===page.path;
-    current=page;position=restored?{...restored}:empty();noteSelection='';selectionAnchor=null;noteAction=null;pendingHash=hash;sidebar=false;contextStatus='Ожидание страницы';
+    current=page;position=restored?{...restored}:empty();noteSelection='';selectionAnchor=null;noteAction=null;pendingHash=hash;closeOverlays();contextStatus='Ожидание страницы';
     if(samePage) {
       frame?.contentWindow?.postMessage({grim:true,type:'restore',position:hash?{...empty(),anchor:hash,anchor_offset:24}:$state.snapshot(position)},'*');
       pendingHash='';
@@ -150,6 +167,7 @@
     return data;
   }
   async function openBook(id:string,push=true,nextVersion:Version|'main'='main') {
+    closeOverlays();
     savePosition();idle();events?.close();events=null;
     const epoch=++generation;
     mainView=nextVersion!=='working';
@@ -216,6 +234,7 @@
     if(epoch===generation)await openBook(id,true,next);
   }
   function showLibrary(push=true) {
+    closeOverlays();
     returnLocations=[];
     savePosition();idle();generation++;events?.close();events=null;bookId=null;book=null;current=null;notes=[];noteSelection='';selectionAnchor=null;noteAction=null;showAgent=false;showContext=false;showNotes=false;error='';
     if(push)history.pushState({},'',appPath);
@@ -232,6 +251,7 @@
       if(event.source!==frame?.contentWindow || !data?.grim || !current?.path || data.path!==framePath(current.path))return;
       if(data.type==='ready') {
         sendTheme();
+        sendReadingSize();
         frame?.contentWindow?.postMessage({grim:true,type:'restore',position:pendingHash?{...empty(),anchor:pendingHash,anchor_offset:24}:$state.snapshot(position)},'*');pendingHash='';
         syncNotes(pendingNoteId);pendingNoteId='';
       }else if(data.type==='context') {
@@ -269,17 +289,20 @@
     };
     const background=()=>{if(document.visibilityState==='hidden')savePosition();};
     const back=(event:Event)=>{
-      if(showAgent){showAgent=false;event.preventDefault();}
+      if(showTools){showTools=false;toolsButton?.focus();event.preventDefault();}
+      else if(showAgent){showAgent=false;event.preventDefault();}
       else if(showContext){showContext=false;event.preventDefault();}
       else if(showNotes){showNotes=false;event.preventDefault();}
       else if(sidebar){sidebar=false;event.preventDefault();}
       else if(bookId){showLibrary();event.preventDefault();}
     };
+    const escape=(event:KeyboardEvent)=>{if(event.key==='Escape' && (showTools||sidebar||showAgent||showContext||showNotes))back(event);};
+    window.addEventListener('keydown',escape);
     document.addEventListener('visibilitychange',background);
     window.addEventListener('pagehide',savePosition);
     window.addEventListener('grim-back',back);
     window.addEventListener('message',listener);window.addEventListener('popstate',navigate);navigate();
-    return ()=>{document.removeEventListener('visibilitychange',background);window.removeEventListener('pagehide',savePosition);window.removeEventListener('grim-back',back);generation++;events?.close();window.removeEventListener('message',listener);window.removeEventListener('popstate',navigate);};
+    return ()=>{window.removeEventListener('keydown',escape);document.removeEventListener('visibilitychange',background);window.removeEventListener('pagehide',savePosition);window.removeEventListener('grim-back',back);generation++;events?.close();window.removeEventListener('message',listener);window.removeEventListener('popstate',navigate);};
   });
 </script>
 
@@ -298,7 +321,8 @@
   <Library onopen={(id)=>{void openBook(id);}}/>
 {:else}
 <div class="app-shell" class:offline style:--reader-header-height={`${headerHeight}px`}>
-  <aside class:mobile-open={sidebar}>
+  {#if sidebar || showTools}<button class="reader-backdrop" aria-label="Закрыть меню" onclick={()=>{closeOverlays();toolsButton?.focus();}}></button>{/if}
+  <aside id="reader-toc" bind:this={toc} class:mobile-open={sidebar}>
     <a class="brand" href={appPath} aria-label="Grim, главная"><span class="brand-mark">g</span><span>grim<span class="brand-period">.</span></span></a>
     <button class="back-library" onclick={()=>showLibrary()}>← Библиотека</button>
     <div class="library-label">ВАША ЖИВАЯ КНИГА</div>
@@ -325,7 +349,24 @@
     <div class="sidebar-bottom"><div class="connection"><span class:online={connected}></span>{offline ? 'Книга на устройстве' : connected ? 'Книга обновляется с диска' : 'Восстанавливаем соединение…'}</div><p>{offline ? 'Читайте без сети. Место в книге сохраняется автоматически.' : 'Читайте. Исследуйте. Задавайте вопросы своему агенту.'}</p><span class="version">GRIM / PROTOTYPE 0.2</span></div>
   </aside>
   <main>
-    <header bind:clientHeight={headerHeight}><button class="menu-button" aria-label="Оглавление" onclick={()=>sidebar=!sidebar}>☰</button><div class="breadcrumbs"><button class="breadcrumb-library" onclick={()=>showLibrary()}>Библиотека</button> <span>/</span> <strong>{current?.title || 'Grim'}</strong></div><div class="reader-actions"><ThemePicker/><button class="context-toggle" class:selected={showNotes} onclick={()=>{showNotes=!showNotes;showAgent=false;showContext=false;}}>Заметки {#if notes.length}<b>{notes.length}</b>{/if}</button><button class="context-toggle" aria-label={offline ? 'Фрагмент' : 'Контекст чтения'} class:selected={showContext} onclick={()=>{showContext=!showContext;showAgent=false;showNotes=false;}}><span>⌘</span> <span class="context-label">{offline ? 'Фрагмент' : 'Контекст чтения'}</span> {#if position.selection}<i></i>{/if}</button>{#if !offline && book}<button class="context-toggle agent-toggle" class:selected={showAgent} onclick={()=>{showAgent=!showAgent;showContext=false;showNotes=false;}}>Чат с агентом</button>{/if}</div></header>
+    <header bind:clientHeight={headerHeight}>
+      <button class="menu-button" aria-label="Оглавление" aria-expanded={sidebar} aria-controls="reader-toc" onclick={toggleToc}><span aria-hidden="true">☰</span> Оглавление</button>
+      <div class="breadcrumbs"><button class="breadcrumb-library" onclick={()=>showLibrary()}>Библиотека</button> <span>/</span> <strong>{current?.title || 'Grim'}</strong></div>
+      <div id="reader-tools" class="reader-actions" class:tools-open={showTools}>
+        <div class="font-settings">
+          <label for="reading-size">Размер текста</label>
+          <select id="reading-size" value={$readingSize} onchange={event=>setReadingSize(event.currentTarget.value==='auto'?'auto':Number(event.currentTarget.value) as ReadingSize)}>
+            <option value="auto">По умолчанию</option>
+            {#each readingSizes as size}<option value={size}>{size} px</option>{/each}
+          </select>
+        </div>
+        <ThemePicker/>
+        <button class="context-toggle" class:selected={showNotes} onclick={()=>togglePanel('notes')}>Заметки {#if notes.length}<b>{notes.length}</b>{/if}</button>
+        <button class="context-toggle" aria-label={offline ? 'Фрагмент' : 'Контекст чтения'} class:selected={showContext} onclick={()=>togglePanel('context')}><span aria-hidden="true">⌘</span> <span class="context-label">{offline ? 'Фрагмент' : 'Контекст чтения'}</span> {#if position.selection}<i></i>{/if}</button>
+        {#if !offline && book}<button class="context-toggle agent-toggle" class:selected={showAgent} onclick={()=>togglePanel('agent')}>Чат с агентом</button>{/if}
+      </div>
+      <button bind:this={toolsButton} class="tools-button" aria-label="Настройки и действия" aria-expanded={showTools} aria-controls="reader-tools" onclick={()=>{showTools=!showTools;sidebar=false;}}>Aa <span aria-hidden="true">⋮</span></button>
+    </header>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
     <div class="reading-area">
       <section class="page-area" aria-label="Страница книги">

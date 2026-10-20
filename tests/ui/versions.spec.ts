@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { openReaderTools } from '../reader-controls';
 
 for(const width of [1440,390]) {
   test(`working copy is optional and versions restore independently at ${width}px`,async({page,request})=>{
@@ -45,6 +46,8 @@ for(const width of [1440,390]) {
       const range=document.createRange();range.selectNodeContents(el);
       const selection=getSelection()!;selection.removeAllRanges();selection.addRange(range);
     });
+    await expect(page.getByRole('button',{name:'＋ Заметка к выделению'})).toBeVisible();
+    if(width<600)await openReaderTools(page);
     await page.getByRole('button',{name:'Заметки',exact:true}).click();
     await page.getByLabel('Новая заметка').fill('Note on the original');
     await page.getByRole('button',{name:'Сохранить заметку'}).click();
@@ -58,6 +61,7 @@ for(const width of [1440,390]) {
     await expect(page).toHaveURL(/version=working/);
     await page.reload();
     await expect(frame.getByRole('heading',{name:'Edited working one'})).toBeVisible();
+    if(width<600)await openReaderTools(page);
     await expect(page.getByRole('button',{name:'Заметки',exact:true})).toBeVisible();
     await expect(frame.locator('body')).toHaveCSS('color','rgb(0, 0, 123)');
     await expect.poll(()=>frame.locator('body').evaluate(()=>scrollY)).toBe(0);
@@ -66,6 +70,7 @@ for(const width of [1440,390]) {
     await expect.poll(()=>frame.locator('body').evaluate(()=>scrollY)).toBeCloseTo(sourceY,0);
     await page.reload();
     await expect(frame.locator('#origin')).toBeInViewport();
+    if(width<600)await openReaderTools(page);
     await page.getByRole('button',{name:/Заметки/}).click();
     await expect(page.locator('.note-card')).toContainText('Note on the original');
     await expect.poll(async()=> (await(await request.get(`/api/context?book_id=${book.id}`)).json()).context?.version).toBe('source');

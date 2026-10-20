@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Grim host: route HTTPS replies through the router, as Migi does.
+set -euo pipefail
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+IFACE=enp197s0
+LAN_IP=192.168.0.61
+LAN_GATEWAY=192.168.0.1
+LAN_CIDR=192.168.0.0/24
+ROUTE_TABLE=1061
+RULE_PREF=10067
+HTTPS_PORT=8444
+
+case "${2:-}" in
+    up|dhcp4-change)
+        [[ "${1:-}" == "$IFACE" ]] || exit 0
+        ;;
+    vpn-up|vpn-down|connectivity-change)
+        ;;
+    *) exit 0 ;;
+esac
+
+# VPN events can name the tunnel interface. Reapply only if the LAN is ready.
+ip -o -4 addr show dev "$IFACE" | grep -Fq "inet $LAN_IP/" || exit 0
+exec 9>/run/lock/grim-routing.lock
+flock 9
+
+existing=$(ip -4 rule show | awk -v pref="$RULE_PREF:" '$1 == pref')
+expected="^${RULE_PREF}:[[:space:]]+from all ipproto tcp sport ${HTTPS_PORT} lookup ${ROUTE_TABLE}[[:space:]]*$"
+if [[ -n "$existing" ]] && ! grep -Eq "$expected" <<<"$existing"; then
+    logger -t grim-routing "priority $RULE_PREF is occupied by another rule; no changes made"
+    exit 1
+fi
+
+ip route replace "$LAN_CIDR" dev "$IFACE" src "$LAN_IP" table "$ROUTE_TABLE"
+ip route replace default via "$LAN_GATEWAY" dev "$IFACE" src "$LAN_IP" table "$ROUTE_TABLE"
+if [[ -z "$existing" ]]; then
+    ip rule add pref "$RULE_PREF" ipproto tcp sport "$HTTPS_PORT" lookup "$ROUTE_TABLE"
+fi
+logger -t grim-routing "tcp sport $HTTPS_PORT uses $LAN_GATEWAY table $ROUTE_TABLE"
