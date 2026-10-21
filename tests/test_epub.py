@@ -12,6 +12,18 @@ from server.library import page_map
 from epub_fixture import epub_bytes
 
 
+def test_import_retains_description_and_authors_for_agent_context(tmp_path):
+    import io
+    import zipfile
+    original = epub_bytes(paragraphs=1)
+    with zipfile.ZipFile(io.BytesIO(original)) as archive:
+        package = archive.read('OEBPS/package.opf').decode().replace('</dc:creator>', '</dc:creator><dc:description>Аннотация книги для агента.</dc:description>')
+    root = import_epub(epub_bytes(paragraphs=1, extra={'OEBPS/package.opf': package}), tmp_path / 'books')
+    book = json.loads((root / 'book.json').read_text())
+    assert book['description'] == 'Аннотация книги для агента.'
+    assert book['authors'] == ['Автор']
+
+
 @pytest.mark.parametrize('epub2', [False, True])
 def test_import_preserves_content_resources_and_cross_part_links(tmp_path, epub2):
     root = import_epub(epub_bytes(epub2=epub2), tmp_path / 'books')

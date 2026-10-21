@@ -25,6 +25,9 @@ for(const width of [1440,390]) {
     await expect(frame.getByRole('heading',{name:'Original one'})).toBeVisible();
     await menu();
     await page.getByRole('button',{name:'Создать рабочую копию',exact:true}).click();
+    // This scenario exercises the explicit single-column mode. Parallel
+    // translation reading has its own browser scenarios.
+    if(width===1440)await page.getByRole('button',{name:'Показывать оригинал и копию рядом'}).click();
     await expect(page.getByRole('button',{name:'Оригинал',exact:true,includeHidden:true})).toHaveAttribute('aria-pressed','true');
     await expect(page.getByRole('button',{name:'Рабочая копия',exact:true,includeHidden:true})).toHaveAttribute('aria-pressed','false');
     await expect(page.locator('iframe')).toHaveAttribute('src',/\/book\/[^/]+\/__grim_source__\//);

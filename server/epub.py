@@ -293,6 +293,7 @@ def build_book(data, root, target_chars=PAGE_CHARS):
         metadata = next((el for el in opf if local(el.tag) == 'metadata'), [])
         title = next((' '.join(''.join(el.itertext()).split()) for el in metadata if local(el.tag) == 'title'), '') or 'Книга EPUB'
         authors = [' '.join(''.join(el.itertext()).split()) for el in metadata if local(el.tag) == 'creator']
+        description = next((' '.join(''.join(el.itertext()).split()) for el in metadata if local(el.tag) == 'description'), '')
         items = {}
         for el in opf.iter():
             if local(el.tag) == 'item':
@@ -449,7 +450,8 @@ def build_book(data, root, target_chars=PAGE_CHARS):
                 toc.extend(nodes)
             elif nodes:
                 toc.append({'id': f'chapter-{len(toc) + 1:04d}', 'title': chapter_pages[0]['chapter'], 'children': nodes})
-        atomic_json(root / 'book.json', {'title': title, 'subtitle': ', '.join(authors), 'pages': toc})
+        atomic_json(root / 'book.json', {'title': title, 'subtitle': ', '.join(authors), 'authors': authors,
+                    **({'description': description} if description else {}), 'pages': toc})
         atomic_json(root / 'epub-import.json', {'format': 'epub', 'sha256': hashlib.sha256(data).hexdigest(),
                     'target_chars': target_chars, 'min_page_chars': min(MIN_PAGE_CHARS, target_chars),
                     'pages': [{'path': 'content/' + p['path'], 'source': p['source'],

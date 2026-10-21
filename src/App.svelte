@@ -7,10 +7,11 @@
   import { resolvedTheme } from './theme';
   import { readingSize, readingSizes, setReadingSize, type ReadingSize } from './reading';
   import NotesPanel from './NotesPanel.svelte';
+  import ParallelReader from './ParallelReader.svelte';
   import { loadLocalNotes, loadNotes, noteAnchor, saveLocalNotes, saveNotes, type NoteAnchor, type ReaderNote } from './notes';
   import { appPath, offline, fetchBook } from './platform';
   type Page = {id:string; title:string; path?:string; children?:Page[]};
-  type Position = {visible_text:string; selection:string; anchor:string; scroll_y:number; anchor_offset:number};
+  type Position = {visible_text:string; selection:string; anchor:string; scroll_y:number; anchor_offset:number;block_index?:number};
   type Version = 'working'|'source';
   let mainView = true;
   let renamingCopy = $state(false), copyName = $state(''), savingCopyName = $state(false);
@@ -19,6 +20,45 @@
   let book = $state<Book|null>(null), bookId = $state<string|null>(null);
   let current = $state<Page|null>(null), revision = $state(0), connected = $state(false), error = $state('');
   let frame = $state<HTMLIFrameElement>();
+  let comparison = $state<ParallelReader>();
+  let readingWidth = $state(0), parallelEnabled = $state(true), copyRevision = $state(0);
+  let sourceBook = $state<Book|null>(null), workingBook = $state<Book|null>(null);
+  let parallel = $derived(!offline && !!book?.has_source && parallelEnabled && readingWidth>=960);
+  const panePositions:Partial<Record<Version,Position>>={};
+  let paneNotes:Record<Version,ReaderNote[]>={source:[],working:[]};
+  function pairedPage(next:Version):Page|null {
+    const other=next==='source'?sourceBook:workingBook;
+    if(!other || !current)return null;
+    const pages=flatten(other.pages);
+    return pages.find(page=>page.id===current!.id)||pages.find(page=>page.path===current!.path)||null;
+  }
+  function comparisonView(next:Version) {
+    const data=next==='source'?sourceBook:workingBook, page=pairedPage(next);
+    return data && page?.path ? {title:page.title,path:framePath(page.path,data,next==='working'?copyRevision:revision)} : null;
+  }
+  function activatePane(next:Version) {
+    if(!parallel || next===version)return;
+    const data=next==='source'?sourceBook:workingBook,page=pairedPage(next);
+    if(!data || !page)return;
+    savePosition();panePositions[version]={...position};paneNotes[version]=notes;
+    book=data;current=page;version=next;mainView=next==='source';
+    position={...(panePositions[next]||empty())};notes=paneNotes[next];
+    frame=comparison?.getFrame(next);noteSelection='';selectionAnchor=null;noteAction=null;returnLocations=[];noteStatus={};
+    history.replaceState({},'',`?book=${encodeURIComponent(book.id)}${next==='working'?'&version=working':''}`);
+    syncNotes();savePosition();void publish();
+  }
+  function comparisonReady(next:Version,element:HTMLIFrameElement) {
+    if(next===version)frame=element;
+    const page=pairedPage(next);
+    const restored=next===version ? (pendingHash?{...empty(),anchor:pendingHash,anchor_offset:24}:$state.snapshot(position)) : panePositions[next]||empty();
+    element.contentWindow?.postMessage({grim:true,type:'restore',position:restored},'*');
+    if(next===version){pendingHash='';syncNotes(pendingNoteId);pendingNoteId='';}
+    else element.contentWindow?.postMessage({grim:true,type:'notes',notes:$state.snapshot(paneNotes[next].filter(note=>note.page_id===page?.id).map(note=>({id:note.id,anchor:note.anchor})))},'*');
+  }
+  function toggleParallel() {
+    savePosition();panePositions[version]={...position};parallelEnabled=!parallelEnabled;
+    try{localStorage.setItem('grim-parallel',String(parallelEnabled));}catch{}
+  }
   let headerHeight = $state(65);
   let showTools = $state(false);
   let toc = $state<HTMLElement>();
@@ -59,12 +99,13 @@
   let pageIndex = $derived(allPages.findIndex(p=>p.id===current?.id));
   let prefix = $derived(book?.content_prefix || `/book/${bookId}/`);
   const encodedPath = (path:string) => path.split('/').map(encodeURIComponent).join('/');
-  function framePath(path:string) {
+  function framePath(path:string,view:Book|null=book,viewRevision=parallel && view===workingBook?copyRevision:revision) {
     const encoded=encodedPath(path);
-    if(offline || !book?.bridge_version)return prefix+encoded;
+    const base=view?.content_prefix || `/book/${bookId}/`;
+    if(offline || !view?.bridge_version)return base+encoded;
     const parts=encoded.split('/'),name=parts.pop()!;
-    parts.push(`__grim_v_${encodeURIComponent(book.bridge_version)}_${revision}__${name}`);
-    return prefix+parts.join('/');
+    parts.push(`__grim_v_${encodeURIComponent(view.bridge_version)}_${viewRevision}__${name}`);
+    return base+parts.join('/');
   }
   function currentNotes() {return notes.filter(note=>note.page_id===current?.id);}
   function syncNotes(focus='') {
@@ -78,6 +119,7 @@
     if(!book)return;
     const id=book.id,writeToken=token,writeVersion=version;
     notes=next;const saved=$state.snapshot(next);syncNotes();
+    paneNotes[version]=saved;
     if(offline){saveLocalNotes(id,saved);return;}
     notesWrite=notesWrite.catch(()=>{}).then(()=>saveNotes(id,writeToken,saved,writeVersion)).catch(cause=>{error=String(cause);});
   }
@@ -99,17 +141,17 @@
     showNotes=true;showAgent=false;showContext=false;
     if(current?.id!==page.id){pendingNoteId=note.id;select(page);}else syncNotes(note.id);
   }
-  const readingKey=(id:string)=>`grim-reading:${id}${version==='source'?':source':''}`;
+  const readingKey=(id:string,v:Version=version)=>`grim-reading:${id}${v==='source'?':source':''}`;
   function savePosition() {
     if (!book || !current) return;
     try {localStorage.setItem(readingKey(book.id),JSON.stringify({page_id:current.id,position:{...position,selection:'',visible_text:''}}));}catch{}
   }
-  function savedPosition(id:string):{page_id?:string;position?:Position} {
+  function savedPosition(id:string,v:Version=version):{page_id?:string;position?:Position} {
     try {
-      const saved=JSON.parse(localStorage.getItem(readingKey(id))||'{}');
+      const saved=JSON.parse(localStorage.getItem(readingKey(id,v))||'{}');
       const p=saved.position;
       if (!p || typeof saved.page_id!=='string' || typeof p.anchor!=='string' || ![p.scroll_y,p.anchor_offset].every(Number.isFinite)) return {};
-      return {page_id:saved.page_id,position:{...empty(),anchor:p.anchor,scroll_y:Math.max(0,p.scroll_y),anchor_offset:p.anchor_offset}};
+      return {page_id:saved.page_id,position:{...empty(),anchor:p.anchor,scroll_y:Math.max(0,p.scroll_y),anchor_offset:p.anchor_offset,...(Number.isSafeInteger(p.block_index)&&p.block_index>=0?{block_index:p.block_index}:{})}};
     }catch{return {};}
   }
   async function publish() {
@@ -130,6 +172,7 @@
   function select(page:Page,hash='',restored:Position|null=null) {
     const samePage=current?.path===page.path;
     current=page;position=restored?{...restored}:empty();noteSelection='';selectionAnchor=null;noteAction=null;pendingHash=hash;closeOverlays();contextStatus='Ожидание страницы';
+    if(!samePage){panePositions.source=empty();panePositions.working=empty();}
     if(samePage) {
       frame?.contentWindow?.postMessage({grim:true,type:'restore',position:hash?{...empty(),anchor:hash,anchor_offset:24}:$state.snapshot(position)},'*');
       pendingHash='';
@@ -153,16 +196,36 @@
     if(!response.ok) throw new Error((await response.json()).detail||'Не удалось открыть книгу');
     const data=await response.json();
     if(epoch!==generation)return null;
-    version=data.version||'working';
-    token=data.writer_token;
-    const loadedNotes=offline ? loadLocalNotes(id) : await loadNotes(id,token,version);
+    const loadedVersion:Version=data.version||'working', writerToken=data.writer_token;
+    const loadedNotes=offline ? loadLocalNotes(id) : await loadNotes(id,writerToken,loadedVersion);
     if(epoch!==generation)return null;
-    const pages=flatten(data.pages),saved=savedPosition(id);
+    let other:Book|null=null, otherNotes:ReaderNote[]=[];
+    const otherVersion=loadedVersion==='source'?'working':'source';
+    if(data.has_source && !offline) {
+      const [response,loadedOtherNotes]=await Promise.all([fetchBook(id,otherVersion),loadNotes(id,writerToken,otherVersion)]);
+      if(!response.ok)throw new Error((await response.json()).detail||'Не удалось открыть вторую версию');
+      other=await response.json();otherNotes=loadedOtherNotes;
+      if(epoch!==generation)return null;
+    }
+    // A reader can choose the other pane while metadata is being refreshed.
+    // Commit both fetched versions together without undoing that choice.
+    const activeVersion=book && parallel ? version : loadedVersion;
+    if(other) {
+      sourceBook=loadedVersion==='source'?data:other;workingBook=loadedVersion==='working'?data:other;
+      paneNotes={...paneNotes,[loadedVersion]:loadedNotes,[otherVersion]:otherNotes};
+    }else{sourceBook=null;workingBook=null;}
+    version=activeVersion;token=writerToken;
+    const activeData=activeVersion===loadedVersion ? data : other!;
+    const pages=flatten(activeData.pages),saved=savedPosition(id);
     const next=pages.find(p=>p.id===(current?.id||saved.page_id))||pages[0]||null;
     if(!current || current.id!==next?.id) {
       position=next && next.id===saved.page_id && saved.position ? saved.position:empty();
     }
-    book=data;current=next;notes=loadedNotes;error='';
+    if(other) {
+      const savedOther=savedPosition(id,otherVersion);
+      if(!panePositions[otherVersion] && savedOther.page_id===next?.id)panePositions[otherVersion]=savedOther.position;
+    }
+    book=activeData;current=next;notes=other?paneNotes[activeVersion]:loadedNotes;error='';
     if(!next)void publish();
     return data;
   }
@@ -172,12 +235,12 @@
     const epoch=++generation;
     mainView=nextVersion!=='working';
     version=offline||nextVersion==='main'?'working':nextVersion;
-    returnLocations=[];renamingCopy=false;
+    returnLocations=[];renamingCopy=false;sourceBook=null;workingBook=null;delete panePositions.source;delete panePositions.working;paneNotes={source:[],working:[]};
     bookId=id;book=null;current=null;position=empty();noteSelection='';selectionAnchor=null;noteAction=null;notes=[];noteStatus={};pendingHash='';pendingNoteId='';error='';updated='';connected=false;sidebar=false;showAgent=false;showContext=false;showNotes=false;
     if(push)history.pushState({},'',`?book=${encodeURIComponent(id)}${nextVersion==='working'?'&version=working':''}`);
     try {
       const data=await loadBook(id,epoch);if(!data)return;
-      revision++;lastRevision=data.revision;
+      revision++;copyRevision++;lastRevision=data.revision;
       if (offline) {connected=true;return;}
       const stream=new EventSource(`/api/books/${id}/events`);events=stream;
       stream.onopen=()=>{if(epoch===generation)connected=true;};
@@ -187,10 +250,10 @@
         if(epoch!==generation || message.book_id!==id || message.revision===lastRevision)return;
         lastRevision=message.revision;
         // Working edits must not reload an unchanged original (or interrupt its media).
-        if(version==='source' && book?.working_directory && Array.isArray(message.changed) && message.changed.every((path:string)=>path.startsWith(book!.working_directory+'/')))return;
+        const onlyWorking=book?.working_directory && Array.isArray(message.changed) && message.changed.every((path:string)=>path.startsWith(book!.working_directory+'/'));
         try {
           if(await loadBook(id,epoch)) {
-            revision++;updated=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+            if(!onlyWorking || (!parallel && version==='working'))revision++;copyRevision++;updated=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
           }
         }catch(e){if(epoch===generation)error=String(e);}
       };
@@ -229,6 +292,7 @@
   }
   async function switchVersion(next:Version) {
     if(!bookId || version===next)return;
+    if(parallel){activatePane(next);return;}
     const id=bookId,epoch=generation;
     await notesWrite;
     if(epoch===generation)await openBook(id,true,next);
@@ -241,6 +305,7 @@
   }
   onMount(()=>{
     readerId=crypto.randomUUID();
+    try{parallelEnabled=localStorage.getItem('grim-parallel')!=='false';}catch{}
     const navigate=()=>{
       const id=new URLSearchParams(location.search).get('book');
       const v=new URLSearchParams(location.search).get('version')==='working'?'working':'main';
@@ -248,7 +313,17 @@
     };
     const listener=(event:MessageEvent)=>{
       const data=event.data;
-      if(event.source!==frame?.contentWindow || !data?.grim || !current?.path || data.path!==framePath(current.path))return;
+      if(parallel) {
+        const incoming=comparison?.identify(event);if(!incoming)return;
+        if(data.type==='activate'){activatePane(incoming);return;}
+        if(data.type==='ready')return;
+        if(incoming!==version) {
+          if(data.type==='context' && typeof data.anchor==='string' && [data.scroll_y,data.anchor_offset].every(Number.isFinite))panePositions[incoming]={...empty(),anchor:data.anchor,scroll_y:Math.max(0,data.scroll_y),anchor_offset:data.anchor_offset,...(Number.isSafeInteger(data.block_index)&&data.block_index>=0?{block_index:data.block_index}:{})};
+          return;
+        }
+        frame=comparison?.getFrame(version);
+      }else if(event.source!==frame?.contentWindow || !data?.grim || !current?.path || data.path!==framePath(current.path))return;
+      if(!current?.path)return;
       if(data.type==='ready') {
         sendTheme();
         sendReadingSize();
@@ -256,7 +331,8 @@
         syncNotes(pendingNoteId);pendingNoteId='';
       }else if(data.type==='context') {
         if(![data.visible_text,data.selection,data.anchor].every(x=>typeof x==='string') || ![data.scroll_y,data.anchor_offset].every(Number.isFinite))return;
-        position={visible_text:data.visible_text.slice(0,24000),selection:data.selection.slice(0,12000),anchor:data.anchor.slice(0,300),scroll_y:Math.max(0,data.scroll_y),anchor_offset:data.anchor_offset};
+        position={visible_text:data.visible_text.slice(0,24000),selection:data.selection.slice(0,12000),anchor:data.anchor.slice(0,300),scroll_y:Math.max(0,data.scroll_y),anchor_offset:data.anchor_offset,...(Number.isSafeInteger(data.block_index)&&data.block_index>=0?{block_index:data.block_index}:{})};
+        panePositions[version]={...position};
         if(Number.isSafeInteger(data.page_characters) && data.page_characters>=0) {
           pageCharacters=data.page_characters;countedFrame=data.path;
         }
@@ -338,6 +414,7 @@
               <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 5 5M4 15 16 3a2.1 2.1 0 0 1 5 5L9 20l-6 1z"/></svg>
             </button>
           </div>
+          {#if readingWidth>=960}<button aria-label="Показывать оригинал и копию рядом" aria-pressed={parallelEnabled} onclick={toggleParallel}>{parallelEnabled?'Рядом ✓':'Рядом'}</button>{/if}
           {#if renamingCopy}<form id="rename-copy-form" onsubmit={renameCopy}><label>Название рабочей копии<input bind:value={copyName} maxlength="200" required /></label><button disabled={savingCopyName}>Сохранить название</button><button type="button" onclick={()=>renamingCopy=false}>Отмена</button></form>{/if}
         {:else}
           <button disabled={creatingCopy || !allPages.length} onclick={createWorkingCopy}>{creatingCopy?'Создаём копию…':'Создать рабочую копию'}</button>
@@ -369,9 +446,11 @@
     </header>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
     <div class="reading-area">
-      <section class="page-area" aria-label="Страница книги">
+      <section class="page-area" aria-label="Страница книги" bind:clientWidth={readingWidth}>
         <div class="reading-meta"><span>{current ? 'ГЛАВА '+(pageIndex+1).toString().padStart(2,'0') : 'НОВАЯ КНИГА'}</span><span>{book?.has_source ? (version==='source'?'Оригинал':book.working_name||'Рабочая копия') : updated ? `Обновлено в ${updated}` : 'Маленькие открытия, большой мир'}</span></div>
-        {#if current?.path}
+        {#if parallel}
+          <ParallelReader bind:this={comparison} source={comparisonView('source')} working={comparisonView('working')} active={version} workingName={workingBook?.working_name||'Рабочая копия'} onactivate={activatePane} onframe={comparisonReady} theme={$resolvedTheme} size={$readingSize}/>
+        {:else if current?.path}
           {#key `${bookId}:${version}:${current.path}:${revision}`}<iframe bind:this={frame} title={current.title} sandbox="allow-scripts allow-downloads" allow="fullscreen *" src={`${framePath(current.path)}?v=${revision}&grim-theme=${get(resolvedTheme)}`}></iframe>{/key}
         {:else if book}
           <div class="empty-book"><span class="eyebrow">ПЕРВАЯ СТРАНИЦА ЕЩЁ ВПЕРЕДИ</span><h1>{book.title}</h1><p>Книга создана. Начните тему в чате или со своим внешним агентом: он добавит HTML-страницы и оглавление, а они появятся здесь автоматически.</p><h2>Папка для ваших страниц</h2><code>{book.root}</code><p class="small">Оглавление: book.json · Добавьте страницу в массив pages.</p></div>

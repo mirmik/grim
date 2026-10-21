@@ -210,7 +210,8 @@
     }
     const visible = blocks();
     const anchor = visible.find(el => el.id);
-    send('context', {page_characters: pageCharacters, visible_text: visible.map(el => readingText(el).trim()).join('\n').slice(0,24000), selection: selectionText().slice(0,12000), selection_anchor: selectionAnchor(), selection_rect: selectionRect(), anchor: anchor?.id || '', anchor_offset: anchor?.getBoundingClientRect().top || 0, scroll_y: Math.max(0,scrollY)});
+    const localAnchor=anchor||visible[0];
+    send('context', {page_characters: pageCharacters, visible_text: visible.map(el => readingText(el).trim()).join('\n').slice(0,24000), selection: selectionText().slice(0,12000), selection_anchor: selectionAnchor(), selection_rect: selectionRect(), anchor: anchor?.id || '', block_index:localAnchor?[...document.querySelectorAll(blockSelector)].indexOf(localAnchor):-1, anchor_offset: localAnchor?.getBoundingClientRect().top || 0, scroll_y: Math.max(0,scrollY)});
   }
   function schedule() {clearTimeout(timer); timer = setTimeout(report, 100);}
   function selectionFinished() {
@@ -218,14 +219,76 @@
     // both shortly after the gesture and once the native toolbar has settled.
     schedule();setTimeout(report,350);setTimeout(report,900);
   }
+  // Comparison is a presentation only: spacers live in the sandbox DOM and
+  // never enter book files, text anchors, notes or the agent's reading text.
+  let parallel=false, alignmentBlocks=[], alignmentSpacers=[], alignmentEnd, layoutTimer;
+  const alignmentSelector='h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,figure,table';
+  const alignmentStyle=document.createElement('style');
+  alignmentStyle.textContent='[data-grim-alignment-spacer]{display:flow-root!important;box-sizing:content-box!important;height:0;margin:0!important;padding:0!important;padding-top:1px!important;border:0!important;pointer-events:none!important;overflow:hidden!important;overflow-anchor:none!important} html[data-grim-parallel]{scroll-behavior:auto!important;overflow-anchor:none}';
+  document.documentElement.append(alignmentStyle);
+  const layoutObserver=new ResizeObserver(()=>scheduleLayout());
+  const alignmentObserver=new MutationObserver(()=>{if(parallel){scanAlignment();scheduleLayout();}});
+  function spacer() {
+    const el=document.createElement('div');el.setAttribute('data-grim-alignment-spacer','');el.setAttribute('aria-hidden','true');return el;
+  }
+  function scanAlignment() {
+    alignmentObserver.disconnect();layoutObserver.disconnect();
+    const candidates=[...document.querySelectorAll(alignmentSelector)].filter(el=>!el.closest('[hidden],script,style,[aria-hidden="true"]') && el.getBoundingClientRect().height>0);
+    const included=new Set(candidates);
+    const next=candidates.filter(el=>{
+      for(let p=el.parentElement;p;p=p.parentElement)if(included.has(p))return false;
+      return true;
+    }).slice(0,10000);
+    if(next.length!==alignmentBlocks.length || next.some((el,i)=>el!==alignmentBlocks[i])) {
+      alignmentSpacers.forEach(el=>el.remove());alignmentEnd?.remove();
+      alignmentBlocks=next;alignmentSpacers=next.map(el=>{const pad=spacer();el.before(pad);return pad;});
+      alignmentEnd=spacer();document.body.append(alignmentEnd);
+    }
+    alignmentBlocks.forEach(el=>layoutObserver.observe(el));
+    // Container widths and images affect wrapping even without text edits.
+    layoutObserver.observe(document.body);
+    alignmentObserver.observe(document.body,{childList:true,characterData:true,subtree:true});
+  }
+  function scheduleLayout() {clearTimeout(layoutTimer);if(parallel)layoutTimer=setTimeout(reportLayout,60);}
+  function reportLayout() {
+    if(!parallel)return;
+    let padding=0;
+    const metrics=alignmentBlocks.map((el,i)=>{
+      // Use the rendered height, not the style's decimal string: subpixel
+      // rounding otherwise feeds tiny errors back into every subsequent pass.
+      padding+=alignmentSpacers[i].getBoundingClientRect().height-1;
+      return {id:el.getAttribute('data-grim-source')||el.id||'',tag:el.tagName.toLowerCase(),top:el.getBoundingClientRect().top+scrollY-padding};
+    });
+    const extent=document.body.getBoundingClientRect().bottom+scrollY-padding-(alignmentEnd.getBoundingClientRect().height-1);
+    send('parallel-layout',{blocks:metrics,extent});
+  }
+  function activate() {if(parallel)send('activate');}
+  document.addEventListener('pointerdown',activate,{passive:true});
+  document.addEventListener('wheel',activate,{passive:true});
+  document.addEventListener('keydown',activate);
+  document.addEventListener('selectionchange',()=>{if(!getSelection()?.isCollapsed)activate();});
+  addEventListener('scroll',()=>{if(parallel)send('parallel-scroll',{y:Math.max(0,scrollY)});},{passive:true});
+  addEventListener('resize',scheduleLayout);
+  document.fonts?.ready.then(scheduleLayout);
   addEventListener('message', event => {
     if (event.source !== parent || !event.data?.grim) return;
     if (event.data.type === 'theme') { applyTheme(event.data.theme); return; }
     if (event.data.type === 'reading-style') { applyReadingStyle(event.data.size); return; }
+    if(event.data.type==='parallel-start') {
+      parallel=true;document.documentElement.dataset.grimParallel='';scanAlignment();scheduleLayout();return;
+    }
+    if(event.data.type==='parallel-align' && parallel) {
+      const pads=event.data.pads;
+      if(!Array.isArray(pads) || pads.length!==alignmentSpacers.length || !pads.every(n=>Number.isFinite(n)&&n>=0) || !Number.isFinite(event.data.end) || event.data.end<0)return;
+      alignmentSpacers.forEach((el,i)=>el.style.setProperty('height',pads[i]+'px','important'));
+      alignmentEnd.style.setProperty('height',event.data.end+'px','important');schedule();return;
+    }
+    if(event.data.type==='parallel-sync' && parallel) {send('parallel-scroll',{y:Math.max(0,scrollY)});return;}
+    if(event.data.type==='parallel-scroll' && parallel && Number.isFinite(event.data.y)) {scrollTo(0,Math.max(0,event.data.y));return;}
     if(event.data.type==='restore') {
       const p = event.data.position;
       if (p) {
-        const anchor = p.anchor && document.getElementById(p.anchor);
+        const anchor = (p.anchor && document.getElementById(p.anchor)) || (Number.isSafeInteger(p.block_index) && p.block_index>=0 && document.querySelectorAll(blockSelector)[p.block_index]);
         scrollTo(0, anchor ? scrollY + anchor.getBoundingClientRect().top - p.anchor_offset : p.scroll_y || 0);
       }
       ready = true; report();

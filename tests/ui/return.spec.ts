@@ -9,12 +9,14 @@ for (const width of [1440, 390]) {
     const book=await (await request.post('/api/library/create', {
       headers:{'X-Grim-Viewer':token},data:{title:`Return test ${width}`},
     })).json();
+    const initialRevision=(await(await request.get(`/api/books/${book.id}`)).json()).revision;
     const head='<html><head><style>body{margin:0;padding:20px}p{margin:0} .gap{height:1400px}</style></head><body>';
     await writeFile(path.join(book.root,'one.html'),head+'<h1>One</h1><div class="gap"></div><p id="origin">Original position <a href="#same-note">Same-page note</a> <a href="two.html#note">Other-page note</a></p><div class="gap"></div><p id="same-note">Same-page footnote</p><div class="gap"></div></body></html>');
     await writeFile(path.join(book.root,'two.html'),head+'<h1>Two</h1><div class="gap"></div><p id="note">Other-page footnote <a href="one.html#same-note">Another note</a></p><div class="gap"></div></body></html>');
     await writeFile(path.join(book.root,'book.json'),JSON.stringify({title:book.title,pages:[
       {id:'one',title:'One',path:'one.html'},{id:'two',title:'Two',path:'two.html'},
     ]}));
+    await expect.poll(async()=>(await(await request.get(`/api/books/${book.id}`)).json()).revision).toBeGreaterThan(initialRevision);
     await page.goto(`/?book=${book.id}`);
     const frame=page.frameLocator('iframe');
     const back=page.getByRole('button',{name:'Вернуться',exact:true});

@@ -22,6 +22,7 @@ BASE = Path(__file__).resolve().parent.parent
 from server.library import Library, library_directory, manifest, page_map, safe_file
 from server.versions import Version, create_source, source_exists, source_file, version_root, source_index, notes_location, rename_working
 from server.notes import NOTES_FILE, NotesDocument, read_notes, write_notes
+from server.agent_notes import DIRECTORY as AGENT_NOTES_DIRECTORY
 from server.epub import EpubError, MAX_UPLOAD, import_epub
 from server.mobile_access import MobileAccess, MobileAccessMiddleware, CAPABILITY, mobile_listener
 
@@ -69,7 +70,7 @@ def browser_origin(value):
         return None
 
 
-def create_app(book_root: Path = None, library_dir: Path = None, *, agent_completion=None):
+def create_app(book_root: Path = None, library_dir: Path = None, *, agent_completion=None, agent_web=None):
     mobile = MobileAccess.from_env()
     contexts = {}
     reader_sequences = {}
@@ -101,6 +102,8 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
         for p in root.rglob('*'):
             try:
                 relative = p.relative_to(root).as_posix()
+                if p.relative_to(root).parts[0] == AGENT_NOTES_DIRECTORY:
+                    continue
                 if p.name in (NOTES_FILE, NOTES_FILE + '.tmp', '.grim-source-notes.json', '.grim-source-notes.json.tmp') or relative.startswith('.grim-source-'):
                     continue
                 if p.is_file() and p.resolve().is_relative_to(root):
@@ -140,7 +143,7 @@ def create_app(book_root: Path = None, library_dir: Path = None, *, agent_comple
             import copy
             context = contexts.get(reader_id)
             return copy.deepcopy(context) if context and context['book']['id'] == book_id else None
-        app.state.agent = AgentService(library, agent_context, agent_completion)
+        app.state.agent = AgentService(library, agent_context, agent_completion, agent_web)
         for book_id in library.entries:
             state_for(book_id)
         task = asyncio.create_task(watch())
